@@ -1,14 +1,17 @@
 # Queue (Orchestrator)
 
 ## Backlog
-- [ ] Собрать 3 оффера из топ-10 идей монетизации OpenClaw
-- [ ] Подготовить шаблон "разбор форвард-поста" для авто `.chaos`
-- [ ] Сформировать weekly review чеклист по OpenClaw-проекту
+- [ ] Сформировать минимальную структуру датасета по Polymarket (кошелёк/рынок/тайминг/сайз/исход)
+- [ ] Определить правило расчёта EV и winrate (единая формула)
+- [ ] Подготовить шаблон Hypothesis Card (гипотеза + аргументы против)
+- [ ] Подготовить micro-test protocol (risk cap / daily loss limit / stop rules)
+- [ ] Подготовить дисциплинарный трекер для пропа (2 минуса подряд → стоп)
 
 ## Today
-- [ ] ORCHESTRATOR: разбить backlog на 4-5 задач дня
-- [ ] RESEARCH: shortlist 3 fastest time-to-money сценария
-- [ ] BUILDER: оформить 1-page оффер + шаблон delivery
+- [ ] ORCHESTRATOR: разложить 30-дневную цель на 7-дневный спринт
+- [ ] RESEARCH: дать 2–3 потенциальных edge-гипотезы по Polymarket + контраргументы
+- [ ] BUILDER: создать шаблоны `Polymarket Data Log`, `Hypothesis Card`, `Micro-Test Review`
+- [ ] ORCHESTRATOR: зафиксировать risk guardrails в отдельной заметке
 
 ## In Progress
 - [ ] (пусто)
@@ -17,7 +20,7 @@
 - [ ] (пусто)
 
 ## Done
-- [x] 2026-03-02: создана базовая мульти-агентная архитектура (registry/queue/log)
+- [x] 2026-03-02: утверждена 30-дневная стратегия (Polymarket/Prop/Infrastructure 60/30/10)
 
 ---
 
