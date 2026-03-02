@@ -4,11 +4,23 @@ set -euo pipefail
 LOG_DIR="$HOME/.openclaw/workspace/tmp/maintenance"
 mkdir -p "$LOG_DIR"
 LOG_FILE="$LOG_DIR/disk-weekly-$(date +%F).log"
+ALERT_FILE="$LOG_DIR/ALERTS.log"
+ALERT_THRESHOLD="${ALERT_THRESHOLD:-15}"
 
 {
   echo "=== Weekly disk maintenance: $(date -Is) ==="
   echo "\n[Disk usage]"
   df -h / /home
+
+  AVAIL_PCT=$(df --output=pcent / | tail -1 | tr -dc '0-9')
+  FREE_PCT=$((100 - AVAIL_PCT))
+  echo "Free space: ${FREE_PCT}% (threshold: ${ALERT_THRESHOLD}%)"
+  if (( FREE_PCT < ALERT_THRESHOLD )); then
+    ALERT_MSG="ALERT $(date -Is): low disk space on / => ${FREE_PCT}% free (< ${ALERT_THRESHOLD}%)"
+    echo "$ALERT_MSG"
+    echo "$ALERT_MSG" >> "$ALERT_FILE"
+    command -v logger >/dev/null 2>&1 && logger -t openclaw-maintenance "$ALERT_MSG" || true
+  fi
 
   echo "\n[Top dirs in /home/openclawuser]"
   du -h --max-depth=2 "$HOME" 2>/dev/null | sort -hr | head -n 25
