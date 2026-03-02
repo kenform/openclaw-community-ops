@@ -64,3 +64,23 @@
   - Создать шаблоны логов в vault и запустить 7-дневный этап сбора
 - Notes:
   - Фокус, ограничения и KPI зафиксированы как non-negotiable.
+
+### [2026-03-02 19:41 UTC] Task: Оптимизация памяти и очистка временных данных
+- Owner session: main
+- Context: Пользователь попросил очищать старую/лишнюю информацию и оптимизировать хранение.
+- Goal: Освободить место без риска потери важных рабочих данных.
+- Actions taken:
+  - Удалены временные файлы в `/home/openclawuser/userbot/tmp`
+  - Удалены служебные `__pycache__` в userbot
+  - Оставлены только 2 последних backup-файла `bot.py.bak_*`
+- Artifacts:
+  - `/home/openclawuser/userbot/tmp` (очищено)
+  - `/home/openclawuser/userbot` (cleanup backups)
+  - `/home/openclawuser/.openclaw/workspace/memory/tasks-log.md`
+- Result: ✅ done
+- Blockers:
+  - Нет
+- Next step:
+  - При желании включить автополитики retention (например, чистка tmp ежедневно, хранение N последних backup)
+- Notes:
+  - Освобождено ~21.7 MB.
