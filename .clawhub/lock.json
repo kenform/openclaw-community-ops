@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "skills": {
+    "openai-whisper": {
+      "version": "1.0.0",
+      "installedAt": 1772426111844
+    },
+    "local-whisper": {
+      "version": "1.0.0",
+      "installedAt": 1772426539564
+    },
+    "summarize": {
+      "version": "1.0.0",
+      "installedAt": 1772429042171
+    },
+    "pdf-extract": {
+      "version": "1.0.0",
+      "installedAt": 1772429047426
+    },
+    "vassili-clawhub-cli": {
+      "version": "1.0.0",
+      "installedAt": 1772429049431
+    },
+    "obsidian-cli-official": {
+      "version": "4.0.0",
+      "installedAt": 1772433732225
+    }
+  }
+}
