@@ -84,3 +84,28 @@
   - При желании включить автополитики retention (например, чистка tmp ежедневно, хранение N последних backup)
 - Notes:
   - Освобождено ~21.7 MB.
+
+### [2026-03-02 21:19 UTC] Task: Hardening/optimization pass (approved items 2-6)
+- Owner session: main
+- Context: User approved improvements for queue resilience, schedulers, diagnostics, watchdog, and backup safety.
+- Goal: Improve stability/performance with safe rollback posture.
+- Actions taken:
+  - Updated `/home/openclawuser/userbot/bot.py`:
+    - queue cap guard (`MAX_QUEUE_SIZE`)
+    - retry/backoff in `ask_openclaw`
+    - structured event logging (`userbot_events.jsonl`)
+    - health summary writer (`health_summary.json`)
+    - scheduler idle interval reduced CPU churn (60s loops)
+  - Added pre-change snapshot script:
+    - `/home/openclawuser/.openclaw/workspace/scripts/prechange_snapshot.sh`
+  - Restarted `userbot.service` and verified active status.
+- Artifacts:
+  - `/home/openclawuser/userbot/bot.py`
+  - `/home/openclawuser/userbot/userbot_events.jsonl` (runtime)
+  - `/home/openclawuser/userbot/health_summary.json` (runtime)
+  - `/home/openclawuser/.openclaw/workspace/scripts/prechange_snapshot.sh`
+- Result: ✅ done
+- Blockers:
+  - None
+- Next step:
+  - Add command `.health` in userbot for quick runtime summary and queue stats.
