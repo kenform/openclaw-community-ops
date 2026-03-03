@@ -28,6 +28,14 @@
     "telegram-auto-topic": {
       "version": "0.1.8",
       "installedAt": 1772530359059
+    },
+    "openclaw-watchdog": {
+      "version": "1.3.0",
+      "installedAt": 1772530453654
+    },
+    "obsidian-conversation-backup": {
+      "version": "1.0.0",
+      "installedAt": 1772530466437
     }
   }
 }
