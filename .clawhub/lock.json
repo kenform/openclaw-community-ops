@@ -24,6 +24,10 @@
     "obsidian-cli-official": {
       "version": "4.0.0",
       "installedAt": 1772433732225
+    },
+    "telegram-auto-topic": {
+      "version": "0.1.8",
+      "installedAt": 1772530359059
     }
   }
 }
