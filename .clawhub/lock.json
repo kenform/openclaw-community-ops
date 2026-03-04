@@ -36,6 +36,14 @@
     "obsidian-conversation-backup": {
       "version": "1.0.0",
       "installedAt": 1772530466437
+    },
+    "arc-security-audit": {
+      "version": "1.1.0",
+      "installedAt": 1772583453467
+    },
+    "agent-task-tracker": {
+      "version": "1.1.0",
+      "installedAt": 1772583466837
     }
   }
 }
