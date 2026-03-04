@@ -35,6 +35,64 @@ def load_env(path: Path):
     return out
 
 
+
+
+def collect_high_relevance_notes(limit=40):
+    roots = [
+        VAULT / '10_Channels',
+        VAULT / '20_Summaries',
+        VAULT / 'Crypto',
+    ]
+    files = []
+    for r in roots:
+        if r.exists():
+            files.extend(r.rglob('*.md'))
+    files = sorted(files, key=lambda p: p.stat().st_mtime, reverse=True)
+
+    out = []
+    for f in files:
+        try:
+            txt = f.read_text(encoding='utf-8', errors='ignore')
+        except Exception:
+            continue
+        low = txt.lower()
+        score = 0
+        for kw in ['openclaw','agent','automation','telegram','obsidian','ai','workflow','research','security','polymarket']:
+            if kw in low:
+                score += 1
+        if 'relevance: high' in low:
+            score += 3
+        if score < 2:
+            continue
+
+        title = f.stem
+        for line in txt.splitlines():
+            if line.startswith('# '):
+                title = line[2:].strip(); break
+
+        # extract 2 short signal lines
+        bullets = []
+        for line in txt.splitlines():
+            l=line.strip()
+            if l.startswith('- ') and len(l) > 6:
+                bullets.append(l[2:].strip())
+            if len(bullets) >= 3:
+                break
+        if not bullets:
+            # fallback: first non-empty sentence-like lines
+            for line in txt.splitlines():
+                l=line.strip()
+                if len(l) > 30 and not l.startswith('#') and not l.startswith('---'):
+                    bullets.append(l[:180])
+                if len(bullets) >= 2:
+                    break
+
+        out.append({'path': str(f), 'title': title, 'bullets': bullets[:3], 'score': score})
+        if len(out) >= limit:
+            break
+    return out
+
+
 def latest_insights(limit=20):
     files = sorted((VAULT / '20_Summaries').glob('*.md'), key=lambda p: p.stat().st_mtime, reverse=True)
     snippets = []
@@ -46,75 +104,27 @@ def latest_insights(limit=20):
 
 
 def pick_post(slot_idx: int):
-    insights = latest_insights(30)
-    title_pool = [t for _, t in insights] or ['AI signal of the day']
-    t = random.choice(title_pool)
+    notes = collect_high_relevance_notes(30)
+    if not notes:
+        return "⚪️ NO POST\n\nНет достаточно ценных материалов для публикации в этом цикле."
 
-    if slot_idx == 0:
-        return f"""⚡ AI Signal
+    n = notes[slot_idx % len(notes)]
+    title = n['title']
+    b = n['bullets'] if n['bullets'] else ["Сигналы не извлечены автоматически, требуется ручная проверка."]
 
-Рынок смещается в сторону агентных систем, где важен не “умный ответ”, а стабильный workflow.
-• Спрос растёт на связки: Telegram + Obsidian + automation
-• Выигрывает тот, кто быстрее превращает инфопоток в действия
-• Главное конкурентное преимущество — дисциплина процессов
+    templates = [
+        ("⚡ AI Signal", "Короткий сигнал по теме дня:"),
+        ("🧰 Tool Breakdown", "Разбор инструмента/подхода:"),
+        ("🤖 Automation Guide", "Практический сценарий автоматизации:"),
+        ("📈 AI Business", "Бизнес-угол и применение:"),
+        ("🔍 Research Note", "Ресерч-выжимка:"),
+        ("🧪 Operational Tip", "Операционный совет на сегодня:"),
+    ]
+    h, lead = templates[slot_idx % len(templates)]
 
-Почему важно:
-Скорость исполнения уже важнее, чем просто количество знаний."""
-
-    if slot_idx == 1:
-        return f"""🧰 Tool Breakdown: OpenClaw + Skills
-
-Ключ к пользе OpenClaw — не в модели, а в правильно собранном стеке skills.
-• База: мониторинг, суммаризация, сохранение в Obsidian
-• Безопасность: аудит скиллов до прод-использования
-• Производство: task-tracker + step-sequencer для повторяемых циклов
-
-Почему важно:
-Навыки и процессы дают предсказуемый результат каждый день."""
-
-    if slot_idx == 2:
-        return f"""🤖 Automation Guide
-
-Как сделать простой AI-конвейер за 30 минут:
-• Источник (Telegram/X/YouTube)
-• Автовыжимка (summary)
-• Сохранение в Obsidian
-• Короткий daily brief в канал
-
-Почему важно:
-Ты перестаёшь тонуть в шуме и начинаешь работать с системой."""
-
-    if slot_idx == 3:
-        return f"""📈 AI Business Model
-
-Один из рабочих путей монетизации: “AI Ops под ключ” для авторов/каналов.
-• Настройка контент-конвейера
-• Автоматизация дайджестов и базы знаний
-• Поддержка и оптимизация по KPI
-
-Почему важно:
-Люди платят не за ИИ, а за стабильный результат и экономию времени."""
-
-    if slot_idx == 4:
-        return f"""🔍 Research Note
-
-Тема дня: {t}
-• Проверяй первоисточники, а не пересказы
-• Отмечай противоречия и уровень уверенности
-• Отделяй факт от мнения (hypothesis, если данных мало)
-
-Почему важно:
-Качественный ресерч напрямую влияет на качество решений и контента."""
-
-    return f"""🧪 Practical Routine (вечер)
-
-Мини-ритуал на 10 минут:
-• Что сработало сегодня?
-• Что не сработало и почему?
-• Что переносим на завтра?
-
-Почему важно:
-Именно ежедневный цикл улучшений даёт эффект на дистанции."""
+    pts = "\n".join([f"• {x}" for x in b[:3]])
+    msg = f"{h}\n\n{lead} {title}\n{pts}\n\nПочему важно:\n• Помогает принимать решения быстрее и с меньшим шумом."
+    return msg
 
 
 def build_weekly_digest():
@@ -163,7 +173,7 @@ async def publish(mode='slot'):
 
     # Quality filter: basic line count guard
     lines = [x for x in msg.splitlines() if x.strip()]
-    if not (6 <= len(lines) <= 14):
+    if not (8 <= len(lines) <= 14):
         await client.disconnect()
         return
 
