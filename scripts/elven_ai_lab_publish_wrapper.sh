@@ -1,7 +1,3 @@
 #!/usr/bin/env bash
 set -euo pipefail
-source /home/openclawuser/userbot/.venv/bin/activate
-systemctl --user stop userbot || true
-sleep 1
-python /home/openclawuser/.openclaw/workspace/scripts/elven_ai_lab_poster.py slot || true
-systemctl --user start userbot || true
+python3 /home/openclawuser/.openclaw/workspace/scripts/elven_ai_lab_poster_bot.py slot >> /home/openclawuser/.openclaw/workspace/tmp/elven_ai_lab.log 2>&1 || true
