@@ -1,0 +1,23 @@
+{
+  "x": {
+    "handles": [],
+    "rss_urls": [],
+    "nitter_base": "https://nitter.net"
+  },
+  "youtube": {
+    "channel_ids": [],
+    "feed_urls": []
+  },
+  "relevance_keywords": [
+    "openclaw",
+    "ai",
+    "agent",
+    "crypto",
+    "polymarket",
+    "automation",
+    "trading"
+  ],
+  "high_relevance_min_hits": 2,
+  "enable_youtube_transcript": false,
+  "enable_whisper_fallback": false
+}
