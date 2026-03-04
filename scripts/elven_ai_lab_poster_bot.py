@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import datetime as dt
 import json
-import os
 import re
 from pathlib import Path
 from urllib.parse import urlencode
@@ -13,12 +12,15 @@ CFG = WORKSPACE / 'scripts' / 'elven_ai_lab_config.json'
 ENV = WORKSPACE / 'scripts' / 'elven_ai_lab_bot.env'
 HISTORY = WORKSPACE / 'tmp' / 'elven_ai_lab_history.json'
 
+MAX_POSTS_PER_DAY = 6
+MAX_LINES = 12
+
 
 def load_env(path: Path):
     out = {}
     for line in path.read_text(encoding='utf-8').splitlines():
         if '=' in line and not line.strip().startswith('#'):
-            k,v = line.split('=',1)
+            k, v = line.split('=', 1)
             out[k.strip()] = v.strip()
     return out
 
@@ -43,7 +45,7 @@ def save_history(h):
     HISTORY.write_text(json.dumps(h, ensure_ascii=False, indent=2), encoding='utf-8')
 
 
-def prune_history(h, hours=48):
+def prune_history(h, hours=168):
     now = dt.datetime.now(dt.timezone.utc)
     keep = []
     for x in h.get('posts', []):
@@ -57,7 +59,21 @@ def prune_history(h, hours=48):
     return h
 
 
-def collect_notes(limit=40):
+def today_post_count(h):
+    today = dt.datetime.now(dt.timezone.utc).strftime('%Y-%m-%d')
+    c = 0
+    for x in h.get('posts', []):
+        if str(x.get('ts', '')).startswith(today):
+            c += 1
+    return c
+
+
+def first_match(pattern, text):
+    m = re.search(pattern, text, re.IGNORECASE)
+    return m.group(1).strip() if m else ''
+
+
+def collect_notes(limit=60):
     roots = [VAULT / '10_Channels', VAULT / '20_Summaries', VAULT / 'Crypto']
     files = []
     for r in roots:
@@ -69,8 +85,19 @@ def collect_notes(limit=40):
     for f in files:
         txt = f.read_text(encoding='utf-8', errors='ignore')
         low = txt.lower()
+
+        # low-value skip
+        bad = ['мем', 'реферал', 'купи', 'подпишись', 'розыгрыш', 'giveaway', 'ad', 'реклама']
+        if any(x in low for x in bad):
+            continue
+
+        # useful priority scoring
         score = 0
-        for kw in ['openclaw','agent','automation','telegram','obsidian','ai','workflow','research','security','polymarket']:
+        good = [
+            'openclaw', 'automation', 'telegram', 'agent', 'ai', 'guide', 'гайд',
+            'пошаг', 'команда', 'config', 'ошибка', 'fix', 'решение', 'инсайт', 'product', 'update'
+        ]
+        for kw in good:
             if kw in low:
                 score += 1
         if 'relevance: high' in low:
@@ -81,56 +108,98 @@ def collect_notes(limit=40):
         title = f.stem
         for line in txt.splitlines():
             if line.startswith('# '):
-                title = line[2:].strip(); break
+                title = line[2:].strip()
+                break
 
         bullets = []
         for line in txt.splitlines():
             l = line.strip()
-            if l.startswith('- ') and len(l) > 8:
-                bullets.append(l[2:].strip())
+            if l.startswith('- ') and len(l) > 15:
+                bullets.append(re.sub(r'\s+', ' ', l[2:]).strip()[:120])
             if len(bullets) >= 3:
                 break
         if not bullets:
             for line in txt.splitlines():
                 l = line.strip()
-                if len(l) > 40 and not l.startswith('#') and not l.startswith('---'):
-                    bullets.append(l[:180])
-                if len(bullets) >= 2:
+                if len(l) > 45 and not l.startswith('#') and not l.startswith('---'):
+                    bullets.append(re.sub(r'\s+', ' ', l)[:120])
+                if len(bullets) >= 3:
                     break
 
-        out.append({"title": title, "bullets": bullets[:3], "score": score})
+        source_name = first_match(r'^Source:\s*(.+)$', txt)
+        source_url = first_match(r'^URL:\s*(https?://\S+)$', txt)
+
+        out.append({
+            'title': title[:90],
+            'bullets': bullets[:3],
+            'score': score,
+            'source_name': source_name or 'unknown',
+            'source_url': source_url,
+        })
         if len(out) >= limit:
             break
     return out
 
 
-def build_post(slot_idx: int):
-    notes = collect_notes(50)
-    h = prune_history(load_history(), 48)
-    used = set((x.get('title','').strip().lower()) for x in h.get('posts', []))
-    pool = [n for n in notes if n['title'].strip().lower() not in used] or notes
+def sanitize_channel_name(name: str):
+    n = (name or '').strip()
+    n = n.replace('https://t.me/', '').replace('@', '').strip('/')
+    return n or 'unknown'
+
+
+def render_post(n, channel_link, chat_link):
+    title = n['title']
+    bullets = n['bullets'] or ['Короткий технический сигнал без лишнего шума.']
+    source_name = sanitize_channel_name(n.get('source_name') or 'unknown')
+    source_url = n.get('source_url') or channel_link
+
+    lines = [
+        f"{title}",
+        "Ключевое по теме:",
+        f"• {bullets[0]}",
+    ]
+    if len(bullets) > 1:
+        lines.append(f"• {bullets[1]}")
+    if len(bullets) > 2:
+        lines.append(f"• {bullets[2]}")
+
+    lines += [
+        "Why it matters: помогает принимать решения быстрее и точнее.",
+        f"Source: @{source_name}",
+        "———",
+        "🌿 ARIA • Elven AI",
+        "#ai #openclaw #automation #telegram",
+        f"[Source]({source_url}) | [Channel]({channel_link}) | [Chat]({chat_link})",
+    ]
+
+    # hard line cap
+    non_empty = [x for x in lines if x.strip()]
+    return '\n'.join(non_empty[:MAX_LINES])
+
+
+def build_post():
+    h = prune_history(load_history(), 168)
+    if today_post_count(h) >= MAX_POSTS_PER_DAY:
+        return None
+
+    notes = collect_notes(80)
+    used_titles = set((x.get('title', '').strip().lower()) for x in h.get('posts', []))
+    pool = [n for n in notes if n['title'].strip().lower() not in used_titles] or notes
     if not pool:
         return None
 
-    n = pool[0]
-    ptype_seq = ['signal','tool','guide','business','research','ops']
-    ptype = ptype_seq[len(h.get('posts', [])) % len(ptype_seq)]
-    head = {
-        'signal': ('⚡ AI Signal', 'Короткий сигнал:'),
-        'tool': ('🧰 Tool Breakdown', 'Разбор инструмента:'),
-        'guide': ('🤖 Automation Guide', 'Практический сценарий:'),
-        'business': ('📈 AI Business', 'Бизнес-угол:'),
-        'research': ('🔍 Research Note', 'Ресерч-выжимка:'),
-        'ops': ('🧪 Operational Tip', 'Операционный совет:'),
-    }[ptype]
+    env = load_env(ENV)
+    channel_link = env.get('CHANNEL_LINK', 'https://t.me/Elven_Ai_Lab')
+    chat_link = env.get('CHAT_LINK', channel_link)
 
-    bullets = '\n'.join([f"• {b}" for b in (n['bullets'] or ['Требуется ручная проверка источника.'])])
-    msg = f"{head[0]}\n\n{head[1]} {n['title']}\n{bullets}\n\nПочему важно:\n• Помогает быстрее принимать решения без инфошума."
+    n = sorted(pool, key=lambda x: x.get('score', 0), reverse=True)[0]
+    msg = render_post(n, channel_link, chat_link)
 
     h.setdefault('posts', []).append({
-        'ts': dt.datetime.now(dt.timezone.utc).isoformat().replace('+00:00','Z'),
+        'ts': dt.datetime.now(dt.timezone.utc).isoformat().replace('+00:00', 'Z'),
         'title': n['title'],
-        'type': ptype
+        'score': n.get('score', 0),
+        'source': n.get('source_name', ''),
     })
     save_history(h)
     return msg
@@ -141,36 +210,31 @@ def send_telegram(token: str, channel: str, text: str):
     data = urlencode({
         'chat_id': channel,
         'text': text,
-        'disable_web_page_preview': 'true'
+        'disable_web_page_preview': 'true',
+        'parse_mode': 'Markdown'
     }).encode('utf-8')
     req = Request(url, data=data, headers={'Content-Type': 'application/x-www-form-urlencoded'})
     with urlopen(req, timeout=20) as r:
-        body = r.read().decode('utf-8', errors='ignore')
-    return body
+        return r.read().decode('utf-8', errors='ignore')
 
 
 def main(mode='slot'):
     cfg = load_cfg()
     if not cfg.get('enabled', True):
         return
+
     env = load_env(ENV)
     token = env['BOT_TOKEN']
     channel = env['CHANNEL']
 
-    if mode == 'weekly':
-        notes = collect_notes(20)
-        top = '\n'.join([f"• {x['title']}" for x in notes[:10]]) if notes else '• Нет новых сильных сигналов'
-        msg = f"🗓 Weekly Digest — Top 10\n\n{top}\n\nПочему важно:\n• Это концентрат сильных сигналов за неделю."
-    else:
-        slot_idx = dt.datetime.utcnow().hour % 6
-        msg = build_post(slot_idx)
-
+    msg = build_post()
     if not msg:
         return
 
+    # strict line guard
     lines = [l for l in msg.splitlines() if l.strip()]
-    if not (8 <= len(lines) <= 14):
-        return
+    if len(lines) > MAX_LINES:
+        msg = '\n'.join(lines[:MAX_LINES])
 
     send_telegram(token, channel, msg)
 
