@@ -11,6 +11,7 @@ CFG = WORKSPACE / 'scripts' / 'elven_ai_lab_config.json'
 USERBOT_ENV = Path('/home/openclawuser/userbot/config.env')
 SESSION = '/home/openclawuser/userbot/session.session'
 VAULT = WORKSPACE / 'Obsidian-Telegram-KB'
+HISTORY_PATH = WORKSPACE / 'tmp' / 'elven_ai_lab_history.json'
 
 
 def load_cfg():
@@ -35,6 +36,44 @@ def load_env(path: Path):
     return out
 
 
+
+
+def load_history():
+    if HISTORY_PATH.exists():
+        try:
+            return json.loads(HISTORY_PATH.read_text(encoding='utf-8'))
+        except Exception:
+            return {'posts': []}
+    return {'posts': []}
+
+
+def save_history(h):
+    HISTORY_PATH.parent.mkdir(parents=True, exist_ok=True)
+    HISTORY_PATH.write_text(json.dumps(h, ensure_ascii=False, indent=2), encoding='utf-8')
+
+
+def prune_history(h, hours=48):
+    now = dt.datetime.now(dt.timezone.utc)
+    kept=[]
+    for x in h.get('posts',[]):
+        try:
+            ts=dt.datetime.fromisoformat(x['ts'].replace('Z','+00:00'))
+        except Exception:
+            continue
+        if (now-ts).total_seconds() <= hours*3600:
+            kept.append(x)
+    h['posts']=kept
+    return h
+
+
+def recently_used_titles(h):
+    return set((x.get('title') or '').strip().lower() for x in h.get('posts',[]))
+
+
+def next_post_type(h):
+    seq=['signal','tool','guide','business','research','ops']
+    n=len(h.get('posts',[]))
+    return seq[n % len(seq)]
 
 
 def collect_high_relevance_notes(limit=40):
@@ -104,27 +143,38 @@ def latest_insights(limit=20):
 
 
 def pick_post(slot_idx: int):
-    notes = collect_high_relevance_notes(30)
-    if not notes:
-        return "⚪️ NO POST\n\nНет достаточно ценных материалов для публикации в этом цикле."
+    notes = collect_high_relevance_notes(50)
+    h = prune_history(load_history(), hours=48)
+    used = recently_used_titles(h)
 
-    n = notes[slot_idx % len(notes)]
+    # filter out recent titles
+    fresh = [n for n in notes if (n.get('title','').strip().lower() not in used)]
+    pool = fresh if fresh else notes
+    if not pool:
+        return "⚪️ NO POST\n\nНет достаточно ценных материалов для публикации в этом цикле.", None
+
+    n = pool[0]
     title = n['title']
     b = n['bullets'] if n['bullets'] else ["Сигналы не извлечены автоматически, требуется ручная проверка."]
 
-    templates = [
-        ("⚡ AI Signal", "Короткий сигнал по теме дня:"),
-        ("🧰 Tool Breakdown", "Разбор инструмента/подхода:"),
-        ("🤖 Automation Guide", "Практический сценарий автоматизации:"),
-        ("📈 AI Business", "Бизнес-угол и применение:"),
-        ("🔍 Research Note", "Ресерч-выжимка:"),
-        ("🧪 Operational Tip", "Операционный совет на сегодня:"),
-    ]
-    h, lead = templates[slot_idx % len(templates)]
+    ptype = next_post_type(h)
+    templates = {
+        'signal': ("⚡ AI Signal", "Короткий сигнал по теме дня:"),
+        'tool': ("🧰 Tool Breakdown", "Разбор инструмента/подхода:"),
+        'guide': ("🤖 Automation Guide", "Практический сценарий автоматизации:"),
+        'business': ("📈 AI Business", "Бизнес-угол и применение:"),
+        'research': ("🔍 Research Note", "Ресерч-выжимка:"),
+        'ops': ("🧪 Operational Tip", "Операционный совет на сегодня:"),
+    }
+    h1, lead = templates.get(ptype, templates['signal'])
 
     pts = "\n".join([f"• {x}" for x in b[:3]])
-    msg = f"{h}\n\n{lead} {title}\n{pts}\n\nПочему важно:\n• Помогает принимать решения быстрее и с меньшим шумом."
-    return msg
+    msg = f"{h1}\n\n{lead} {title}\n{pts}\n\nПочему важно:\n• Помогает принимать решения быстрее и с меньшим шумом."
+
+    # save history marker
+    h.setdefault('posts', []).append({'ts': dt.datetime.now(dt.timezone.utc).isoformat().replace('+00:00','Z'), 'title': title, 'type': ptype})
+    save_history(h)
+    return msg, ptype
 
 
 def build_weekly_digest():
@@ -169,7 +219,7 @@ async def publish(mode='slot'):
     else:
         now = dt.datetime.utcnow()
         slot_idx = now.hour % 6
-        msg = pick_post(slot_idx)
+        msg, _ptype = pick_post(slot_idx)
 
     # Quality filter: basic line count guard
     lines = [x for x in msg.splitlines() if x.strip()]
