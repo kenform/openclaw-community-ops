@@ -44,6 +44,26 @@
     "agent-task-tracker": {
       "version": "1.1.0",
       "installedAt": 1772583466837
+    },
+    "arc-trust-verifier": {
+      "version": "1.1.0",
+      "installedAt": 1772583601105
+    },
+    "azhua-skill-vetter": {
+      "version": "1.0.0",
+      "installedAt": 1772583604837
+    },
+    "agent-step-sequencer": {
+      "version": "1.1.0",
+      "installedAt": 1772583609419
+    },
+    "airadar": {
+      "version": "1.0.0",
+      "installedAt": 1772583613558
+    },
+    "biz-reporter": {
+      "version": "1.0.0",
+      "installedAt": 1772583617244
     }
   }
 }
