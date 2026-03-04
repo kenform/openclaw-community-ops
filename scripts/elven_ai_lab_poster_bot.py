@@ -91,7 +91,7 @@ def collect_notes(limit=60):
         low = txt.lower()
 
         # low-value skip
-        bad = ['мем', 'реферал', 'купи', 'подпишись', 'розыгрыш', 'giveaway', 'ad', 'реклама']
+        bad = ['мем', 'реферал', 'купи', 'подпишись', 'розыгрыш', 'giveaway', 'ad', 'реклама', 'мотивац', 'вдохнов']
         if any(x in low for x in bad):
             continue
 
@@ -151,46 +151,33 @@ def sanitize_channel_name(name: str):
     return n or 'unknown'
 
 
-def render_post(n, channel_link, chat_link):
+def render_post(n, channel_link, chat_link, post_type="AI SIGNAL"):
     title = n['title']
     bullets = n['bullets'] or ['Короткий технический сигнал без лишнего шума.']
     source_name = sanitize_channel_name(n.get('source_name') or 'unknown')
     source_url = n.get('source_url') or channel_link
 
-    lines = [
-        f"{title}",
-        "Ключевое по теме:",
-        f"• {bullets[0]}",
+    out = [
+        f"◆ ARIA • {post_type}",
+        title,
+        "Контекст:",
     ]
-    if len(bullets) > 1:
-        lines.append(f"• {bullets[1]}")
-    if len(bullets) > 2:
-        lines.append(f"• {bullets[2]}")
-
-    lines += [
-        "Why it matters: помогает принимать решения быстрее и точнее.",
+    out += [f"• {b[:120]}" for b in bullets[:3]]
+    out += [
+        "Why it matters: это практичный сигнал, который можно применить сразу.",
         f"Source: @{source_name}",
-        "———",
+        "───",
         "🌿 ARIA • Elven AI",
-        "#ai #openclaw #automation #telegram",
+        "#ai #openclaw #automation #agents",
         f"[Source]({source_url}) | [Channel]({channel_link}) | [Chat]({chat_link})",
     ]
+    return '\n'.join([x for x in out if x.strip()][:MAX_LINES])
 
-    # hard line cap
-    non_empty = [x for x in lines if x.strip()]
-    return '\n'.join(non_empty[:MAX_LINES])
-
-
-
-def daily_post_cap(notes_count: int) -> int:
-    # Normal mode: 8/day. If there is high-quality supply, allow up to 10/day.
-    return HIGH_SIGNAL_MAX_POSTS_PER_DAY if notes_count >= 30 else BASE_MAX_POSTS_PER_DAY
 
 def build_post():
     h = prune_history(load_history(), 168)
     notes = collect_notes(80)
-    cap = daily_post_cap(len(notes))
-    if today_post_count(h) >= cap:
+    if today_post_count(h) >= MAX_POSTS_PER_DAY:
         return None
     used_titles = set((x.get('title', '').strip().lower()) for x in h.get('posts', []))
     pool = [n for n in notes if n['title'].strip().lower() not in used_titles] or notes
@@ -202,7 +189,8 @@ def build_post():
     chat_link = env.get('CHAT_LINK', channel_link)
 
     n = sorted(pool, key=lambda x: x.get('score', 0), reverse=True)[0]
-    msg = render_post(n, channel_link, chat_link)
+    ptype = POST_TYPES[today_post_count(h) % len(POST_TYPES)]
+    msg = render_post(n, channel_link, chat_link, ptype)
 
     h.setdefault('posts', []).append({
         'ts': dt.datetime.now(dt.timezone.utc).isoformat().replace('+00:00', 'Z'),
