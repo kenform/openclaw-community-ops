@@ -10,7 +10,7 @@ from telethon import TelegramClient
 
 BASE = Path('/home/openclawuser/userbot')
 VAULT = Path('/home/openclawuser/vault') / 'AutoLearning' / 'Telegram'
-INDEX = VAULT / 'telegram_ingest_index.json'
+INDEX = Path('/home/openclawuser/vault/AutoLearning/telegram_ingest_index.json')
 INBOX = BASE / 'autolearn_inbox.jsonl'
 STATE = BASE / 'autolearn_state.json'
 LAST_DIGEST = BASE / 'autolearn_last_digest.md'
