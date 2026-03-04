@@ -162,7 +162,14 @@ def render_post(n, channel_link, chat_link, post_type="AI SIGNAL"):
         title,
         "Контекст:",
     ]
-    out += [f"• {b[:120]}" for b in bullets[:3]]
+    for b in bullets[:3]:
+        short = b[:90]
+        extra = b[90:260].strip()
+        if extra:
+            out.append(f"• {short}")
+            out.append(f"«||{extra}||»")
+        else:
+            out.append(f"• {short}")
     out += [
         "Why it matters: это практичный сигнал, который можно применить сразу.",
         f"Source: @{source_name}",
