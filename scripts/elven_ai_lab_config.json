@@ -1,0 +1,15 @@
+{
+  "channel_name": "Elven AI Lab",
+  "language": "ru",
+  "max_lines": 12,
+  "min_lines": 8,
+  "daily_slots": [
+    "09:00",
+    "12:00",
+    "15:00",
+    "18:00",
+    "21:00",
+    "23:00"
+  ],
+  "enabled": true
+}
