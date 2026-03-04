@@ -12,8 +12,12 @@ CFG = WORKSPACE / 'scripts' / 'elven_ai_lab_config.json'
 ENV = WORKSPACE / 'scripts' / 'elven_ai_lab_bot.env'
 HISTORY = WORKSPACE / 'tmp' / 'elven_ai_lab_history.json'
 
-MAX_POSTS_PER_DAY = 6
 MAX_LINES = 12
+
+# Adaptive daily cap: enough cadence without spam
+# base 8, can scale to 10 when signal density is high
+BASE_MAX_POSTS_PER_DAY = 8
+HIGH_SIGNAL_MAX_POSTS_PER_DAY = 10
 
 
 def load_env(path: Path):
@@ -177,12 +181,17 @@ def render_post(n, channel_link, chat_link):
     return '\n'.join(non_empty[:MAX_LINES])
 
 
+
+def daily_post_cap(notes_count: int) -> int:
+    # Normal mode: 8/day. If there is high-quality supply, allow up to 10/day.
+    return HIGH_SIGNAL_MAX_POSTS_PER_DAY if notes_count >= 30 else BASE_MAX_POSTS_PER_DAY
+
 def build_post():
     h = prune_history(load_history(), 168)
-    if today_post_count(h) >= MAX_POSTS_PER_DAY:
-        return None
-
     notes = collect_notes(80)
+    cap = daily_post_cap(len(notes))
+    if today_post_count(h) >= cap:
+        return None
     used_titles = set((x.get('title', '').strip().lower()) for x in h.get('posts', []))
     pool = [n for n in notes if n['title'].strip().lower() not in used_titles] or notes
     if not pool:
