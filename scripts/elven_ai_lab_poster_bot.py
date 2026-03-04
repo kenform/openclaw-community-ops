@@ -12,12 +12,8 @@ CFG = WORKSPACE / 'scripts' / 'elven_ai_lab_config.json'
 ENV = WORKSPACE / 'scripts' / 'elven_ai_lab_bot.env'
 HISTORY = WORKSPACE / 'tmp' / 'elven_ai_lab_history.json'
 
-MAX_LINES = 12
-
-# Adaptive daily cap: enough cadence without spam
-# base 8, can scale to 10 when signal density is high
-BASE_MAX_POSTS_PER_DAY = 8
-HIGH_SIGNAL_MAX_POSTS_PER_DAY = 10
+MAX_SIGNALS_PER_DAY = 20
+POST_TYPES = ["AI SIGNAL", "TOOL", "HOW TO", "TREND", "WEEKLY DIGEST"]
 
 
 def load_env(path: Path):
@@ -63,13 +59,9 @@ def prune_history(h, hours=168):
     return h
 
 
-def today_post_count(h):
+def today_count_by_layer(h, layer: str):
     today = dt.datetime.now(dt.timezone.utc).strftime('%Y-%m-%d')
-    c = 0
-    for x in h.get('posts', []):
-        if str(x.get('ts', '')).startswith(today):
-            c += 1
-    return c
+    return sum(1 for x in h.get('posts', []) if str(x.get('ts', '')).startswith(today) and x.get('layer') == layer)
 
 
 def first_match(pattern, text):
@@ -77,7 +69,29 @@ def first_match(pattern, text):
     return m.group(1).strip() if m else ''
 
 
-def collect_notes(limit=60):
+def sanitize_channel_name(name: str):
+    n = (name or '').strip()
+    n = n.replace('https://t.me/', '').replace('@', '').strip('/')
+    return n or 'unknown'
+
+
+def score_text(low: str):
+    bad = ['мем', 'реферал', 'купи', 'подпишись', 'розыгрыш', 'giveaway', 'ad', 'реклама', 'мотивац', 'вдохнов']
+    if any(x in low for x in bad):
+        return 0
+    score = 25
+    good = [
+        'openclaw', 'automation', 'telegram', 'agent', 'ai', 'guide', 'гайд',
+        'пошаг', 'команда', 'config', 'ошибка', 'fix', 'решение', 'инсайт',
+        'product', 'update', 'tool', 'workflow', 'api', 'архитект'
+    ]
+    for kw in good:
+        if kw in low:
+            score += 6
+    return min(100, score)
+
+
+def collect_notes(limit=120):
     roots = [VAULT / '10_Channels', VAULT / '20_Summaries', VAULT / 'Crypto']
     files = []
     for r in roots:
@@ -89,24 +103,8 @@ def collect_notes(limit=60):
     for f in files:
         txt = f.read_text(encoding='utf-8', errors='ignore')
         low = txt.lower()
-
-        # low-value skip
-        bad = ['мем', 'реферал', 'купи', 'подпишись', 'розыгрыш', 'giveaway', 'ad', 'реклама', 'мотивац', 'вдохнов']
-        if any(x in low for x in bad):
-            continue
-
-        # useful priority scoring
-        score = 0
-        good = [
-            'openclaw', 'automation', 'telegram', 'agent', 'ai', 'guide', 'гайд',
-            'пошаг', 'команда', 'config', 'ошибка', 'fix', 'решение', 'инсайт', 'product', 'update'
-        ]
-        for kw in good:
-            if kw in low:
-                score += 1
-        if 'relevance: high' in low:
-            score += 3
-        if score < 2:
+        score = score_text(low)
+        if score < 60:
             continue
 
         title = f.stem
@@ -118,15 +116,15 @@ def collect_notes(limit=60):
         bullets = []
         for line in txt.splitlines():
             l = line.strip()
-            if l.startswith('- ') and len(l) > 15:
-                bullets.append(re.sub(r'\s+', ' ', l[2:]).strip()[:120])
+            if l.startswith('- ') and len(l) > 20:
+                bullets.append(re.sub(r'\s+', ' ', l[2:]).strip())
             if len(bullets) >= 3:
                 break
         if not bullets:
             for line in txt.splitlines():
                 l = line.strip()
-                if len(l) > 45 and not l.startswith('#') and not l.startswith('---'):
-                    bullets.append(re.sub(r'\s+', ' ', l)[:120])
+                if len(l) > 50 and not l.startswith('#') and not l.startswith('---'):
+                    bullets.append(re.sub(r'\s+', ' ', l).strip())
                 if len(bullets) >= 3:
                     break
 
@@ -134,7 +132,7 @@ def collect_notes(limit=60):
         source_url = first_match(r'^URL:\s*(https?://\S+)$', txt)
 
         out.append({
-            'title': title[:90],
+            'title': title[:100],
             'bullets': bullets[:3],
             'score': score,
             'source_name': source_name or 'unknown',
@@ -145,68 +143,43 @@ def collect_notes(limit=60):
     return out
 
 
-def sanitize_channel_name(name: str):
-    n = (name or '').strip()
-    n = n.replace('https://t.me/', '').replace('@', '').strip('/')
-    return n or 'unknown'
+def signal_level(score: int):
+    if score >= 80:
+        return '🜂 HIGH SIGNAL'
+    if score >= 60:
+        return '🜁 MEDIUM SIGNAL'
+    return '🜃 LOW SIGNAL'
 
 
-def render_post(n, channel_link, chat_link, post_type="AI SIGNAL"):
+def render_post(n, channel_link, chat_link, post_type='AI SIGNAL'):
     title = n['title']
     bullets = n['bullets'] or ['Короткий технический сигнал без лишнего шума.']
     source_name = sanitize_channel_name(n.get('source_name') or 'unknown')
     source_url = n.get('source_url') or channel_link
 
     out = [
+        signal_level(n.get('score', 0)),
         f"◆ ARIA • {post_type}",
         title,
-        "Контекст:",
+        'Контекст:',
     ]
+
     for b in bullets[:3]:
-        short = b[:90]
-        extra = b[90:260].strip()
+        short = b[:95]
+        extra = b[95:260].strip()
+        out.append(f"• {short}")
         if extra:
-            out.append(f"• {short}")
             out.append(f"«||{extra}||»")
-        else:
-            out.append(f"• {short}")
+
     out += [
-        "Why it matters: это практичный сигнал, который можно применить сразу.",
-        f"Source: @{source_name}",
-        "───",
-        "🌿 ARIA • Elven AI",
-        "#ai #openclaw #automation #agents",
-        f"[Source]({source_url}) | [Channel]({channel_link}) | [Chat]({chat_link})",
+        'Why it matters: помогает принимать решения без инфошума.',
+        f'Source: @{source_name}',
+        '───',
+        '🌿 ARIA • Elven AI',
+        '#ai #openclaw #automation #agents',
+        f'[Source]({source_url}) | [Channel]({channel_link}) | [Chat]({chat_link})',
     ]
-    return '\n'.join([x for x in out if x.strip()][:MAX_LINES])
-
-
-def build_post():
-    h = prune_history(load_history(), 168)
-    notes = collect_notes(80)
-    if today_post_count(h) >= MAX_POSTS_PER_DAY:
-        return None
-    used_titles = set((x.get('title', '').strip().lower()) for x in h.get('posts', []))
-    pool = [n for n in notes if n['title'].strip().lower() not in used_titles] or notes
-    if not pool:
-        return None
-
-    env = load_env(ENV)
-    channel_link = env.get('CHANNEL_LINK', 'https://t.me/Elven_Ai_Lab')
-    chat_link = env.get('CHAT_LINK', channel_link)
-
-    n = sorted(pool, key=lambda x: x.get('score', 0), reverse=True)[0]
-    ptype = POST_TYPES[today_post_count(h) % len(POST_TYPES)]
-    msg = render_post(n, channel_link, chat_link, ptype)
-
-    h.setdefault('posts', []).append({
-        'ts': dt.datetime.now(dt.timezone.utc).isoformat().replace('+00:00', 'Z'),
-        'title': n['title'],
-        'score': n.get('score', 0),
-        'source': n.get('source_name', ''),
-    })
-    save_history(h)
-    return msg
+    return '\n'.join([x for x in out if x.strip()])
 
 
 def send_telegram(token: str, channel: str, text: str):
@@ -222,28 +195,60 @@ def send_telegram(token: str, channel: str, text: str):
         return r.read().decode('utf-8', errors='ignore')
 
 
-def main(mode='slot'):
+def main():
     cfg = load_cfg()
     if not cfg.get('enabled', True):
         return
 
     env = load_env(ENV)
     token = env['BOT_TOKEN']
-    channel = env['CHANNEL']
 
-    msg = build_post()
-    if not msg:
+    # layers
+    signals_channel = env.get('SIGNALS_CHANNEL', env.get('CHANNEL', '@Elven_Ai_Lab'))
+    raw_channel = env.get('RAW_CHANNEL', '')
+    research_channel = env.get('RESEARCH_CHANNEL', '')
+
+    channel_link = env.get('CHANNEL_LINK', 'https://t.me/Elven_Ai_Lab')
+    chat_link = env.get('CHAT_LINK', channel_link)
+
+    h = prune_history(load_history(), 168)
+    notes = collect_notes(120)
+    if not notes:
         return
 
-    # strict line guard
-    lines = [l for l in msg.splitlines() if l.strip()]
-    if len(lines) > MAX_LINES:
-        msg = '\n'.join(lines[:MAX_LINES])
+    used_titles = set((x.get('title', '').strip().lower()) for x in h.get('posts', []))
+    pool = [n for n in notes if n['title'].strip().lower() not in used_titles] or notes
+    n = sorted(pool, key=lambda x: x.get('score', 0), reverse=True)[0]
 
-    send_telegram(token, channel, msg)
+    score = int(n.get('score', 0))
+    ptype = POST_TYPES[(today_count_by_layer(h, 'signals') + today_count_by_layer(h, 'raw')) % len(POST_TYPES)]
+    msg = render_post(n, channel_link, chat_link, ptype)
+
+    # routing by score
+    if score < 60:
+        return
+    elif 60 <= score < 80:
+        if raw_channel:
+            send_telegram(token, raw_channel, msg)
+            layer = 'raw'
+        else:
+            return
+    else:
+        if today_count_by_layer(h, 'signals') >= MAX_SIGNALS_PER_DAY:
+            return
+        send_telegram(token, signals_channel, msg)
+        layer = 'signals'
+
+    h.setdefault('posts', []).append({
+        'ts': dt.datetime.now(dt.timezone.utc).isoformat().replace('+00:00', 'Z'),
+        'title': n['title'],
+        'score': score,
+        'source': n.get('source_name', ''),
+        'layer': layer,
+        'type': ptype,
+    })
+    save_history(h)
 
 
 if __name__ == '__main__':
-    import sys
-    m = sys.argv[1] if len(sys.argv) > 1 else 'slot'
-    main(m)
+    main()
