@@ -4,7 +4,7 @@
 - **Status**: 🔄 进行中
 - **Requested**: 2026-03-04 22:37 UTC
 - **Updated**: 2026-03-05 04:24 UTC
-- **Notes**: Сделано: создан Obsidian handoff, userbot проверен (active), синтаксис bot.py валиден, сервис перезапущен в чистое состояние (NRestarts=0), бэкапы созданы. Осталось: подтвердить утром факт свежей публикации в канал и при необходимости дожать digest вручную.
+- **Notes**: Сделано: создан Obsidian handoff, userbot проверен (active), синтаксис bot.py валиден, сервис перезапущен в чистое состояние (NRestarts=0), бэкапы созданы; backup timer активен (`openclaw-backup.timer`). Осталось: подтвердить утром факт свежей публикации в канал и при необходимости дожать digest вручную.
 
 ## [2026-03-04-gateway-tailnet-fix] Применить bind=tailnet для openclaw-gateway
 - **Status**: ⏸️ 暂停
