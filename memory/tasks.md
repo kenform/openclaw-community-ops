@@ -18,6 +18,12 @@
 - **Updated**: 2026-03-05 08:57 UTC
 - **Notes**: Выяснено: `DIGEST_BOT_TOKEN` действительно указывает на `@Elven_post_bot` (getMe OK). 403 был от другого бот-отправителя (message tool), не члена канала. Выполнено через Telethon user-session (`/home/openclawuser/userbot/session.session`). Дополнительно исправлен код userbot: добавлен fallback user-session при fail Bot API. Пользователь подтвердил, что визуально стало лучше, но спойлеры всё ещё не работают; получен обновлённый жёсткий контракт форматтера (Telegram HTML, `<span class="tg-spoiler">`, фиксированная структура и длины) — применяю его как новый стандарт публикаций. Добавлены правила dedup+ranking+batch policy (winner-кластер, UPD в тот же пост, top 1–3/час, mega-breaking immediate).
 
+## [2026-03-05-eragon-site-next-v3] V3 wow-эффекты (parallax+rune-border+reveal)
+- **Status**: 🔄 进行中
+- **Requested**: 2026-03-05 11:11 UTC
+- **Updated**: 2026-03-05 11:11 UTC
+- **Notes**: Пользователь подтвердил запуск v3: параллакс hero, анимированная руническая рамка карточек, мягкий reveal секций при скролле.
+
 ## [2026-03-05-eragon-site-next-polish] Улучшение Next.js версии (визуал+анимации+deploy)
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-05 08:57 UTC

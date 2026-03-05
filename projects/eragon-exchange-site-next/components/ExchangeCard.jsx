@@ -1,6 +1,7 @@
 export default function ExchangeCard({ item }) {
   return (
-    <article className={`gate ${item.highlight ? 'highlighted' : ''}`}>
+    <article className={`gate reveal ${item.highlight ? 'highlighted' : ''}`}>
+      <span className="rune" aria-hidden="true" />
       <span className="sigil" aria-hidden="true">{item.sigil}</span>
       <h3>{item.name}</h3>
       <p>{item.desc}</p>
