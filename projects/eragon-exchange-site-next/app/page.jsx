@@ -5,6 +5,9 @@ export default function HomePage() {
   return (
     <>
       <div className="noise" aria-hidden="true" />
+      <div className="orb orb-a" aria-hidden="true" />
+      <div className="orb orb-b" aria-hidden="true" />
+      <div className="orb orb-c" aria-hidden="true" />
 
       <header className="hero">
         <div className="hero-inner">

@@ -16,13 +16,26 @@ body{
   background:radial-gradient(1200px 600px at 20% -10%, #241b3f 0%, var(--bg) 55%),
              linear-gradient(180deg,var(--bg),var(--bg-soft));
   min-height:100vh;
+  overflow-x:hidden;
 }
 .noise{
   position:fixed;inset:0;pointer-events:none;opacity:.06;
   background-image:radial-gradient(#fff 0.45px, transparent 0.45px);
   background-size:3px 3px;
+  animation:drift 22s linear infinite;
 }
-.hero{min-height:62vh;display:grid;place-items:center;padding:56px 20px 24px}
+.orb{
+  position:fixed;
+  border-radius:999px;
+  filter:blur(44px);
+  pointer-events:none;
+  opacity:.24;
+  z-index:0;
+}
+.orb-a{width:320px;height:320px;background:#6c47ff;top:8%;left:-80px;animation:floatA 14s ease-in-out infinite}
+.orb-b{width:260px;height:260px;background:#2d9cff;top:56%;right:-60px;animation:floatB 12s ease-in-out infinite}
+.orb-c{width:220px;height:220px;background:#d6b36b;bottom:8%;left:42%;animation:floatC 16s ease-in-out infinite}
+.hero{position:relative;z-index:1;min-height:62vh;display:grid;place-items:center;padding:56px 20px 24px}
 .hero-inner{max-width:920px;text-align:center}
 .kicker{margin:0 0 10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-size:.78rem}
 h1{margin:0;font-size:clamp(2rem,6vw,4.2rem);line-height:1.05;text-shadow:0 0 24px rgba(122,92,255,.18)}
@@ -30,9 +43,10 @@ h1{margin:0;font-size:clamp(2rem,6vw,4.2rem);line-height:1.05;text-shadow:0 0 24
 .btn{display:inline-block;padding:12px 18px;border-radius:12px;text-decoration:none;transition:.2s ease;font-weight:600}
 .btn-primary{border:1px solid var(--gold);color:var(--gold-soft);background:rgba(214,179,107,.08)}
 .btn-primary:hover{transform:translateY(-1px);background:rgba(214,179,107,.16)}
-.section{max-width:1120px;margin:0 auto;padding:20px}
+.section{position:relative;z-index:1;max-width:1120px;margin:0 auto;padding:20px}
 .gates{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:-26px}
-.gate{background:linear-gradient(180deg, rgba(255,255,255,.01), rgba(255,255,255,0)), var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,.28)}
+.gate{background:linear-gradient(180deg, rgba(255,255,255,.01), rgba(255,255,255,0)), var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,.28);transition:transform .22s ease, box-shadow .22s ease, border-color .22s ease}
+.gate:hover{transform:translateY(-4px);box-shadow:0 18px 36px rgba(0,0,0,.34);border-color:#6b54a7}
 .gate.highlighted{border-color:#5a4399;box-shadow:0 10px 30px rgba(72,44,150,.32)}
 .sigil{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:999px;border:1px solid var(--gold);color:var(--gold);font-size:.8rem}
 .gate h3{margin:10px 0 8px}
@@ -43,4 +57,9 @@ h1{margin:0;font-size:clamp(2rem,6vw,4.2rem);line-height:1.05;text-shadow:0 0 24
 .oath{margin-top:10px;text-align:center;padding-bottom:44px}
 .oath h2{color:var(--gold);margin-bottom:8px}
 .oath p{margin:0;color:var(--muted)}
-footer{padding:22px 20px 30px;text-align:center;color:var(--muted)}
+footer{position:relative;z-index:1;padding:22px 20px 30px;text-align:center;color:var(--muted)}
+
+@keyframes drift{from{transform:translateY(0)}to{transform:translateY(-8px)}}
+@keyframes floatA{0%,100%{transform:translateY(0)}50%{transform:translateY(18px)}}
+@keyframes floatB{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+@keyframes floatC{0%,100%{transform:translateY(0)}50%{transform:translateY(10px)}}

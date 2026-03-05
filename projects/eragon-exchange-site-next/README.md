@@ -15,6 +15,10 @@ npm run build
 npm run start
 ```
 
+## Deploy
+- **Vercel:** проект готов, есть `vercel.json`
+- **Netlify:** проект готов, есть `netlify.toml` + Next plugin
+
 ## Что внутри
 - App Router (`app/`)
 - Компонент карточки биржи
