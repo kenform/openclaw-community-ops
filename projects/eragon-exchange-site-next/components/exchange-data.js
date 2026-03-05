@@ -1,0 +1,35 @@
+export const exchanges = [
+  {
+    id: 'bybit',
+    sigil: 'I',
+    name: 'Bybit',
+    desc: 'Сильная ликвидность и понятный интерфейс для базовых и продвинутых сценариев.',
+    href: 'https://example.com/bybit',
+    highlight: false,
+  },
+  {
+    id: 'bitget',
+    sigil: 'II',
+    name: 'Bitget',
+    desc: 'Социальные механики и копи-трейдинг, если нужен более гибкий стиль входа.',
+    href: 'https://example.com/bitget',
+    highlight: false,
+  },
+  {
+    id: 'mexc',
+    sigil: 'III',
+    name: 'MEXC',
+    desc: 'Широкий листинг и ранние возможности. Больше потенциала — выше дисциплина риска.',
+    href: 'https://promote.mexc.com/r/vu6RfizpRR',
+    highlight: true,
+  },
+  {
+    id: 'orbit',
+    sigil: 'IV',
+    name: 'Orbit',
+    desc: 'Нишевый маршрут для точечных стратегий и ручной проверки условий перед входом.',
+    href: 'https://www.ourbit.com/ru-RU/auth/signup?inviteCode=6B2LY7',
+    note: '⚠️ Orbit: сайт и регистрация работают только с VPN.',
+    highlight: true,
+  },
+];

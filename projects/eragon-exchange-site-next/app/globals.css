@@ -1,0 +1,46 @@
+:root{
+  --bg:#09070f;
+  --bg-soft:#130f22;
+  --card:#161129;
+  --line:#322757;
+  --gold:#d6b36b;
+  --gold-soft:#f0d9a6;
+  --text:#f5f1e8;
+  --muted:#b9b1a1;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  color:var(--text);
+  background:radial-gradient(1200px 600px at 20% -10%, #241b3f 0%, var(--bg) 55%),
+             linear-gradient(180deg,var(--bg),var(--bg-soft));
+  min-height:100vh;
+}
+.noise{
+  position:fixed;inset:0;pointer-events:none;opacity:.06;
+  background-image:radial-gradient(#fff 0.45px, transparent 0.45px);
+  background-size:3px 3px;
+}
+.hero{min-height:62vh;display:grid;place-items:center;padding:56px 20px 24px}
+.hero-inner{max-width:920px;text-align:center}
+.kicker{margin:0 0 10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-size:.78rem}
+h1{margin:0;font-size:clamp(2rem,6vw,4.2rem);line-height:1.05;text-shadow:0 0 24px rgba(122,92,255,.18)}
+.subtitle{margin:14px auto 26px;max-width:680px;color:var(--muted);font-size:1.02rem}
+.btn{display:inline-block;padding:12px 18px;border-radius:12px;text-decoration:none;transition:.2s ease;font-weight:600}
+.btn-primary{border:1px solid var(--gold);color:var(--gold-soft);background:rgba(214,179,107,.08)}
+.btn-primary:hover{transform:translateY(-1px);background:rgba(214,179,107,.16)}
+.section{max-width:1120px;margin:0 auto;padding:20px}
+.gates{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:-26px}
+.gate{background:linear-gradient(180deg, rgba(255,255,255,.01), rgba(255,255,255,0)), var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,.28)}
+.gate.highlighted{border-color:#5a4399;box-shadow:0 10px 30px rgba(72,44,150,.32)}
+.sigil{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:999px;border:1px solid var(--gold);color:var(--gold);font-size:.8rem}
+.gate h3{margin:10px 0 8px}
+.gate p{margin:0 0 12px;color:var(--muted);line-height:1.45}
+.btn-ghost{border:1px solid var(--gold);color:var(--gold-soft);background:rgba(214,179,107,.06)}
+.btn-ghost:hover{background:rgba(214,179,107,.15)}
+.note{margin-top:10px;font-size:.88rem;color:#ffd7a3;line-height:1.35}
+.oath{margin-top:10px;text-align:center;padding-bottom:44px}
+.oath h2{color:var(--gold);margin-bottom:8px}
+.oath p{margin:0;color:var(--muted)}
+footer{padding:22px 20px 30px;text-align:center;color:var(--muted)}
