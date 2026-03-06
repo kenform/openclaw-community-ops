@@ -3,8 +3,9 @@
 ## [2026-03-06-diana-core-foundation] Пояснить шаг A2 (docker-compose.yml) для diana-core пошагово
 - **Status**: 🔄 进行中
 - **Requested**: 2026-03-06 12:15 UTC
-- **Updated**: 2026-03-06 14:05 UTC
-- **Notes**: Получены логи из txt: Postgres и Redis healthy, но `diana-api` в Restarting из-за `IndentationError` в `/app/app/main.py` (неправильные отступы после `def health()` и `def version()`). Нужно исправить `api/app/main.py`, пересобрать `api`, проверить `/health`/`/version`; затем можно закрывать этап A и идти в этап B.
+- **Status**: ✅ 完成
+- **Updated**: 2026-03-06 14:15 UTC
+- **Notes**: Этап A успешно поднят: `diana-api Up`, Postgres/Redis healthy, `/health` и `/version` отвечают корректным JSON. Пользователь готов переходить к этапу B (persistent history).
 
 
 ## [2026-03-05-eragon-site] Сделать сайт в стиле Eragon с реферальными кнопками бирж
