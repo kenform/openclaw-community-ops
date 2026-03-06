@@ -42,6 +42,11 @@ export default function HomePage() {
 
       <header className="hero reveal">
         <div className="hero-vignette" aria-hidden="true" />
+        <div className="moonbeams" aria-hidden="true">
+          <span className="moonbeam beam-1" />
+          <span className="moonbeam beam-2" />
+          <span className="moonbeam beam-3" />
+        </div>
         <div className="dragon-wrap" aria-hidden="true">
           <div className="dragon dragon-body" />
           <div className="dragon dragon-wing wing-left" />
