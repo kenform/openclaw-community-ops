@@ -12,8 +12,10 @@ CFG = WORKSPACE / 'scripts' / 'elven_ai_lab_config.json'
 ENV = WORKSPACE / 'scripts' / 'elven_ai_lab_bot.env'
 HISTORY = WORKSPACE / 'tmp' / 'elven_ai_lab_history.json'
 
-MAX_SIGNALS_PER_DAY = 20
+MAX_SIGNALS_PER_DAY = 24
 POST_TYPES = ["AI SIGNAL", "TOOL", "HOW TO", "TREND", "WEEKLY DIGEST"]
+SIGNALS_MIN_SCORE = 75
+RAW_MIN_SCORE = 55
 
 
 def load_env(path: Path):
@@ -91,6 +93,15 @@ def score_text(low: str):
     return min(100, score)
 
 
+def ambiguity_reason(low: str) -> str:
+    reasons = []
+    if any(k in low for k in ['кажется', 'возможно', 'слух', 'rumor', 'мнение', 'opinion']):
+        reasons.append('много предположений, мало проверяемых фактов')
+    if not any(k in low for k in ['цифр', 'data', 'метрик', 'официаль', 'source:', 'url:']):
+        reasons.append('нет явных метрик/источников в тексте')
+    return '; '.join(reasons[:1])
+
+
 def collect_notes(limit=120):
     roots = [VAULT / '10_Channels', VAULT / '20_Summaries', VAULT / 'Crypto']
     files = []
@@ -133,15 +144,38 @@ def collect_notes(limit=120):
 
         out.append({
             'title': title[:100],
-            'bullets': bullets[:3],
+            'bullets': bullets[:6],
             'score': score,
             'source_name': source_name or 'unknown',
             'source_url': source_url,
+            'unclear': ambiguity_reason(low),
         })
         if len(out) >= limit:
             break
     return out
 
+
+def pick_context_tags(text: str):
+    low = (text or '').lower()
+    tags = []
+    if any(k in low for k in ['ai', 'agent', 'ии', 'агент']):
+        tags.append('#ai')
+    if any(k in low for k in ['automation', 'автомат', 'workflow']):
+        tags.append('#automation')
+    if any(k in low for k in ['telegram', 'канал', 'тг']):
+        tags.append('#telegram')
+    if any(k in low for k in ['tool', 'sdk', 'api', 'инструмент']):
+        tags.append('#tools')
+    if any(k in low for k in ['guide', 'гайд', 'how to', 'пошаг']):
+        tags.append('#guide')
+    if any(k in low for k in ['crypto', 'solana', 'ethereum', 'btc', 'defi']):
+        tags.append('#crypto')
+    for d in ['#ai', '#automation', '#agents', '#telegram']:
+        if len(tags) >= 3:
+            break
+        if d not in tags:
+            tags.append(d)
+    return ' '.join(tags[:5])
 
 def signal_level(score: int):
     if score >= 80:
@@ -158,28 +192,31 @@ def render_post(n, channel_link, chat_link, post_type='AI SIGNAL'):
     source_url = n.get('source_url') or channel_link
 
     out = [
-        signal_level(n.get('score', 0)),
-        f"◆ ARIA • {post_type}",
+        f"✨ {post_type.title()}",
+        f'<a href="{source_url}">{source_name}</a>',
         title,
-        'Контекст:',
+        "",
+        "Краткая выжимка:",
     ]
 
     for b in bullets[:3]:
-        short = b[:95]
-        extra = b[95:260].strip()
+        short = b[:125]
+        extra = b[125:300].strip()
         out.append(f"• {short}")
         if extra:
-            out.append(f"«||{extra}||»")
+            out.append(f"<a href=\"{source_url}\">Читать подробнее</a>")
+            out.append(f"<blockquote expandable>{extra}</blockquote>")
 
     out += [
-        'Why it matters: помогает принимать решения без инфошума.',
-        f'Source: @{source_name}',
-        '───',
-        '🌿 ARIA • Elven AI',
-        '#ai #openclaw #automation #agents',
-        f'[Source]({source_url}) | [Channel]({channel_link}) | [Chat]({chat_link})',
+        "",
+        "",
+        "🌿 Elven AI Lab",
+        "",
+        "Ссылки:",
+        f'<a href="https://example.com/exchanges">Биржи</a> | <a href="{channel_link}">Канал</a> | <a href="{chat_link}">Чат</a>',
+        pick_context_tags(' '.join(bullets) + ' ' + title),
     ]
-    return '\n'.join([x for x in out if x.strip()])
+    return '\n'.join([x for x in out if x is not None])
 
 
 def send_telegram(token: str, channel: str, text: str):
@@ -188,7 +225,7 @@ def send_telegram(token: str, channel: str, text: str):
         'chat_id': channel,
         'text': text,
         'disable_web_page_preview': 'true',
-        'parse_mode': 'Markdown'
+        'parse_mode': 'HTML'
     }).encode('utf-8')
     req = Request(url, data=data, headers={'Content-Type': 'application/x-www-form-urlencoded'})
     with urlopen(req, timeout=20) as r:
@@ -225,9 +262,9 @@ def main():
     msg = render_post(n, channel_link, chat_link, ptype)
 
     # routing by score
-    if score < 60:
+    if score < RAW_MIN_SCORE:
         return
-    elif 60 <= score < 80:
+    elif RAW_MIN_SCORE <= score < SIGNALS_MIN_SCORE:
         if raw_channel:
             send_telegram(token, raw_channel, msg)
             layer = 'raw'
@@ -244,6 +281,7 @@ def main():
         'title': n['title'],
         'score': score,
         'source': n.get('source_name', ''),
+        'source_url': n.get('source_url', ''),
         'layer': layer,
         'type': ptype,
     })

@@ -12,6 +12,7 @@
 - **Requested**: 2026-03-05 06:18 UTC
 - **Updated**: 2026-03-06 16:28 UTC
 - **Notes**: Приоритет по Eragon-сайту выполняется в авто-режиме (branch→push→PR→merge). Выпущен V8 bold redesign по запросу пользователя: полная переработка hero и визуального языка в более cinematic/premium Eragon-inspired стиле, при сохранении структуры link-hub. Дополнительно по новому ТЗ внедрена мягкая система moonlight beams в hero (3 размытых луча, медленный drift/pulse, центр-композиции усилен без потери читаемости текста/CTA), mobile-safe. Изменены `app/page.jsx` и `app/globals.css`, сборка OK.
+- **Extra**: По запросу пользователя удалён шаблонный вывод "Вывод: применимо на практике, если внедрить в ближайшие 24 часа." из формата постов userbot (`/home/openclawuser/userbot/bot.py`) и из workspace-скрипта `scripts/elven_ai_lab_poster_bot.py`.
 
 ## [2026-03-04-gateway-tailnet-fix] Применить bind=tailnet для openclaw-gateway
 - **Status**: ⏸️ 暂停
