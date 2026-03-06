@@ -10,8 +10,8 @@
 ## [2026-03-05-eragon-site] Сделать сайт в стиле Eragon с реферальными кнопками бирж
 - **Status**: 🔄 进行中
 - **Requested**: 2026-03-05 06:18 UTC
-- **Updated**: 2026-03-06 15:17 UTC
-- **Notes**: Приоритет по Eragon-сайту выполняется в авто-режиме (branch→push→PR→merge). Выпущен V8 bold redesign по запросу пользователя: полная переработка hero и визуального языка в более cinematic/premium Eragon-inspired стиле, при сохранении структуры link-hub. Изменены `app/page.jsx` и `app/globals.css`, сборка OK, PR #5 создан и смержен в `main`.
+- **Updated**: 2026-03-06 16:28 UTC
+- **Notes**: Приоритет по Eragon-сайту выполняется в авто-режиме (branch→push→PR→merge). Выпущен V8 bold redesign по запросу пользователя: полная переработка hero и визуального языка в более cinematic/premium Eragon-inspired стиле, при сохранении структуры link-hub. Дополнительно по новому ТЗ внедрена мягкая система moonlight beams в hero (3 размытых луча, медленный drift/pulse, центр-композиции усилен без потери читаемости текста/CTA), mobile-safe. Изменены `app/page.jsx` и `app/globals.css`, сборка OK.
 
 ## [2026-03-04-gateway-tailnet-fix] Применить bind=tailnet для openclaw-gateway
 - **Status**: ⏸️ 暂停
