@@ -10,8 +10,8 @@
 ## [2026-03-05-eragon-site] Сделать сайт в стиле Eragon с реферальными кнопками бирж
 - **Status**: 🔄 进行中
 - **Requested**: 2026-03-05 06:18 UTC
-- **Updated**: 2026-03-06 14:06 UTC
-- **Notes**: Приоритет на сегодня подтверждён пользователем: доделать задачи по Eragon-сайту в первую очередь (tailnet отложить). Runtime Error оказался от браузерного расширения Talisman (`chrome-extension://...`), не от кода Next.js. V4 и V5 собраны и переданы (cinematic fog + premium CTA). Пользователь поднял проект на Vercel и подтвердил live-ссылку, PR-flow починен. Новый запрос: начать V6 polish (hero depth + живой hover карточек + sticky mobile CTA + scroll micro-animations).
+- **Updated**: 2026-03-06 15:00 UTC
+- **Notes**: Приоритет по Eragon-сайту выполняется. Настроен авто-режим: агент сам делает branch→push→PR→merge в GitHub+Vercel. Выпущены V6 и V7 напрямую в репозиторий (`feat/auto-v6`, `feat/auto-v7`, merged). В V7 добавлены trust-strip метрики и 3-step guided path блок. Пользователь хочет дальше только смотреть изменения по live-ссылке без ручных git-действий.
 
 ## [2026-03-04-gateway-tailnet-fix] Применить bind=tailnet для openclaw-gateway
 - **Status**: ⏸️ 暂停
