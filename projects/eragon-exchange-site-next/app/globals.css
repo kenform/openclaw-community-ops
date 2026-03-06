@@ -37,8 +37,24 @@ body{
 .orb-a{width:320px;height:320px;background:#6c47ff;top:8%;left:-80px;transform:translate3d(calc(var(--mx) * -.35), calc(var(--my) * -.25), 0);animation:floatA 14s ease-in-out infinite}
 .orb-b{width:260px;height:260px;background:#2d9cff;top:56%;right:-60px;transform:translate3d(calc(var(--mx) * .28), calc(var(--my) * .2), 0);animation:floatB 12s ease-in-out infinite}
 .orb-c{width:220px;height:220px;background:#d6b36b;bottom:8%;left:42%;transform:translate3d(calc(var(--mx) * -.22), calc(var(--my) * .16), 0);animation:floatC 16s ease-in-out infinite}
-.hero{position:relative;z-index:1;min-height:62vh;display:grid;place-items:center;padding:56px 20px 24px;transform:translate3d(calc(var(--mx) * .18), calc(var(--my) * .18), 0)}
-.hero-inner{max-width:920px;text-align:center;transition:transform .18s ease}
+.hero{position:relative;z-index:1;min-height:70vh;display:grid;place-items:center;padding:56px 20px 24px;transform:translate3d(calc(var(--mx) * .18), calc(var(--my) * .18), 0);overflow:hidden}
+.hero-inner{position:relative;max-width:920px;text-align:center;transition:transform .18s ease;z-index:2}
+
+.dragon-wrap{position:absolute;inset:0;display:grid;place-items:center;z-index:1;pointer-events:none;opacity:.8;transform:translate3d(calc(var(--mx) * -.12), calc(var(--my) * -.08), 0)}
+.dragon{position:absolute;filter:drop-shadow(0 0 20px rgba(80,140,255,.45))}
+.dragon-body{width:min(74vw,760px);height:min(36vw,280px);border-radius:50% 50% 42% 42%;background:radial-gradient(ellipse at 50% 50%, rgba(82,160,255,.28) 0%, rgba(44,108,217,.15) 42%, rgba(8,20,54,.02) 70%, transparent 100%);animation:dragonFloat 7s ease-in-out infinite}
+.dragon-wing{width:min(38vw,340px);height:min(20vw,180px);background:radial-gradient(ellipse at 50% 50%, rgba(84,178,255,.22) 0%, rgba(47,104,232,.14) 45%, transparent 75%);border-radius:60% 40% 40% 60%;top:31%}
+.wing-left{left:6%;transform-origin:100% 60%;animation:wingBeatL 4.4s ease-in-out infinite}
+.wing-right{right:6%;transform-origin:0% 60%;animation:wingBeatR 4.4s ease-in-out infinite}
+.dragon-head{width:min(18vw,160px);height:min(10vw,92px);top:34%;right:24%;border-radius:58% 42% 50% 50%;background:radial-gradient(circle at 40% 50%, rgba(112,186,255,.55), rgba(34,88,200,.22) 55%, transparent 80%);animation:dragonBreath 5.4s ease-in-out infinite}
+.dragon-eye{position:absolute;top:37.5%;right:28.4%;width:10px;height:10px;border-radius:999px;background:#7fd2ff;box-shadow:0 0 16px #46b6ff,0 0 28px rgba(70,182,255,.85);animation:eyePulse 2.2s ease-in-out infinite}
+
+.sparkles{position:fixed;inset:0;z-index:0;pointer-events:none;background:
+radial-gradient(circle at 14% 28%, rgba(128,193,255,.2) 0 1px, transparent 2px),
+radial-gradient(circle at 72% 22%, rgba(176,226,255,.18) 0 1px, transparent 2px),
+radial-gradient(circle at 58% 66%, rgba(98,174,255,.14) 0 1px, transparent 2px),
+radial-gradient(circle at 84% 76%, rgba(176,226,255,.14) 0 1px, transparent 2px);
+animation:sparkShift 16s linear infinite}
 .kicker{margin:0 0 10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-size:.78rem}
 h1{margin:0;font-size:clamp(2rem,6vw,4.2rem);line-height:1.05;text-shadow:0 0 24px rgba(122,92,255,.18)}
 .subtitle{margin:14px auto 26px;max-width:680px;color:var(--muted);font-size:1.02rem}
@@ -54,14 +70,15 @@ h1{margin:0;font-size:clamp(2rem,6vw,4.2rem);line-height:1.05;text-shadow:0 0 24
 .rune{
   position:absolute;inset:0;border-radius:16px;pointer-events:none;
   border:1px solid transparent;
-  background:linear-gradient(120deg, rgba(214,179,107,.0), rgba(214,179,107,.44), rgba(214,179,107,.0)) border-box;
+  background:linear-gradient(120deg, rgba(107,192,255,.0), rgba(122,198,255,.58), rgba(107,192,255,.0)) border-box;
   mask:linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0);
   -webkit-mask:linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0);
   -webkit-mask-composite:xor;
   mask-composite:exclude;
-  opacity:.65;
+  opacity:.58;
   animation:runeSpin 8s linear infinite;
 }
+.gate:hover .rune{opacity:.95;animation-duration:3.6s;filter:drop-shadow(0 0 10px rgba(99,186,255,.7))}
 .gate h3{margin:10px 0 8px}
 .gate p{margin:0 0 12px;color:var(--muted);line-height:1.45}
 .btn-ghost{border:1px solid var(--gold);color:var(--gold-soft);background:rgba(214,179,107,.06)}
@@ -80,3 +97,13 @@ footer{position:relative;z-index:1;padding:22px 20px 30px;text-align:center;colo
 @keyframes floatB{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
 @keyframes floatC{0%,100%{transform:translateY(0)}50%{transform:translateY(10px)}}
 @keyframes runeSpin{from{transform:translateX(-40%) rotate(0deg)}to{transform:translateX(40%) rotate(360deg)}}
+@keyframes dragonFloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(8px) scale(1.02)}}
+@keyframes dragonBreath{0%,100%{transform:scale(1);opacity:.82}50%{transform:scale(1.08);opacity:1}}
+@keyframes eyePulse{0%,100%{opacity:.75;transform:scale(.92)}50%{opacity:1;transform:scale(1.15)}}
+@keyframes wingBeatL{0%,100%{transform:rotate(8deg)}50%{transform:rotate(-6deg)}}
+@keyframes wingBeatR{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(6deg)}}
+@keyframes sparkShift{0%{transform:translateY(0)}50%{transform:translateY(-10px)}100%{transform:translateY(0)}}
+
+@media (prefers-reduced-motion: reduce){
+  .noise,.orb,.rune,.dragon,.dragon-eye,.sparkles{animation:none!important}
+}

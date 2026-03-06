@@ -36,17 +36,27 @@ export default function HomePage() {
       <div className="orb orb-a" aria-hidden="true" />
       <div className="orb orb-b" aria-hidden="true" />
       <div className="orb orb-c" aria-hidden="true" />
+      <div className="sparkles" aria-hidden="true" />
 
       <header className="hero reveal">
+        <div className="dragon-wrap" aria-hidden="true">
+          <div className="dragon dragon-body" />
+          <div className="dragon dragon-wing wing-left" />
+          <div className="dragon dragon-wing wing-right" />
+          <div className="dragon dragon-head" />
+          <div className="dragon-eye" />
+        </div>
+
         <div className="hero-inner">
           <p className="kicker">Elven AI Lab • Codex</p>
           <h1>
-            Врата Бирж
+            Сапфировые Врата
             <br />
             для Всадника
           </h1>
           <p className="subtitle">
             Выбери гильдию, открой доступ и заходи в рынок через проверенные маршруты.
+            Сила дракона — в дисциплине и ясном плане.
           </p>
           <a href="#gates" className="btn btn-primary">Открыть врата</a>
         </div>
