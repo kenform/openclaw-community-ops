@@ -3,15 +3,15 @@
 ## [2026-03-06-diana-core-foundation] diana-core A→B bootstrap и отладка persistent history
 - **Status**: 🔄 进行中
 - **Requested**: 2026-03-06 12:15 UTC
-- **Updated**: 2026-03-06 14:50 UTC
-- **Notes**: Этап A закрыт. На B1 пользователь прислал лог: `\dt` пусто (`Did not find any relations`). Причина: в текущем состоянии отсутствуют `api/app/db/session.py` и `api/app/db/models.py`, а `main.py` без DB-bootstrap (`create_all`). Следующий шаг: выдать один атомарный command-only блок для пересоздания 3 файлов с корректными отступами + rebuild + проверка `\dt`.
+- **Updated**: 2026-03-06 15:18 UTC
+- **Notes**: Новый лог: `docker compose build` упал на `TLS handshake timeout` при pull `python:3.12-slim`, поэтому контейнер остался на старом (битом) образе и продолжает падать с `IndentationError`; `\dt` пусто. Следующий шаг: без rebuild скопировать исправленные файлы в контейнер (`docker compose cp ...`) и перезапустить `api`, затем проверить `\dt`.
 
 
 ## [2026-03-05-eragon-site] Сделать сайт в стиле Eragon с реферальными кнопками бирж
 - **Status**: 🔄 进行中
 - **Requested**: 2026-03-05 06:18 UTC
-- **Updated**: 2026-03-06 15:00 UTC
-- **Notes**: Приоритет по Eragon-сайту выполняется. Настроен авто-режим: агент сам делает branch→push→PR→merge в GitHub+Vercel. Выпущены V6 и V7 напрямую в репозиторий (`feat/auto-v6`, `feat/auto-v7`, merged). В V7 добавлены trust-strip метрики и 3-step guided path блок. Пользователь хочет дальше только смотреть изменения по live-ссылке без ручных git-действий.
+- **Updated**: 2026-03-06 15:17 UTC
+- **Notes**: Приоритет по Eragon-сайту выполняется в авто-режиме (branch→push→PR→merge). Выпущен V8 bold redesign по запросу пользователя: полная переработка hero и визуального языка в более cinematic/premium Eragon-inspired стиле, при сохранении структуры link-hub. Изменены `app/page.jsx` и `app/globals.css`, сборка OK, PR #5 создан и смержен в `main`.
 
 ## [2026-03-04-gateway-tailnet-fix] Применить bind=tailnet для openclaw-gateway
 - **Status**: ⏸️ 暂停
