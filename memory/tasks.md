@@ -4,8 +4,8 @@
 - **Status**: 🔄 进行中
 - **Requested**: 2026-03-06 12:15 UTC
 - **Status**: ✅ 完成
-- **Updated**: 2026-03-06 18:59 UTC
-- **Notes**: Диагностика и перезапуск завершены: `userbot.service` — user-level unit, успешно перезапущен через `systemctl --user restart userbot.service`, статус `active (running)`. Дополнительно устранена причина, почему форс-скрипт не публиковал: в `scripts/elven_ai_lab_poster_bot.py` исправлены пороги/фильтры скоринга и fallback-маршрутизация при пустом `RAW_CHANNEL`; после фикса форс-запуск добавил новую запись в history (`Полимаркет — следующие шаги`, score 49).
+- **Updated**: 2026-03-06 19:03 UTC
+- **Notes**: Диагностика и перезапуск завершены: `userbot.service` — user-level unit, успешно перезапущен через `systemctl --user restart userbot.service`, статус `active (running)`. Дополнительно устранена причина, почему форс-скрипт не публиковал: в `scripts/elven_ai_lab_poster_bot.py` исправлены пороги/фильтры скоринга и fallback-маршрутизация при пустом `RAW_CHANNEL`; после фикса форс-запуск добавил новую запись в history (`Полимаркет — следующие шаги`, score 49). По прямому запросу пользователя выполнена проверка здоровья userbot (active, без свежих error/traceback) и опубликован новый пост из самого свежего источника из digest-групп: source `adel_aggregator/125715`, message_id в канале `@Elven_Ai_Lab` = 140.
 
 
 ## [2026-03-05-eragon-site] Сделать сайт в стиле Eragon с реферальными кнопками бирж
