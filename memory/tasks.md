@@ -3,8 +3,8 @@
 ## [2026-03-06-diana-core-foundation] diana-core A→B bootstrap и отладка persistent history
 - **Status**: 🔄 进行中
 - **Requested**: 2026-03-06 12:15 UTC
-- **Updated**: 2026-03-06 15:18 UTC
-- **Notes**: Новый лог: `docker compose build` упал на `TLS handshake timeout` при pull `python:3.12-slim`, поэтому контейнер остался на старом (битом) образе и продолжает падать с `IndentationError`; `\dt` пусто. Следующий шаг: без rebuild скопировать исправленные файлы в контейнер (`docker compose cp ...`) и перезапустить `api`, затем проверить `\dt`.
+- **Updated**: 2026-03-06 15:22 UTC
+- **Notes**: `docker compose cp` + restart не сняли `IndentationError` — контейнер всё ещё исполняет битый `/app/app/main.py`. Следующий шаг: записать `main.py/session.py/models.py` напрямую внутри контейнера через `docker compose exec api python3 -c ...`, затем restart и проверка `\dt`.
 
 
 ## [2026-03-05-eragon-site] Сделать сайт в стиле Eragon с реферальными кнопками бирж
