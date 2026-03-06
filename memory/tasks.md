@@ -3,8 +3,8 @@
 ## [2026-03-06-diana-core-foundation] diana-core A→B bootstrap и отладка persistent history
 - **Status**: 🔄 进行中
 - **Requested**: 2026-03-06 12:15 UTC
-- **Updated**: 2026-03-06 16:24 UTC
-- **Notes**: Причина найдена по логам: `IndentationError` в `/app/app/deps.py` (после `try` не было отступа у `yield db`), API в Restarting. Следующий шаг: one-liner переписать `deps.py` корректно + `docker compose up -d --build api` + проверка `/context`.
+- **Updated**: 2026-03-06 16:34 UTC
+- **Notes**: Логи снова показывают `IndentationError` в `/app/app/deps.py` line 6 (`yield db`) — текущий one-liner пишет неверные уровни отступов. Следующий шаг: записать `deps.py` безопасным base64 one-liner (без риска сдвига пробелов), затем `docker compose up -d api` и проверка `/context`.
 
 
 ## [2026-03-05-eragon-site] Сделать сайт в стиле Eragon с реферальными кнопками бирж
