@@ -3,8 +3,8 @@
 ## [2026-03-06-diana-core-foundation] diana-core A→B bootstrap и отладка persistent history
 - **Status**: 🔄 进行中
 - **Requested**: 2026-03-06 12:15 UTC
-- **Updated**: 2026-03-06 18:42 UTC
-- **Notes**: По новому запросу обновлены шаблоны вывода в userbot: убрана жёсткая фраза и добавлен динамический `Вывод` на основе содержания поста (эвристики practical/signal/risk) в `/home/openclawuser/userbot/bot.py`; зеркально обновлён workspace-скрипт `scripts/elven_ai_lab_poster_bot.py`. Перезапуск `userbot.service` из этой сессии не выполнен из-за sudo-пароля (TTY required).
+- **Updated**: 2026-03-06 18:48 UTC
+- **Notes**: Диагностика показала: сервисы user-level существуют (`userbot.service`, `psybot-api.service` в `systemctl --user`). Ошибка пользователя была из-за подстановки плейсхолдера `<ИМЯ_СЕРВИСА>` как буквального текста. Нужно дать точные команды без плейсхолдеров: `systemctl --user restart userbot.service` + status/log.
 
 
 ## [2026-03-05-eragon-site] Сделать сайт в стиле Eragon с реферальными кнопками бирж
