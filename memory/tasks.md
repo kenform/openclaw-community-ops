@@ -15,8 +15,8 @@
 ## [2026-03-05-channel-posts] Опубликовать новые посты в @Elven_Ai_Lab
 - **Status**: 🔄 进行中
 - **Requested**: 2026-03-05 04:38 UTC
-- **Updated**: 2026-03-06 07:39 UTC
-- **Notes**: Ранее публикации работали (последний post id 127), но пользователь сообщил, что новые посты сейчас не доходят в канал. Диагностика: `userbot.service` активен (user systemd), `NRestarts=0`, процесс непрерывно живой с 2026-03-05 04:59 UTC. В `digest_config.json` расписание `time_utc=08:00`, `last_run_date=2026-03-05` — до 08:00 UTC новый автопрогон не должен был идти. `health_summary.json`: queue=0, active job отсутствует. По журналу событий последний успешный digest был 2026-03-05 08:01 UTC.
+- **Updated**: 2026-03-06 08:06 UTC
+- **Notes**: Ранее публикации работали (последний post id 127), но пользователь сообщил, что новые посты сейчас не доходят в канал. Диагностика подтвердила: сервис живой, причина была в daily-расписании. По запросу пользователя включён режим чаще: реализован интервальный scheduler в `/home/openclawuser/userbot/bot.py` (`interval_minutes`, `last_run_ts`), обновлён `digest_config.json` на `interval_minutes=30`, сервис перезапущен; статус после рестарта `active/running`, `NRestarts=0`.
 
 ## [2026-03-05-eragon-site-next-v3] V3 wow-эффекты (parallax+rune-border+reveal)
 - **Status**: ✅ 完成
