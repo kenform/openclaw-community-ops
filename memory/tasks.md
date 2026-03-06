@@ -3,8 +3,8 @@
 ## [2026-03-06-diana-core-foundation] diana-core A→B bootstrap и отладка persistent history
 - **Status**: 🔄 进行中
 - **Requested**: 2026-03-06 12:15 UTC
-- **Updated**: 2026-03-06 16:01 UTC
-- **Notes**: На B3 сборка снова упёрлась в `TLS handshake timeout` при pull `python:3.12-slim`. Нужен no-build путь: применить правки локально и запустить `docker compose up -d api`, затем проверить `/context` curl.
+- **Updated**: 2026-03-06 16:07 UTC
+- **Notes**: No-build запуск прошёл (containers healthy), но `curl /context` не вывел тело. Нужно диагностировать одним one-liner: HTTP-код + первые строки тела + хвост логов api, чтобы понять (404/500/пустой ответ/ранний вызов до готовности).
 
 
 ## [2026-03-05-eragon-site] Сделать сайт в стиле Eragon с реферальными кнопками бирж
