@@ -3,8 +3,8 @@
 ## [2026-03-06-diana-core-foundation] diana-core A→B bootstrap и отладка persistent history
 - **Status**: 🔄 进行中
 - **Requested**: 2026-03-06 12:15 UTC
-- **Updated**: 2026-03-06 15:46 UTC
-- **Notes**: Пользователь подтвердил, что предпочитает single-shot. По последнему логу длинная команда искажается при передаче (пробелы/разрывы в токенах), поэтому цепочка не доходит до curl/psql. Решение: закрепить B2 в git (корректный `main.py`) и давать короткий single-shot из `git checkout <commit> + docker compose up + curl + psql`.
+- **Updated**: 2026-03-06 15:49 UTC
+- **Notes**: Новый блокер: `git checkout 7fcb43c -- api/app/schemas.py api/app/deps.py` падает (`pathspec ... did not match`) — эти файлы не были закоммичены в указанном коммите. Нужно дать fallback без git-pathspec: создать `schemas.py` и `deps.py` однострочными командами, затем `docker compose up -d --build api` и тест ingest.
 
 
 ## [2026-03-05-eragon-site] Сделать сайт в стиле Eragon с реферальными кнопками бирж
