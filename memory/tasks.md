@@ -13,10 +13,10 @@
 - **Notes**: Временно отложено, приоритет смещён на ночные задачи по userbot по прямому запросу пользователя.
 
 ## [2026-03-05-channel-posts] Опубликовать новые посты в @Elven_Ai_Lab
-- **Status**: ✅ 完成
+- **Status**: 🔄 进行中
 - **Requested**: 2026-03-05 04:38 UTC
-- **Updated**: 2026-03-05 08:57 UTC
-- **Notes**: Выяснено: `DIGEST_BOT_TOKEN` действительно указывает на `@Elven_post_bot` (getMe OK). 403 был от другого бот-отправителя (message tool), не члена канала. Выполнено через Telethon user-session (`/home/openclawuser/userbot/session.session`). Дополнительно исправлен код userbot: добавлен fallback user-session при fail Bot API. Пользователь подтвердил, что визуально стало лучше, но спойлеры всё ещё не работают; получен обновлённый жёсткий контракт форматтера (Telegram HTML, `<span class="tg-spoiler">`, фиксированная структура и длины) — применяю его как новый стандарт публикаций. Добавлены правила dedup+ranking+batch policy (winner-кластер, UPD в тот же пост, top 1–3/час, mega-breaking immediate).
+- **Updated**: 2026-03-06 07:39 UTC
+- **Notes**: Ранее публикации работали (последний post id 127), но пользователь сообщил, что новые посты сейчас не доходят в канал. Диагностика: `userbot.service` активен (user systemd), `NRestarts=0`, процесс непрерывно живой с 2026-03-05 04:59 UTC. В `digest_config.json` расписание `time_utc=08:00`, `last_run_date=2026-03-05` — до 08:00 UTC новый автопрогон не должен был идти. `health_summary.json`: queue=0, active job отсутствует. По журналу событий последний успешный digest был 2026-03-05 08:01 UTC.
 
 ## [2026-03-05-eragon-site-next-v3] V3 wow-эффекты (parallax+rune-border+reveal)
 - **Status**: ✅ 完成
@@ -24,11 +24,23 @@
 - **Updated**: 2026-03-05 18:40 UTC
 - **Notes**: V3 для Next.js сделана, но пользователь решил отказаться от Next.js в пользу статической версии.
 
-## [2026-03-05-eragon-style-from-github] Изучить GitHub kenform и перенести стиль в Eragon-сайт
+## [2026-03-05-userbot-healthcheck-post] Протестировать userbot и опубликовать свежий пост из новых TG-постов
 - **Status**: ✅ 完成
+- **Requested**: 2026-03-05 20:10 UTC
+- **Updated**: 2026-03-05 20:11 UTC
+- **Notes**: Проверка пройдена: `userbot.service active`, `NRestarts=0`, критичных ошибок в текущем цикле нет. Свежие посты с каналов проверены, шум отфильтрован, пост опубликован в канал (message_id 127).
+
+## [2026-03-05-next-fantasy-landing] Сгенерировать Next.js+TS+Tailwind+Framer landing (fantasy elf aesthetic)
+- **Status**: 🔄 进行中
+- **Requested**: 2026-03-05 19:30 UTC
+- **Updated**: 2026-03-05 19:30 UTC
+- **Notes**: Пользователь запросил готовую структуру проекта и код: app/page.tsx + компоненты ButtonCard/Background + tailwind config + запуск.
+
+## [2026-03-05-eragon-style-from-github] Изучить GitHub kenform и перенести стиль в Eragon-сайт
+- **Status**: 🔄 进行中
 - **Requested**: 2026-03-05 19:01 UTC
-- **Updated**: 2026-03-05 19:08 UTC
-- **Notes**: Получена ссылка на GitHub `kenform`, проведён аудит репозиториев верстки (Portfolio/FarmVest/Tzeezotje/react-sneakers), собрана новая статическая версия `projects/eragon-exchange-site-kenform` в близком стиле и отправлен архив `eragon-exchange-site-kenform-v1.tar.gz`.
+- **Updated**: 2026-03-05 19:18 UTC
+- **Notes**: V1 отправлен, пользователь запросил радикальный редизайн. Запускаю V2 в варианте «1» — темнее и пафоснее, с усиленным cinematic hero и премиальными карточками.
 
 ## [2026-03-05-eragon-site-static-final] Переключение на статическую версию без Next.js
 - **Status**: ✅ 完成
