@@ -1,11 +1,10 @@
 # Active Tasks
 
-## [2026-03-06-diana-core-foundation] Пояснить шаг A2 (docker-compose.yml) для diana-core пошагово
+## [2026-03-06-diana-core-foundation] diana-core A→B bootstrap и отладка persistent history
 - **Status**: 🔄 进行中
 - **Requested**: 2026-03-06 12:15 UTC
-- **Status**: ✅ 完成
-- **Updated**: 2026-03-06 14:15 UTC
-- **Notes**: Этап A успешно поднят: `diana-api Up`, Postgres/Redis healthy, `/health` и `/version` отвечают корректным JSON. Пользователь готов переходить к этапу B (persistent history).
+- **Updated**: 2026-03-06 14:50 UTC
+- **Notes**: Этап A закрыт. На B1 пользователь прислал лог: `\dt` пусто (`Did not find any relations`). Причина: в текущем состоянии отсутствуют `api/app/db/session.py` и `api/app/db/models.py`, а `main.py` без DB-bootstrap (`create_all`). Следующий шаг: выдать один атомарный command-only блок для пересоздания 3 файлов с корректными отступами + rebuild + проверка `\dt`.
 
 
 ## [2026-03-05-eragon-site] Сделать сайт в стиле Eragon с реферальными кнопками бирж
