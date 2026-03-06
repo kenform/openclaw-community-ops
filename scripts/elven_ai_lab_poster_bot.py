@@ -14,8 +14,8 @@ HISTORY = WORKSPACE / 'tmp' / 'elven_ai_lab_history.json'
 
 MAX_SIGNALS_PER_DAY = 24
 POST_TYPES = ["AI SIGNAL", "TOOL", "HOW TO", "TREND", "WEEKLY DIGEST"]
-SIGNALS_MIN_SCORE = 75
-RAW_MIN_SCORE = 55
+SIGNALS_MIN_SCORE = 60
+RAW_MIN_SCORE = 45
 
 
 def load_env(path: Path):
@@ -78,8 +78,11 @@ def sanitize_channel_name(name: str):
 
 
 def score_text(low: str):
-    bad = ['мем', 'реферал', 'купи', 'подпишись', 'розыгрыш', 'giveaway', 'ad', 'реклама', 'мотивац', 'вдохнов']
-    if any(x in low for x in bad):
+    bad_patterns = [
+        r'\bмем\w*\b', r'\bреферал\w*\b', r'\bкупи\w*\b', r'\bподпиш\w*\b',
+        r'\bрозыгрыш\w*\b', r'\bgiveaway\b', r'\bреклама\w*\b', r'\bмотивац\w*\b', r'\bвдохнов\w*\b'
+    ]
+    if any(re.search(p, low, re.IGNORECASE) for p in bad_patterns):
         return 0
     score = 25
     good = [
@@ -115,7 +118,7 @@ def collect_notes(limit=120):
         txt = f.read_text(encoding='utf-8', errors='ignore')
         low = txt.lower()
         score = score_text(low)
-        if score < 60:
+        if score < RAW_MIN_SCORE:
             continue
 
         title = f.stem
@@ -281,11 +284,9 @@ def main():
     if score < RAW_MIN_SCORE:
         return
     elif RAW_MIN_SCORE <= score < SIGNALS_MIN_SCORE:
-        if raw_channel:
-            send_telegram(token, raw_channel, msg)
-            layer = 'raw'
-        else:
-            return
+        target = raw_channel or signals_channel
+        send_telegram(token, target, msg)
+        layer = 'raw' if raw_channel else 'signals'
     else:
         if today_count_by_layer(h, 'signals') >= MAX_SIGNALS_PER_DAY:
             return

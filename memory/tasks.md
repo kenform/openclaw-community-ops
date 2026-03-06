@@ -4,8 +4,8 @@
 - **Status**: 🔄 进行中
 - **Requested**: 2026-03-06 12:15 UTC
 - **Status**: ✅ 完成
-- **Updated**: 2026-03-06 18:56 UTC
-- **Notes**: Диагностика и перезапуск завершены: `userbot.service` — user-level unit, успешно перезапущен через `systemctl --user restart userbot.service`, статус `active (running)`. Сделан форс-запуск `elven_ai_lab_poster_bot.py` — скрипт отработал без ошибок, history-файл читается; новых записей в показанном хвосте history не появилось.
+- **Updated**: 2026-03-06 18:59 UTC
+- **Notes**: Диагностика и перезапуск завершены: `userbot.service` — user-level unit, успешно перезапущен через `systemctl --user restart userbot.service`, статус `active (running)`. Дополнительно устранена причина, почему форс-скрипт не публиковал: в `scripts/elven_ai_lab_poster_bot.py` исправлены пороги/фильтры скоринга и fallback-маршрутизация при пустом `RAW_CHANNEL`; после фикса форс-запуск добавил новую запись в history (`Полимаркет — следующие шаги`, score 49).
 
 
 ## [2026-03-05-eragon-site] Сделать сайт в стиле Eragon с реферальными кнопками бирж
