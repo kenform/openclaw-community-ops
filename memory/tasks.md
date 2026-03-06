@@ -3,8 +3,8 @@
 ## [2026-03-06-diana-core-foundation] diana-core A→B bootstrap и отладка persistent history
 - **Status**: 🔄 进行中
 - **Requested**: 2026-03-06 12:15 UTC
-- **Updated**: 2026-03-06 16:34 UTC
-- **Notes**: Логи снова показывают `IndentationError` в `/app/app/deps.py` line 6 (`yield db`) — текущий one-liner пишет неверные уровни отступов. Следующий шаг: записать `deps.py` безопасным base64 one-liner (без риска сдвига пробелов), затем `docker compose up -d api` и проверка `/context`.
+- **Updated**: 2026-03-06 18:42 UTC
+- **Notes**: По новому запросу обновлены шаблоны вывода в userbot: убрана жёсткая фраза и добавлен динамический `Вывод` на основе содержания поста (эвристики practical/signal/risk) в `/home/openclawuser/userbot/bot.py`; зеркально обновлён workspace-скрипт `scripts/elven_ai_lab_poster_bot.py`. Перезапуск `userbot.service` из этой сессии не выполнен из-за sudo-пароля (TTY required).
 
 
 ## [2026-03-05-eragon-site] Сделать сайт в стиле Eragon с реферальными кнопками бирж

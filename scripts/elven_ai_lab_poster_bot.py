@@ -177,6 +177,21 @@ def pick_context_tags(text: str):
             tags.append(d)
     return ' '.join(tags[:5])
 
+def build_smart_conclusion(text: str):
+    low = (text or '').lower()
+    practical = sum(1 for k in ['гайд', 'пошаг', 'инструкц', 'как ', 'чеклист', 'workflow', 'setup'] if k in low)
+    risk = sum(1 for k in ['риск', 'risk', 'волатил', 'ликвид', 'плеч', 'drawdown'] if k in low)
+    signal = sum(1 for k in ['анонс', 'launch', 'релиз', 'обнов', 'апдейт', 'roadmap'] if k in low)
+
+    if practical >= 2:
+        return 'Вывод: материал практический — можно применять как чеклист после сверки первоисточника.'
+    if signal >= 2 and practical == 0:
+        return 'Вывод: это скорее сигнал/апдейт — сначала наблюдение и валидация, затем действие.'
+    if risk >= 1:
+        return 'Вывод: перед внедрением оцените риски и лимиты, затем применяйте поэтапно.'
+    return 'Вывод: ценность есть, но перед внедрением лучше проверить контекст и первоисточник.'
+
+
 def signal_level(score: int):
     if score >= 80:
         return '🜂 HIGH SIGNAL'
@@ -209,6 +224,7 @@ def render_post(n, channel_link, chat_link, post_type='AI SIGNAL'):
 
     out += [
         "",
+        build_smart_conclusion(' '.join(bullets) + ' ' + title),
         "",
         "🌿 Elven AI Lab",
         "",
