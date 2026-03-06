@@ -52,7 +52,7 @@ export default function HomePage() {
 
         <div className="hero-inner">
           <p className="kicker">Elven AI Lab • Codex</p>
-          <h1>
+          <h1 className="hero-title">
             Сапфировые Врата
             <br />
             для Всадника
@@ -66,6 +66,10 @@ export default function HomePage() {
       </header>
 
       <main>
+        <section className="section reveal">
+          <h2 className="section-title">Выбор Гильдии</h2>
+        </section>
+
         <section id="gates" className="section gates reveal">
           {exchanges.map((item) => (
             <ExchangeCard key={item.id} item={item} />
@@ -73,10 +77,14 @@ export default function HomePage() {
         </section>
 
         <section className="section oath reveal">
-          <h2>Клятва Всадника</h2>
+          <h2 className="section-title">Клятва Всадника</h2>
           <p>Один вход — одна стратегия. Один риск — один лимит. Один план — без импровизации.</p>
         </section>
       </main>
+
+      <div className="mobile-sticky-cta">
+        <a href="#gates" className="btn btn-primary">Открыть врата</a>
+      </div>
 
       <footer className="reveal">
         <p>🌿 Elven AI Lab</p>

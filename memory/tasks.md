@@ -3,15 +3,15 @@
 ## [2026-03-06-diana-core-foundation] Пояснить шаг A2 (docker-compose.yml) для diana-core пошагово
 - **Status**: 🔄 进行中
 - **Requested**: 2026-03-06 12:15 UTC
-- **Updated**: 2026-03-06 13:36 UTC
-- **Notes**: Docker установлен, но `docker-compose.yml` был с неправильными отступами (YAML-ключи на одном уровне), из-за чего дубли ключей. Файл исправлен на валидный; `docker compose config` проходит (только warning про устаревшее поле `version`). Следующий шаг: `docker compose up -d --build`, затем `docker compose ps` и проверка `/health`.
+- **Updated**: 2026-03-06 14:05 UTC
+- **Notes**: Получены логи из txt: Postgres и Redis healthy, но `diana-api` в Restarting из-за `IndentationError` в `/app/app/main.py` (неправильные отступы после `def health()` и `def version()`). Нужно исправить `api/app/main.py`, пересобрать `api`, проверить `/health`/`/version`; затем можно закрывать этап A и идти в этап B.
 
 
 ## [2026-03-05-eragon-site] Сделать сайт в стиле Eragon с реферальными кнопками бирж
 - **Status**: 🔄 进行中
 - **Requested**: 2026-03-05 06:18 UTC
-- **Updated**: 2026-03-06 13:50 UTC
-- **Notes**: Приоритет на сегодня подтверждён пользователем: доделать задачи по Eragon-сайту в первую очередь (tailnet отложить). Runtime Error оказался от браузерного расширения Talisman (`chrome-extension://...`), не от кода Next.js. V4 и V5 собраны и переданы (cinematic fog + premium CTA). Пользователь поднял проект на Vercel и подтвердил live-ссылку. Текущий следующий шаг: настроить workflow “по-взрослому” — `main` production, `feat/*` preview, PR-only protection, опционально custom domain.
+- **Updated**: 2026-03-06 14:06 UTC
+- **Notes**: Приоритет на сегодня подтверждён пользователем: доделать задачи по Eragon-сайту в первую очередь (tailnet отложить). Runtime Error оказался от браузерного расширения Talisman (`chrome-extension://...`), не от кода Next.js. V4 и V5 собраны и переданы (cinematic fog + premium CTA). Пользователь поднял проект на Vercel и подтвердил live-ссылку, PR-flow починен. Новый запрос: начать V6 polish (hero depth + живой hover карточек + sticky mobile CTA + scroll micro-animations).
 
 ## [2026-03-04-gateway-tailnet-fix] Применить bind=tailnet для openclaw-gateway
 - **Status**: ⏸️ 暂停
