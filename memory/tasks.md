@@ -1,10 +1,17 @@
 # Active Tasks
 
+## [2026-03-06-diana-core-foundation] Пояснить шаг A2 (docker-compose.yml) для diana-core пошагово
+- **Status**: 🔄 进行中
+- **Requested**: 2026-03-06 12:15 UTC
+- **Updated**: 2026-03-06 13:36 UTC
+- **Notes**: Docker установлен, но `docker-compose.yml` был с неправильными отступами (YAML-ключи на одном уровне), из-за чего дубли ключей. Файл исправлен на валидный; `docker compose config` проходит (только warning про устаревшее поле `version`). Следующий шаг: `docker compose up -d --build`, затем `docker compose ps` и проверка `/health`.
+
+
 ## [2026-03-05-eragon-site] Сделать сайт в стиле Eragon с реферальными кнопками бирж
 - **Status**: 🔄 进行中
 - **Requested**: 2026-03-05 06:18 UTC
-- **Updated**: 2026-03-06 12:12 UTC
-- **Notes**: Приоритет на сегодня подтверждён пользователем: доделать задачи по Eragon-сайту в первую очередь (tailnet отложить). Пользователь запустил `npm run dev`; Runtime Error оказался от браузерного расширения Talisman (`chrome-extension://...`), не от кода Next.js. Новый запрос: собрать V4 улучшения (сапфировый дракон + рунические анимации), без внедрения Арьи-гида на этом этапе.
+- **Updated**: 2026-03-06 13:31 UTC
+- **Notes**: Приоритет на сегодня подтверждён пользователем: доделать задачи по Eragon-сайту в первую очередь (tailnet отложить). Runtime Error оказался от браузерного расширения Talisman (`chrome-extension://...`), не от кода Next.js. V4 собран (сапфировый дракон + рунические анимации, без Арьи-гида). Новый запрос: начать V5 (драконий туман + более cinematic hero + premium hover CTA).
 
 ## [2026-03-04-gateway-tailnet-fix] Применить bind=tailnet для openclaw-gateway
 - **Status**: ⏸️ 暂停

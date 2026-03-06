@@ -55,12 +55,18 @@ radial-gradient(circle at 72% 22%, rgba(176,226,255,.18) 0 1px, transparent 2px)
 radial-gradient(circle at 58% 66%, rgba(98,174,255,.14) 0 1px, transparent 2px),
 radial-gradient(circle at 84% 76%, rgba(176,226,255,.14) 0 1px, transparent 2px);
 animation:sparkShift 16s linear infinite}
+.fog{position:fixed;left:-10%;right:-10%;height:34vh;pointer-events:none;z-index:0;filter:blur(22px)}
+.fog-back{top:16%;background:radial-gradient(ellipse at 50% 50%, rgba(90,164,255,.14), rgba(11,27,66,.02) 62%, transparent 72%);animation:fogDriftA 18s ease-in-out infinite}
+.fog-front{bottom:6%;background:radial-gradient(ellipse at 50% 50%, rgba(131,205,255,.12), rgba(9,22,56,.02) 58%, transparent 72%);animation:fogDriftB 22s ease-in-out infinite}
+.hero-vignette{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 45%, rgba(117,198,255,.14) 0%, rgba(10,18,46,.22) 50%, rgba(6,8,18,.65) 100%);pointer-events:none;z-index:0}
 .kicker{margin:0 0 10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-size:.78rem}
 h1{margin:0;font-size:clamp(2rem,6vw,4.2rem);line-height:1.05;text-shadow:0 0 24px rgba(122,92,255,.18)}
 .subtitle{margin:14px auto 26px;max-width:680px;color:var(--muted);font-size:1.02rem}
-.btn{display:inline-block;padding:12px 18px;border-radius:12px;text-decoration:none;transition:.2s ease;font-weight:600}
-.btn-primary{border:1px solid var(--gold);color:var(--gold-soft);background:rgba(214,179,107,.08)}
-.btn-primary:hover{transform:translateY(-1px);background:rgba(214,179,107,.16)}
+.btn{display:inline-block;padding:12px 18px;border-radius:12px;text-decoration:none;transition:.24s ease;font-weight:600}
+.btn-primary{position:relative;border:1px solid rgba(144,206,255,.7);color:#dff2ff;background:linear-gradient(180deg, rgba(72,145,255,.18), rgba(40,87,180,.14));box-shadow:0 0 0 rgba(94,182,255,0), inset 0 0 0 rgba(150,212,255,0);overflow:hidden}
+.btn-primary::before{content:"";position:absolute;inset:-40% -10%;background:linear-gradient(120deg, rgba(255,255,255,0) 30%, rgba(173,223,255,.48) 50%, rgba(255,255,255,0) 70%);transform:translateX(-120%) rotate(8deg);transition:transform .7s ease}
+.btn-primary:hover{transform:translateY(-2px) scale(1.01);box-shadow:0 10px 26px rgba(71,151,255,.35), inset 0 0 16px rgba(137,211,255,.22);border-color:#9ad8ff}
+.btn-primary:hover::before{transform:translateX(120%) rotate(8deg)}
 .section{position:relative;z-index:1;max-width:1120px;margin:0 auto;padding:20px}
 .gates{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:-26px}
 .gate{position:relative;overflow:hidden;background:linear-gradient(180deg, rgba(255,255,255,.01), rgba(255,255,255,0)), var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,.28);transition:transform .22s ease, box-shadow .22s ease, border-color .22s ease}
@@ -103,7 +109,9 @@ footer{position:relative;z-index:1;padding:22px 20px 30px;text-align:center;colo
 @keyframes wingBeatL{0%,100%{transform:rotate(8deg)}50%{transform:rotate(-6deg)}}
 @keyframes wingBeatR{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(6deg)}}
 @keyframes sparkShift{0%{transform:translateY(0)}50%{transform:translateY(-10px)}100%{transform:translateY(0)}}
+@keyframes fogDriftA{0%,100%{transform:translateX(-2%) translateY(0)}50%{transform:translateX(2%) translateY(1.8%)}}
+@keyframes fogDriftB{0%,100%{transform:translateX(2%) translateY(0)}50%{transform:translateX(-2%) translateY(-1.6%)}}
 
 @media (prefers-reduced-motion: reduce){
-  .noise,.orb,.rune,.dragon,.dragon-eye,.sparkles{animation:none!important}
+  .noise,.orb,.rune,.dragon,.dragon-eye,.sparkles,.fog{animation:none!important}
 }

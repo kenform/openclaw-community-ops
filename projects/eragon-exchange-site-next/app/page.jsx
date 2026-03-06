@@ -37,8 +37,11 @@ export default function HomePage() {
       <div className="orb orb-b" aria-hidden="true" />
       <div className="orb orb-c" aria-hidden="true" />
       <div className="sparkles" aria-hidden="true" />
+      <div className="fog fog-back" aria-hidden="true" />
+      <div className="fog fog-front" aria-hidden="true" />
 
       <header className="hero reveal">
+        <div className="hero-vignette" aria-hidden="true" />
         <div className="dragon-wrap" aria-hidden="true">
           <div className="dragon dragon-body" />
           <div className="dragon dragon-wing wing-left" />
