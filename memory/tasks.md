@@ -3,8 +3,8 @@
 ## [2026-03-06-diana-core-foundation] diana-core A→B bootstrap и отладка persistent history
 - **Status**: 🔄 进行中
 - **Requested**: 2026-03-06 12:15 UTC
-- **Updated**: 2026-03-06 15:24 UTC
-- **Notes**: B1 успешно подтверждён: после правки внутри контейнера API стартует, а `\dt` показывает `users`, `conversations`, `messages`. История в Postgres активирована. Следующий шаг: B2 — добавить `POST /ingest/message` (upsert user, get/create conversation, insert message) и smoke-тест через curl.
+- **Updated**: 2026-03-06 15:25 UTC
+- **Notes**: B1 успешно подтверждён: после правки внутри контейнера API стартует, а `\dt` показывает `users`, `conversations`, `messages`. История в Postgres активирована. Пользователь попросил строгий формат команд для MobX/копипаста без сбоев (без смешивания строк/блоков). Дальше давать только короткие, атомарные, нумерованные команды в отдельных code-блоках.
 
 
 ## [2026-03-05-eragon-site] Сделать сайт в стиле Eragon с реферальными кнопками бирж
