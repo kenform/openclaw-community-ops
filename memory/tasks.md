@@ -3,8 +3,8 @@
 ## [2026-03-06-diana-core-foundation] diana-core A→B bootstrap и отладка persistent history
 - **Status**: 🔄 进行中
 - **Requested**: 2026-03-06 12:15 UTC
-- **Updated**: 2026-03-06 15:52 UTC
-- **Notes**: Пользователь подтвердил, что всё ок и готов продолжать дальше без дополнительных разборов. Переходим к B3: endpoint `GET /context/{user_external_id}?limit=30` и проверка retrieval последних сообщений.
+- **Updated**: 2026-03-06 16:01 UTC
+- **Notes**: На B3 сборка снова упёрлась в `TLS handshake timeout` при pull `python:3.12-slim`. Нужен no-build путь: применить правки локально и запустить `docker compose up -d api`, затем проверить `/context` curl.
 
 
 ## [2026-03-05-eragon-site] Сделать сайт в стиле Eragon с реферальными кнопками бирж
