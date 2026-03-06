@@ -214,7 +214,7 @@ def render_post(n, channel_link, chat_link, post_type='AI SIGNAL'):
         f'<a href="{source_url}">{source_name}</a>',
         title,
         "",
-        "Краткая выжимка:",
+        "Главное:",
     ]
 
     for b in bullets[:3]:
