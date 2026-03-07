@@ -10,6 +10,7 @@
 - **Hotfix**: После повторного `⚠️ voiceauto: [no final transcript received]` добавлен retry транскрипции (вторая попытка с увеличенным timeout) и отключён вывод ошибок voiceauto в чат; ошибки теперь только в логах.
 - **New request**: Пользователь попросил: обработать все неразобранные голосовые, повторно проверить баги/ошибки и убедиться, что очередь не переполнена после большого объёма сообщений.
 - **Implemented by request (1/4/5)**: (1) confidence-flag для voiceauto (`🟢/🟡/🟠` в ответе + confidence в логах), (4) anti-duplicate fingerprint (SHA1 аудио + TTL окно, чтобы не отвечать повторно на один и тот же voice), (5) mini-metrics логирование pipeline (`ms_download`, `ms_transcribe`, `ms_analyze`, `ms_total`) в `userbot_events.jsonl`.
+- **New request**: Пользователь подтвердил запуск V1 EN-пайплайна (RU voice -> EN transcript/summary/polished). Внедрил команду `.voiceen [literal|natural|business]` (reply-to-voice), использует @voice_transcribot для RU транскрипции и OpenClaw для EN pack; сохраняет в vault/voice и vault/notes. userbot перезапущен, active.
 - **Clarification**: Сообщение `⚠️ voiceauto: [voice_transcribot: no final transcript received]` пришло до последнего рестарта (16:55 UTC), то есть это старый хвост до hotfix/silent-mode.
 
 
