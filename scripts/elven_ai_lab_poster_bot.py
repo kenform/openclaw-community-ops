@@ -227,8 +227,6 @@ def render_post(n, channel_link, chat_link, post_type='AI SIGNAL'):
 
     out += [
         "",
-        build_smart_conclusion(' '.join(bullets) + ' ' + title),
-        "",
         "🌿 Elven AI Lab",
         "",
         "Ссылки:",
