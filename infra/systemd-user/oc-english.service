@@ -1,0 +1,19 @@
+[Unit]
+Description=OpenClaw english agent
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/openclawuser/.openclaw/workspace
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/home/openclawuser/.openclaw/workspace/scripts/oc-role-runner.sh english
+Restart=on-failure
+RestartSec=5
+CPUQuota=40%
+MemoryMax=500M
+TasksMax=512
+TimeoutStopSec=20
+
+[Install]
+WantedBy=default.target

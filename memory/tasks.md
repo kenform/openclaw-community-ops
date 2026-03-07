@@ -66,6 +66,12 @@
 - **Result**: Отправлены 2 новых поста в канал (IDs: 99 и 100). Прямой Bot API probe через `@Elven_post_bot` успешен (message_id 102), тест удалён; userbot stable (NRestarts=0). Дополнительно опубликованы: авто-срез (103), эталонный тест (104), spoiler-тест (105), plain-style тест (107), актуальный пост (108), link-style тест (109) и точный plain-шаблон (110). Фолбэк форматтер зафиксирован под plain-эталон (без markdown-ссылок/spoiler).
 
 
+## [2026-03-07-agent-systemd-pack] Подготовить готовые .service-файлы для 7-агентной схемы
+- **Status**: 🔄 进行中
+- **Requested**: 2026-03-07 00:36 UTC
+- **Updated**: 2026-03-07 00:39 UTC
+- **Notes**: Пользователь подтвердил «Да, хочу». Готовлю набор user-systemd юнитов (always-on + on-demand), безопасный wrapper и команды запуска.
+
 # Completed (recent)
 - [2026-03-05-overnight-ops] ✅ Ночная задача закрыта: userbot стабилен, бэкапы сделаны, end-to-end публикация digest подтверждена (`@Elven_Ai_Lab`, "✨ Главное на сегодня").
 - [2026-03-04-gateway-fix] ✅ Починил: удалён systemd override с `--bind tailnet`, выполнены daemon-reload + restart; сейчас `openclaw-gateway.service` stable, `gateway probe` => Reachable yes / RPC ok.

@@ -1,0 +1,19 @@
+[Unit]
+Description=OpenClaw telegram agent
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/openclawuser/.openclaw/workspace
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/home/openclawuser/.openclaw/workspace/scripts/oc-role-runner.sh telegram
+Restart=always
+RestartSec=5
+CPUQuota=120%
+MemoryMax=1800M
+TasksMax=512
+TimeoutStopSec=20
+
+[Install]
+WantedBy=default.target
