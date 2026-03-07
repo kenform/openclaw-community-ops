@@ -12,6 +12,8 @@
 - **Implemented by request (1/4/5)**: (1) confidence-flag для voiceauto (`🟢/🟡/🟠` в ответе + confidence в логах), (4) anti-duplicate fingerprint (SHA1 аудио + TTL окно, чтобы не отвечать повторно на один и тот же voice), (5) mini-metrics логирование pipeline (`ms_download`, `ms_transcribe`, `ms_analyze`, `ms_total`) в `userbot_events.jsonl`.
 - **New request**: Пользователь подтвердил запуск V1 EN-пайплайна (RU voice -> EN transcript/summary/polished). Внедрил команду `.voiceen [literal|natural|business]` (reply-to-voice), использует @voice_transcribot для RU транскрипции и OpenClaw для EN pack; сохраняет в vault/voice и vault/notes. userbot перезапущен, active.
 - **Bugfix**: Подтверждена утечка служебного prompt-текста в чат из auto-цепочки. Немедленный mitigation: принудительно выключен `voiceauto` (`voice_auto_state.json: enabled=false`) для прекращения промпт-спама/дублей; оставлены ручные безопасные команды `.voicebot`/`.voiceen`.
+- **User question**: Запрошен текущий статус: работает ли расшифровка голосовых сейчас и в каком состоянии EN-пайплайн.
+- **Leak hardening**: По запросу пользователя "почини" добавлен анти-утечка guard для `.voiceen`: детект service-prompt текста, авто-fallback перевод без RU service-шаблона, и защитный безопасный шаблон при повторном leak. userbot перезапущен, active.
 - **Clarification**: Сообщение `⚠️ voiceauto: [voice_transcribot: no final transcript received]` пришло до последнего рестарта (16:55 UTC), то есть это старый хвост до hotfix/silent-mode.
 
 
