@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import datetime as dt
+import hashlib
 import json
 import re
 from pathlib import Path
@@ -67,14 +68,14 @@ def today_count_by_layer(h, layer: str):
 
 
 def first_match(pattern, text):
-    m = re.search(pattern, text, re.IGNORECASE)
+    m = re.search(pattern, text, re.IGNORECASE | re.MULTILINE)
     return m.group(1).strip() if m else ''
 
 
 def sanitize_channel_name(name: str):
     n = (name or '').strip()
     n = n.replace('https://t.me/', '').replace('@', '').strip('/')
-    return n or 'unknown'
+    return n
 
 
 def score_text(low: str):
@@ -149,7 +150,7 @@ def collect_notes(limit=120):
             'title': title[:100],
             'bullets': bullets[:6],
             'score': score,
-            'source_name': source_name or 'unknown',
+            'source_name': sanitize_channel_name(source_name),
             'source_url': source_url,
             'unclear': ambiguity_reason(low),
         })
@@ -180,21 +181,6 @@ def pick_context_tags(text: str):
             tags.append(d)
     return ' '.join(tags[:5])
 
-def build_smart_conclusion(text: str):
-    low = (text or '').lower()
-    practical = sum(1 for k in ['гайд', 'пошаг', 'инструкц', 'как ', 'чеклист', 'workflow', 'setup'] if k in low)
-    risk = sum(1 for k in ['риск', 'risk', 'волатил', 'ликвид', 'плеч', 'drawdown'] if k in low)
-    signal = sum(1 for k in ['анонс', 'launch', 'релиз', 'обнов', 'апдейт', 'roadmap'] if k in low)
-
-    if practical >= 2:
-        return 'Вывод: материал практический — можно применять как чеклист после сверки первоисточника.'
-    if signal >= 2 and practical == 0:
-        return 'Вывод: это скорее сигнал/апдейт — сначала наблюдение и валидация, затем действие.'
-    if risk >= 1:
-        return 'Вывод: перед внедрением оцените риски и лимиты, затем применяйте поэтапно.'
-    return 'Вывод: ценность есть, но перед внедрением лучше проверить контекст и первоисточник.'
-
-
 def signal_level(score: int):
     if score >= 80:
         return '🜂 HIGH SIGNAL'
@@ -203,15 +189,31 @@ def signal_level(score: int):
     return '🜃 LOW SIGNAL'
 
 
+def note_signature(n: dict) -> str:
+    base = (n.get('title', '').strip().lower() + '|' + ' '.join((n.get('bullets') or [])[:2]).strip().lower())
+    return hashlib.sha1(base.encode('utf-8', errors='ignore')).hexdigest()
+
+
+def is_buggy_unknown_note(n: dict) -> bool:
+    source_name = (n.get('source_name') or '').strip().lower()
+    title = (n.get('title') or '').strip().lower()
+    # Block known bad pattern: unknown source + repeating polymarket checklist
+    if not source_name and ('полимаркет — следующие шаги' in title or 'polymarket' in title):
+        return True
+    return False
+
+
 def render_post(n, channel_link, chat_link, post_type='AI SIGNAL'):
     title = n['title']
     bullets = n['bullets'] or ['Короткий технический сигнал без лишнего шума.']
-    source_name = sanitize_channel_name(n.get('source_name') or 'unknown')
+    source_name = sanitize_channel_name(n.get('source_name') or '')
     source_url = n.get('source_url') or channel_link
+
+    source_line = f'<a href="{source_url}">{source_name}</a>' if source_name else f'<a href="{source_url}">Источник</a>'
 
     out = [
         f"✨ {post_type.title()}",
-        f'<a href="{source_url}">{source_name}</a>',
+        source_line,
         title,
         "",
         "Главное:",
@@ -271,7 +273,24 @@ def main():
         return
 
     used_titles = set((x.get('title', '').strip().lower()) for x in h.get('posts', []))
-    pool = [n for n in notes if n['title'].strip().lower() not in used_titles] or notes
+    used_sigs = set((x.get('sig', '') for x in h.get('posts', [])))
+
+    clean_notes = [n for n in notes if not is_buggy_unknown_note(n)]
+    if not clean_notes:
+        return
+
+    pool = [
+        n for n in clean_notes
+        if n['title'].strip().lower() not in used_titles and note_signature(n) not in used_sigs
+    ] or clean_notes
+
+    # avoid reposting exact same top note over and over even if history was pruned/reset
+    if h.get('posts'):
+        last_sig = h['posts'][-1].get('sig', '')
+        pool2 = [n for n in pool if note_signature(n) != last_sig]
+        if pool2:
+            pool = pool2
+
     n = sorted(pool, key=lambda x: x.get('score', 0), reverse=True)[0]
 
     score = int(n.get('score', 0))
@@ -294,6 +313,7 @@ def main():
     h.setdefault('posts', []).append({
         'ts': dt.datetime.now(dt.timezone.utc).isoformat().replace('+00:00', 'Z'),
         'title': n['title'],
+        'sig': note_signature(n),
         'score': score,
         'source': n.get('source_name', ''),
         'source_url': n.get('source_url', ''),
