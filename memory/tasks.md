@@ -1,12 +1,20 @@
 # Active Tasks
 
+## [2026-03-07-voice-transcribe-integration-eval] Оценить интеграцию @voice_transcribot и сравнить с текущей расшифровкой
+- **Status**: ✅ 完成
+- **Requested**: 2026-03-07 09:32 UTC
+- **Updated**: 2026-03-07 15:55 UTC
+- **Notes**: A/B тест подтвердил преимущество @voice_transcribot на длинных голосовых. В `~/userbot/bot.py` добавлена автоматизация этапа 2: новая команда `.voicebot` (reply-to-voice), отправка в @voice_transcribot, фильтрация служебных ответов, извлечение финальной транскрипции (>=10 слов), сохранение в vault/voice и vault/notes, обновлена `.help`. Сервис `userbot.service` перезапущен, status=active.
+- **Result**: Пользователь может сразу использовать: reply на голосовое → `.voicebot`.
+
+
 ## [2026-03-06-diana-core-foundation] diana-core A→B bootstrap и отладка persistent history
 - **Status**: 🔄 进行中
 - **Requested**: 2026-03-06 12:15 UTC
 - **Status**: ✅ 完成
 - **Status**: ✅ 完成
-- **Updated**: 2026-03-07 01:48 UTC
-- **Notes**: По запросу пользователя убран блок `Вывод` из структуры постов (и в userbot, и в workspace-постер-скрипте). Userbot перезапущен, сервис активен.
+- **Updated**: 2026-03-07 01:51 UTC
+- **Notes**: По запросу пользователя дожато единообразие формата: удалены остаточные функции/следы старого `Вывод`-блока и legacy-формата в userbot + workspace постер-скрипте. Проверка grep по ключам старого шаблона чистая, userbot перезапущен и активен.
 
 
 ## [2026-03-05-eragon-site] Сделать сайт в стиле Eragon с реферальными кнопками бирж
