@@ -3,9 +3,9 @@
 ## [2026-03-07-voice-transcribe-integration-eval] Оценить интеграцию @voice_transcribot и сравнить с текущей расшифровкой
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-07 09:32 UTC
-- **Updated**: 2026-03-07 15:55 UTC
-- **Notes**: A/B тест подтвердил преимущество @voice_transcribot на длинных голосовых. В `~/userbot/bot.py` добавлена автоматизация этапа 2: новая команда `.voicebot` (reply-to-voice), отправка в @voice_transcribot, фильтрация служебных ответов, извлечение финальной транскрипции (>=10 слов), сохранение в vault/voice и vault/notes, обновлена `.help`. Сервис `userbot.service` перезапущен, status=active.
-- **Result**: Пользователь может сразу использовать: reply на голосовое → `.voicebot`.
+- **Updated**: 2026-03-07 16:30 UTC
+- **Notes**: A/B тест подтвердил преимущество @voice_transcribot на длинных голосовых. В `~/userbot/bot.py` добавлена автоматизация этапа 2: команда `.voicebot` (reply-to-voice), отправка в @voice_transcribot, фильтрация служебных ответов, извлечение финальной транскрипции (>=10 слов), сохранение в vault/voice и vault/notes, обновлена `.help`. Дополнительно внедрён autorun: `.voiceauto on/off/status` + авто-хук на исходящие голосовые в личке с @{OPENCLAW_BOT}; после отправки голосового бот автоматически получает и отправляет обратно чистую транскрипцию `📝 ...` для дальнейшего анализа. Сервис `userbot.service` перезапущен, status=active.
+- **Result**: Доступны оба режима: ручной (`.voicebot`) и автоматический (`.voiceauto on`).
 
 
 ## [2026-03-06-diana-core-foundation] diana-core A→B bootstrap и отладка persistent history
