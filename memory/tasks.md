@@ -3,9 +3,9 @@
 ## [2026-03-07-voice-transcribe-integration-eval] Оценить интеграцию @voice_transcribot и сравнить с текущей расшифровкой
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-07 09:32 UTC
-- **Updated**: 2026-03-07 16:34 UTC
-- **Notes**: A/B тест подтвердил преимущество @voice_transcribot на длинных голосовых. В `~/userbot/bot.py` добавлена автоматизация этапа 2: команда `.voicebot` (reply-to-voice), отправка в @voice_transcribot, фильтрация служебных ответов, извлечение финальной транскрипции (>=10 слов), сохранение в vault/voice и vault/notes, обновлена `.help`. Дополнительно внедрён autorun: `.voiceauto on/off/status` + авто-хук на исходящие голосовые в личке с @{OPENCLAW_BOT}. По уточнению пользователя переключено в режим privacy: сырая транскрипция в чат больше не отправляется; бот шлёт только итоговый анализ ответа по расшифровке. Сервис `userbot.service` перезапущен, status=active.
-- **Result**: Доступны оба режима: ручной (`.voicebot`) и автоматический (`.voiceauto on`) в формате analysis-only без публикации сырого текста.
+- **Updated**: 2026-03-07 16:36 UTC
+- **Notes**: A/B тест подтвердил преимущество @voice_transcribot на длинных голосовых. В `~/userbot/bot.py` добавлена автоматизация этапа 2: команда `.voicebot` (reply-to-voice), отправка в @voice_transcribot, фильтрация служебных ответов, извлечение финальной транскрипции, сохранение в vault/voice и vault/notes, обновлена `.help`. Дополнительно внедрён autorun: `.voiceauto on/off/status` + авто-хук на исходящие голосовые в личке с @{OPENCLAW_BOT}. По уточнению пользователя переключено в режим privacy: сырая транскрипция в чат больше не отправляется; бот шлёт только итоговый анализ ответа по расшифровке. Исправлен edge-case коротких голосовых: добавлен fallback-парсинг (min_words=1), чтобы не падало с `[no final transcript received]`.
+- **Result**: Доступны оба режима: ручной (`.voicebot`) и автоматический (`.voiceauto on`) в формате analysis-only; стабильность повышена на коротких ГС.
 
 
 ## [2026-03-06-diana-core-foundation] diana-core A→B bootstrap и отладка persistent history
