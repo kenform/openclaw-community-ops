@@ -4,8 +4,8 @@
 - **Status**: 🔄 进行中
 - **Requested**: 2026-03-08 19:51 UTC
 - **Updated**: 2026-03-08 19:51 UTC
-- **Background**: dawn-nexus (pid 1740207) on localhost — `scripts/watchdog_3h.sh`
-- **Notes**: Пользователь запросил 3-часовой цикл watchdog (15m): проверка зависаний/статусов сервисов и авто-починка при зависании. Старт выполнен в 19:52 UTC, в 1-м цикле найден `psybot-api` в `activating/auto-restart`, выполнен restart, сервис вернулся в `active/running`.
+- **Background**: keen-shell (pid 1754026) on localhost — `scripts/watchdog_3h.sh`
+- **Notes**: Пользователь запросил 3-часовой цикл watchdog (15m): проверка зависаний/статусов сервисов и авто-починка при зависании. Первый watchdog отработал 2 цикла и завершился раньше ожидания; перезапущен новый watchdog в 20:27 UTC. Зафиксирован флап `psybot-api` (auto-restart), выполнен ручной restart, состояние `active/running`.
 
 
 ## [2026-03-08-userbot-parser-check] Проверить работу userbot и второго parser
