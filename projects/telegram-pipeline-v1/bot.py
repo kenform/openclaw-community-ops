@@ -77,14 +77,8 @@ def format_payload(
     media_only: bool,
     topic_title: Optional[str] = None,
 ) -> str:
-    header = [f"[Source: {chat_title}]", f"[ChatID: {chat_id}]"]
-    if topic_id:
-        header.append(f"[TopicID: {topic_id}]")
-    if topic_title:
-        header.append(f"[TopicTitle: {topic_title}]")
-
-    body = "[media message]" if media_only else (text.strip() if text else "[empty message]")
-    return "\n".join(header) + "\n\n" + body
+    _ = (chat_title, chat_id, topic_id, topic_title)
+    return "[media message]" if media_only else (text.strip() if text else "[empty message]")
 
 
 def _chunk_text(text: str, limit: int = 3500):
