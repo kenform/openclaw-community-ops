@@ -77,38 +77,67 @@ def format_payload(chat_title: str, chat_id: int, topic_id: Optional[int], text:
     return "\n".join(header) + "\n\n" + body
 
 
+def _chunk_text(text: str, limit: int = 3500):
+    text = text or ""
+    if len(text) <= limit:
+        return [text]
+    parts = []
+    rest = text
+    while rest:
+        if len(rest) <= limit:
+            parts.append(rest)
+            break
+        cut = rest.rfind("\n", 0, limit)
+        if cut < 200:
+            cut = limit
+        parts.append(rest[:cut])
+        rest = rest[cut:].lstrip("\n")
+    return parts
+
+
 def send_via_bot_api(bot_token: str, target_channel_id: str, text: str, logger: logging.Logger, dry_run: bool = False) -> bool:
+    chunks = _chunk_text(text)
+
     if dry_run:
-        logger.info("[DRY_RUN] Skip send. Payload:\n%s", text)
+        logger.info("[DRY_RUN] Skip send. chunks=%s first_payload:\n%s", len(chunks), chunks[0])
         return True
 
     url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
-    payload = {
-        "chat_id": target_channel_id,
-        "text": text,
-        "disable_web_page_preview": True,
-    }
 
-    for attempt in range(1, 4):
-        try:
-            r = requests.post(url, json=payload, timeout=20)
-            if r.status_code == 429:
-                retry_after = r.json().get("parameters", {}).get("retry_after", 2)
-                logger.warning("Bot API rate limit. retry_after=%s", retry_after)
-                time.sleep(retry_after)
-                continue
+    for idx, chunk in enumerate(chunks, start=1):
+        payload = {
+            "chat_id": target_channel_id,
+            "text": chunk,
+            "disable_web_page_preview": True,
+        }
 
-            r.raise_for_status()
-            data = r.json()
-            if not data.get("ok"):
-                logger.error("Bot API responded ok=false: %s", data)
-                return False
-            return True
-        except requests.RequestException as e:
-            logger.error("Bot API send error attempt %s/3: %s", attempt, e)
-            time.sleep(1.5 * attempt)
+        sent = False
+        for attempt in range(1, 4):
+            try:
+                r = requests.post(url, json=payload, timeout=20)
+                if r.status_code == 429:
+                    retry_after = r.json().get("parameters", {}).get("retry_after", 2)
+                    logger.warning("Bot API rate limit. retry_after=%s", retry_after)
+                    time.sleep(retry_after)
+                    continue
 
-    return False
+                if r.status_code >= 400:
+                    logger.error("Bot API %s: %s", r.status_code, r.text[:300])
+                r.raise_for_status()
+                data = r.json()
+                if not data.get("ok"):
+                    logger.error("Bot API responded ok=false: %s", data)
+                    return False
+                sent = True
+                break
+            except requests.RequestException as e:
+                logger.error("Bot API send error chunk %s/%s attempt %s/3: %s", idx, len(chunks), attempt, e)
+                time.sleep(1.5 * attempt)
+
+        if not sent:
+            return False
+
+    return True
 
 
 def parse_ref(value: Union[int, str]) -> Union[int, str]:
