@@ -1,0 +1,17 @@
+[Unit]
+Description=Telegram Pipeline v1 (Telethon Reader -> Bot API Sender)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/openclawuser/.openclaw/workspace/projects/telegram-pipeline-v1
+ExecStart=/usr/bin/python3 /home/openclawuser/.openclaw/workspace/projects/telegram-pipeline-v1/bot.py
+Restart=always
+RestartSec=5
+User=openclawuser
+Group=openclawuser
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=default.target

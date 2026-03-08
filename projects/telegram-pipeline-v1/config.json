@@ -1,0 +1,14 @@
+{
+  "TELEGRAM_API_ID": 123456,
+  "TELEGRAM_API_HASH": "your_api_hash",
+  "SESSION_NAME": "reader_session",
+  "BOT_TOKEN": "123456789:your_bot_token",
+  "TARGET_CHANNEL_ID": "-1001234567890",
+  "ALLOWED_CHANNEL_IDS": [
+    -1001111111111,
+    -1002222222222
+  ],
+  "ALLOWED_GROUP_ID": -1003333333333,
+  "DRY_RUN": true,
+  "DEBUG": true
+}
