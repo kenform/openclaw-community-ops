@@ -1,5 +1,13 @@
 # Active Tasks
 
+## [2026-03-08-stability-check] Проверить стабильность работы OpenClaw/хоста (read-only)
+- **Status**: ✅ 完成
+- **Requested**: 2026-03-08 05:08 UTC
+- **Updated**: 2026-03-08 05:10 UTC
+- **Notes**: Выполнены read-only проверки: `openclaw status --deep`, `openclaw health --json`, `openclaw gateway status`, `openclaw update status`, `systemctl --user show/journalctl`, `ps`. Gateway active, NRestarts=0, Telegram probe OK. Найден риск стабильности: зависший `whisper` PID 1337084 (остался после рестарта) + ещё один активный whisper PID 1339696; высокий CPU/RAM, низкий свободный RAM, swap используется.
+- **Result**: Базовые сервисы OpenClaw работают, но есть ресурсная деградация из-за whisper-процессов.
+
+
 ## [2026-03-07-voice-transcribe-integration-eval] Оценить интеграцию @voice_transcribot и сравнить с текущей расшифровкой
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-07 09:32 UTC
