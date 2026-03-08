@@ -1,11 +1,18 @@
 # Active Tasks
 
+## [2026-03-08-voice-2495] Расшифровать и проанализировать голосовое сообщение (msg 2495)
+- **Status**: ❌ 失败
+- **Requested**: 2026-03-08 05:09 UTC
+- **Updated**: 2026-03-08 05:10 UTC
+- **Notes**: Локальная транскрипция Whisper прервана SIGTERM (две попытки: turbo/tiny). Требуется повторный запуск/альтернативный путь.
+
+
 ## [2026-03-08-stability-check] Проверить стабильность работы OpenClaw/хоста (read-only)
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-08 05:08 UTC
-- **Updated**: 2026-03-08 05:10 UTC
-- **Notes**: Выполнены read-only проверки: `openclaw status --deep`, `openclaw health --json`, `openclaw gateway status`, `openclaw update status`, `systemctl --user show/journalctl`, `ps`. Gateway active, NRestarts=0, Telegram probe OK. Найден риск стабильности: зависший `whisper` PID 1337084 (остался после рестарта) + ещё один активный whisper PID 1339696; высокий CPU/RAM, низкий свободный RAM, swap используется.
-- **Result**: Базовые сервисы OpenClaw работают, но есть ресурсная деградация из-за whisper-процессов.
+- **Updated**: 2026-03-08 05:21 UTC
+- **Notes**: Выполнены read-only проверки: `openclaw status --deep`, `openclaw health --json`, `openclaw gateway status`, `openclaw update status`, `systemctl --user show/journalctl`, `ps`. Gateway active, NRestarts=0, Telegram probe OK. Найден риск стабильности: зависший `whisper` PID 1337084 + параллельный PID 1339696. По подтверждению пользователя выполнена полная стабилизация: `pkill -f '/whisper( |$)'` + принудительная очистка `pkill -9` для хвостов, затем контрольная верификация.
+- **Result**: Активных `whisper`-процессов не осталось; `openclaw-gateway` стабилен (`active/running`, `NRestarts=0`), `openclaw health --json: ok=true`. Ресурсы восстановились: свободная RAM ~2.6GiB (было ~123MiB), swap снизился до ~498MiB. Обнаружен накопленный inbound media cache (`~/.openclaw/media/inbound`: 155 файлов) — можно почистить отдельно по подтверждению.
 
 
 ## [2026-03-07-voice-transcribe-integration-eval] Оценить интеграцию @voice_transcribot и сравнить с текущей расшифровкой
