@@ -10,9 +10,9 @@
 ## [2026-03-08-stability-check] Проверить стабильность работы OpenClaw/хоста (read-only)
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-08 05:08 UTC
-- **Updated**: 2026-03-08 05:21 UTC
-- **Notes**: Выполнены read-only проверки: `openclaw status --deep`, `openclaw health --json`, `openclaw gateway status`, `openclaw update status`, `systemctl --user show/journalctl`, `ps`. Gateway active, NRestarts=0, Telegram probe OK. Найден риск стабильности: зависший `whisper` PID 1337084 + параллельный PID 1339696. По подтверждению пользователя выполнена полная стабилизация: `pkill -f '/whisper( |$)'` + принудительная очистка `pkill -9` для хвостов, затем контрольная верификация.
-- **Result**: Активных `whisper`-процессов не осталось; `openclaw-gateway` стабилен (`active/running`, `NRestarts=0`), `openclaw health --json: ok=true`. Ресурсы восстановились: свободная RAM ~2.6GiB (было ~123MiB), swap снизился до ~498MiB. Обнаружен накопленный inbound media cache (`~/.openclaw/media/inbound`: 155 файлов) — можно почистить отдельно по подтверждению.
+- **Updated**: 2026-03-08 05:25 UTC
+- **Notes**: Выполнены read-only проверки: `openclaw status --deep`, `openclaw health --json`, `openclaw gateway status`, `openclaw update status`, `systemctl --user show/journalctl`, `ps`. Gateway active, NRestarts=0, Telegram probe OK. Найден риск стабильности: зависший `whisper` PID 1337084 + параллельный PID 1339696. По подтверждению пользователя выполнена полная стабилизация: `pkill -f '/whisper( |$)'` + принудительная очистка `pkill -9` для хвостов, затем контрольная верификация. Пользователь подтвердил очистку inbound media cache.
+- **Result**: Выполнена безопасная чистка inbound-кэша по правилу `mtime +7 days`: удалений нет (в каталоге 155 файлов, но старше 7 дней — 0). Система стабильна, дисковое использование без изменений.
 
 
 ## [2026-03-07-voice-transcribe-integration-eval] Оценить интеграцию @voice_transcribot и сравнить с текущей расшифровкой
