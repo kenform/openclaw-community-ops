@@ -1,0 +1,8 @@
+{
+  "fields": [
+    "trader", "source", "chat_id", "topic_id", "asset", "signal_type", "bias", "entry", "entry_zone", "stop", "target", "timeframe", "confidence", "raw_text", "message_url_if_any", "has_tradingview_link", "has_image", "has_voice", "timestamp"
+  ],
+  "signal_types": [
+    "LONG_ENTRY", "SHORT_ENTRY", "LONG_SETUP", "SHORT_SETUP", "HOLD", "EXIT", "LEVEL_UPDATE", "MARKET_VIEW", "CONDITIONAL_ENTRY", "NO_SIGNAL"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "main_target_key": "MAIN_TARGET_CHANNEL_ID",
+  "signal_target_key": "SIGNAL_TARGET_CHANNEL_ID",
+  "storage_jsonl": "signals.jsonl",
+  "rules": {
+    "always_main_if_tradingview": true,
+    "save_all_signal_like": true,
+    "voice_main_only_default": true
+  }
+}

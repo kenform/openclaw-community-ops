@@ -1,0 +1,12 @@
+{
+  "traders": {
+    "ilya": {"style": "thought_based", "signal_threshold": 5},
+    "artur": {"style": "explicit_signal_based", "signal_threshold": 6},
+    "evelina": {"style": "scenario_hold_level", "signal_threshold": 6},
+    "altador": {"style": "explicit_signal_tradingview", "signal_threshold": 6},
+    "irina": {"style": "setup_image_tradingview", "signal_threshold": 6},
+    "psy": {"style": "psychology_filtered", "signal_threshold": 7}
+  },
+  "global_drop": ["всем привет", "доброе утро", "красиво", "жесть", "работаем", "ну что", "как вам", "стрим", "подкаст", "академия", "обучение", "набор", "курс"],
+  "tradingview_patterns": ["tradingview.com", "tradingview.com/x/", "in.tradingview.com"]
+}

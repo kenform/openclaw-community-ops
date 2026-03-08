@@ -1,0 +1,12 @@
+{
+  "sources": [
+    {"id": "ilya_topic", "type": "topic", "chat_id": -1003398914047, "topic_ids": [14, 58866], "trader": "ilya"},
+    {"id": "artur_channel", "type": "channel", "chat_id": -1001699376756, "trader": "artur"},
+    {"id": "artur_topic", "type": "topic", "chat_id": -1003398914047, "topic_ids": [13810, 57974], "trader": "artur"},
+    {"id": "evelina_topic", "type": "topic", "chat_id": -1003398914047, "topic_ids": [10, 58990], "trader": "evelina"},
+    {"id": "altador_channel", "type": "channel", "chat_id": -1002037215613, "trader": "altador"},
+    {"id": "altador_topic", "type": "topic", "chat_id": -1003398914047, "topic_ids": [8, 58829], "trader": "altador"},
+    {"id": "irina_topic", "type": "topic", "chat_id": -1003398914047, "topic_ids": [4, 58926], "trader": "irina"},
+    {"id": "psy_topic", "type": "topic", "chat_id": -1003398914047, "topic_ids": [6, 58567], "trader": "psy"}
+  ]
+}
