@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import asyncio
 import json
 import logging
 import os
@@ -12,6 +13,7 @@ import requests
 from telethon import TelegramClient, events
 from telethon.errors import FloodWaitError, RPCError
 from telethon.tl.functions.messages import GetDialogFiltersRequest
+from telethon.errors.common import TypeNotFoundError
 
 BASE_DIR = Path(__file__).resolve().parent
 CONFIG_PATH = BASE_DIR / "config.json"
@@ -272,8 +274,12 @@ def main() -> None:
 
     dry_run = bool(cfg["DRY_RUN"])
 
+    topic_filter_enabled = bool(cfg.get("TOPIC_FILTER_ENABLED", False))
+    allowed_topic_ids = {int(x) for x in cfg.get("ALLOWED_TOPIC_IDS", []) if str(x).strip().isdigit()}
+
     logger.info("Starting pipeline. dry_run=%s, debug=%s", dry_run, debug)
     logger.info("Allowed channel refs=%s, allowed_group_ref=%s", allowed_channel_refs, allowed_group_ref)
+    logger.info("Topic filter: enabled=%s allowed_topic_ids=%s", topic_filter_enabled, sorted(list(allowed_topic_ids)))
 
     client = TelegramClient(session_name, api_id, api_hash, auto_reconnect=True, sequential_updates=True)
 
@@ -286,6 +292,11 @@ def main() -> None:
     def _shutdown(*_args):
         should_stop["value"] = True
         logger.info("Shutdown signal received")
+        try:
+            if client.is_connected():
+                client.loop.create_task(client.disconnect())
+        except Exception:
+            pass
 
     signal.signal(signal.SIGINT, _shutdown)
     signal.signal(signal.SIGTERM, _shutdown)
@@ -302,6 +313,12 @@ def main() -> None:
             chat = await event.get_chat()
             chat_title = getattr(chat, "title", None) or getattr(chat, "username", None) or str(chat_id)
             topic_id = extract_topic_id(msg)
+
+            # topic filter scaffold (off by default)
+            if topic_filter_enabled and chat_id == allowed_group_id:
+                if not topic_id or topic_id not in allowed_topic_ids:
+                    logger.debug("Topic filtered out: chat_id=%s topic_id=%s", chat_id, topic_id)
+                    return
 
             text = msg.message or ""
             media_only = bool(msg.media) and not text.strip()
@@ -444,7 +461,27 @@ def main() -> None:
                     await client.connect()
                 except Exception as e:
                     logger.error("Reconnect failed: %s", e)
-            await client.run_until_disconnected()
+                    await asyncio.sleep(3)
+                    continue
+
+            try:
+                await client.run_until_disconnected()
+            except TypeNotFoundError as e:
+                logger.warning("Telethon update decode glitch (TypeNotFoundError). Reconnecting: %s", e)
+                try:
+                    await client.disconnect()
+                except Exception:
+                    pass
+                await asyncio.sleep(2)
+                continue
+            except Exception as e:
+                logger.error("run_until_disconnected error: %s", e)
+                try:
+                    await client.disconnect()
+                except Exception:
+                    pass
+                await asyncio.sleep(3)
+                continue
 
     try:
         with client:

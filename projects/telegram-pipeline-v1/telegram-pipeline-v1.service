@@ -6,7 +6,7 @@ Wants=network-online.target
 [Service]
 Type=simple
 WorkingDirectory=/home/openclawuser/.openclaw/workspace/projects/telegram-pipeline-v1
-ExecStart=/usr/bin/python3 /home/openclawuser/.openclaw/workspace/projects/telegram-pipeline-v1/bot.py
+ExecStart=/home/openclawuser/.openclaw/workspace/projects/telegram-pipeline-v1/.venv/bin/python /home/openclawuser/.openclaw/workspace/projects/telegram-pipeline-v1/bot.py
 Restart=always
 RestartSec=5
 User=openclawuser
