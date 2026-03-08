@@ -99,13 +99,37 @@ EMOJI_RE = re.compile(
     flags=re.UNICODE,
 )
 
-POSITIVE_3 = ["лонг", "шорт", "беру", "взял", "заходим", "открываю", "закрыл", "прикрыл", "фикс"]
-POSITIVE_2 = ["позиция", "поза", "тейк", "тейкнул", "стоп", "стопы", "держу", "перезайду"]
-POSITIVE_1 = ["btc", "биток", "eth", "эфир", "sol", "solana", "альта", "альты", "рынок", "монета"]
-LEVEL_WORDS = ["закреп", "уровень", "под зоной", "над зоной", "под красной зоной"]
-NEGATIVE_3 = ["стрим", "эфир", "ютуб", "интра", "академия", "обучение", "набор"]
-NEGATIVE_2 = ["всем привет", "салам", "доброе утро", "вы там спите", "команда", "в офисе"]
-SHORT_PASS_WORDS = ["лонг", "шорт", "беру", "взял", "тейк", "фикс"]
+DEFAULT_RULES = {
+    "main_threshold": 3,
+    "short_max_words": 6,
+    "positive_3": ["лонг", "шорт", "беру", "взял", "заходим", "открываю", "открыл", "закрыл", "прикрыл", "фикс", "перезайду", "перезаходить"],
+    "positive_2": ["позиция", "позиции", "позу", "поза", "тейк", "тейкнул", "стоп", "стопы", "держу", "жду тейк", "буду искать", "ищем позы", "дам позиции", "вход", "входы", "закреп"],
+    "positive_1": ["btc", "биток", "eth", "эфир", "sol", "solana", "near", "ltc", "apt", "tia", "ordi", "link", "альта", "альты", "рынок", "монета", "фрс", "структура", "боковик", "откат", "коррекция", "разворот", "отскок", "цель"],
+    "level_words": ["закреп под", "закреп над", "под красной зоной", "под зоной", "над зоной", "если пробьют", "если удержат", "если выкупят", "если не развернут", "будут давать вход", "цель", "локально", "выше идти", "к лоям", "в верх", "вверх", "вниз", "в разворот"],
+    "negative_3": ["стрим", "эфир", "ютуб", "интра", "академия", "обучение", "набор", "бесплатно", "подписывайтесь", "инстаграм"],
+    "negative_2": ["всем привет", "салам", "доброе утро", "вы там спите", "команда", "в офисе", "добавляйтесь", "пишите", "будкемп", "встреча", "билеты", "минск"],
+    "short_pass_words": ["лонг", "шорт", "беру", "взял", "тейк", "фикс", "стоп", "цель", "вход", "закреп"],
+    "asset_aliases": ["btc", "биток", "eth", "эфир", "sol", "solana", "near", "ltc", "apt", "tia", "ordi", "link", "zec", "alt", "альта"],
+    "signal_threshold": 7,
+}
+
+
+def load_ilya_rules(cfg: Dict[str, Any], logger: logging.Logger) -> Dict[str, Any]:
+    rules = dict(DEFAULT_RULES)
+    p = cfg.get("ILYA_RULES_PATH")
+    if not p:
+        return rules
+    try:
+        rp = Path(str(p))
+        if not rp.is_absolute():
+            rp = BASE_DIR / rp
+        ext = json.loads(rp.read_text(encoding="utf-8"))
+        if isinstance(ext, dict):
+            rules.update(ext)
+            logger.info("Loaded external Ilya rules: %s", rp)
+    except Exception as e:
+        logger.warning("Cannot load external Ilya rules (%s): %s", p, e)
+    return rules
 
 
 def _norm_text_for_filter(text: str) -> str:
@@ -115,73 +139,136 @@ def _norm_text_for_filter(text: str) -> str:
     return text
 
 
-def classify_ilya_message(raw_text: str, has_media: bool = False) -> Dict[str, Any]:
+def classify_main_ilya_message(raw_text: str, has_media: bool, rules: Dict[str, Any]) -> Dict[str, Any]:
     text = _norm_text_for_filter(raw_text)
-
     if has_media and not text:
-        return {"pass": False, "score": -999, "type": None, "reason": "DROP_NO_SIGNAL"}
+        return {"pass": False, "score": -999, "type": None, "reason": "DROP_NO_SIGNAL", "text": text}
 
     score = 0
+    for w in rules.get("positive_3", []):
+        if w in text: score += 3
+    for w in rules.get("positive_2", []):
+        if w in text: score += 2
+    for w in rules.get("positive_1", []):
+        if w in text: score += 1
+    for w in rules.get("level_words", []):
+        if w in text: score += 2
 
-    for w in POSITIVE_3:
-        if w in text:
-            score += 3
-    for w in POSITIVE_2:
-        if w in text:
-            score += 2
-    for w in POSITIVE_1:
-        if w in text:
-            score += 1
-    for w in LEVEL_WORDS:
-        if w in text:
-            score += 2
-
-    negative3_hit = any(w in text for w in NEGATIVE_3)
-    negative2_hit = any(w in text for w in NEGATIVE_2)
-    if negative3_hit:
-        score -= 3
-    if negative2_hit:
-        score -= 2
+    neg3 = any(w in text for w in rules.get("negative_3", []))
+    neg2 = any(w in text for w in rules.get("negative_2", []))
+    if neg3: score -= 3
+    if neg2: score -= 2
 
     words = [w for w in text.split(" ") if w]
-    short_pass = len(words) <= 6 and any(w in text for w in SHORT_PASS_WORDS)
+    short_pass = len(words) <= int(rules.get("short_max_words", 6)) and any(w in text for w in rules.get("short_pass_words", []))
 
-    msg_type = None
-    if any(w in text for w in ["закрыл", "прикрыл", "фикс", "тейк", "тейкнул"]):
-        msg_type = "EXIT"
-    elif any(w in text for w in ["лонг", "шорт", "беру", "взял", "заходим", "открываю"]):
-        msg_type = "ENTRY"
-    elif any(w in text for w in LEVEL_WORDS):
-        msg_type = "LEVEL"
-    elif any(w in text for w in ["держу", "позиция", "поза"]):
-        msg_type = "HOLD"
-    elif any(w in text for w in ["перезайду", "план", "подготов"]):
-        msg_type = "PLAN"
+    msg_type = "VIEW"
+    if any(w in text for w in ["закрыл", "прикрыл", "фикс", "тейк", "тейкнул"]): msg_type = "EXIT"
+    elif any(w in text for w in ["лонг", "шорт", "беру", "взял", "заходим", "открываю", "открыл"]): msg_type = "ENTRY"
+    elif any(w in text for w in rules.get("level_words", [])): msg_type = "LEVEL"
+    elif any(w in text for w in ["держу", "позиция", "позиции", "поза", "позу"]): msg_type = "HOLD"
+    elif any(w in text for w in ["перезайду", "перезаходить", "буду искать", "ищем позы", "вход", "входы"]): msg_type = "PLAN"
 
-    is_pass = short_pass or score >= 3
-
+    is_pass = short_pass or score >= int(rules.get("main_threshold", 3))
     if is_pass:
-        if msg_type == "ENTRY":
-            reason = "PASS_ENTRY"
-        elif msg_type == "HOLD":
-            reason = "PASS_HOLD"
-        elif msg_type == "EXIT":
-            reason = "PASS_EXIT"
-        elif msg_type == "PLAN":
-            reason = "PASS_PLAN"
-        elif msg_type == "LEVEL":
-            reason = "PASS_LEVEL"
-        else:
-            reason = "PASS_PLAN"
+        reason = {"ENTRY": "PASS_ENTRY", "HOLD": "PASS_HOLD", "EXIT": "PASS_EXIT", "PLAN": "PASS_PLAN", "LEVEL": "PASS_LEVEL", "VIEW": "PASS_VIEW"}.get(msg_type, "PASS_VIEW")
     else:
-        if negative3_hit:
-            reason = "DROP_PROMO"
-        elif negative2_hit:
-            reason = "DROP_SMALLTALK"
-        else:
-            reason = "DROP_NO_SIGNAL"
+        if any(w in text for w in ["стрим", "ютуб", "эфир"]): reason = "DROP_STREAM"
+        elif neg3: reason = "DROP_PROMO"
+        elif neg2: reason = "DROP_SMALLTALK"
+        else: reason = "DROP_NO_SIGNAL"
 
     return {"pass": is_pass, "score": score, "type": msg_type, "reason": reason, "text": text}
+
+
+def parse_ilya_signal(raw_text: str, rules: Dict[str, Any]) -> Dict[str, Any]:
+    text = _norm_text_for_filter(raw_text)
+    direction_words = ["лонг", "шорт", "лонгами", "шортить"]
+    action_words = ["беру", "взял", "держу", "прикрыл", "закрыл", "перезайду", "открываю"]
+    cond_words = ["закреп", "вход", "входы", "стоп", "цель", "если пробьют", "если удержат", "если выкупят", "будут давать вход"]
+    bias_words = ["вверх", "вниз", "разворот", "отскок", "коррекция", "структура", "боковик", "к лоям", "выше идти"]
+
+    has_dir = any(w in text for w in direction_words)
+    has_action = any(w in text for w in action_words)
+    has_cond = any(w in text for w in cond_words)
+    has_bias = any(w in text for w in bias_words)
+
+    nums = re.findall(r"\b\d{2,6}(?:[\.,]\d+)?(?:\s*[kк])?(?:\s*[-–]\s*\d{2,6}(?:[\.,]\d+)?(?:\s*[kк])?)?\b", text)
+    asset = "UNKNOWN"
+    for a in rules.get("asset_aliases", []):
+        if a in text:
+            asset = a.upper()
+            break
+
+    signal_type = "MARKET_VIEW"
+    if "лонг" in text and ("вход" in text or "беру" in text or "взял" in text): signal_type = "LONG_ENTRY"
+    elif "шорт" in text and ("вход" in text or "беру" in text or "взял" in text): signal_type = "SHORT_ENTRY"
+    elif "лонг" in text: signal_type = "LONG_SETUP"
+    elif "шорт" in text: signal_type = "SHORT_SETUP"
+    elif any(w in text for w in ["закрыл", "прикрыл", "фикс"]): signal_type = "EXIT"
+    elif "держу" in text: signal_type = "HOLD"
+    elif has_cond: signal_type = "CONDITIONAL_ENTRY"
+    elif any(w in text for w in ["уровень", "закреп", "зона"]): signal_type = "LEVEL_UPDATE"
+
+    confidence = 0
+    confidence += 3 if has_dir else 0
+    confidence += 3 if has_action else 0
+    confidence += 3 if "цель" in text else 0
+    confidence += 3 if len(nums) > 0 else 0
+    confidence += 3 if asset != "UNKNOWN" else 0
+    confidence += 2 if has_cond else 0
+    confidence += 2 if has_bias else 0
+    confidence += 2 if any(w in text for w in ["стоп", "закреп", "зона"]) else 0
+    if any(w in text for w in rules.get("negative_2", [])): confidence -= 2
+    if any(w in text for w in ["стрим", "эфир", "в офисе", "интра"]): confidence -= 2
+
+    entry_zone = nums[0] if nums else "—"
+    target = nums[1] if len(nums) > 1 else (nums[0] if "цель" in text and nums else "—")
+    stop = "есть" if "стоп" in text else "—"
+    timeframe = "—"
+    tf = re.search(r"\b(\d+[mhd]|\d+\s*(мин|час|дн|дней))\b", text)
+    if tf: timeframe = tf.group(1)
+
+    threshold = int(rules.get("signal_threshold", 7))
+    signal_pass = confidence >= threshold and (has_dir or has_action or has_cond or has_bias)
+    if signal_pass:
+        reason = "SIGNAL_PASS"
+    elif confidence < threshold:
+        reason = "SIGNAL_LOW_CONFIDENCE"
+    elif asset == "UNKNOWN":
+        reason = "SIGNAL_NO_ASSET"
+    else:
+        reason = "SIGNAL_DROP"
+
+    return {
+        "pass": signal_pass,
+        "reason": reason,
+        "confidence": confidence,
+        "asset": asset,
+        "signal_type": signal_type,
+        "bias": "UP" if "вверх" in text else ("DOWN" if "вниз" in text else "—"),
+        "entry_condition": "есть" if has_cond else "—",
+        "entry_zone": entry_zone,
+        "stop": stop,
+        "target": target,
+        "timeframe": timeframe,
+        "raw_text": text,
+    }
+
+
+def format_signal_message(sig: Dict[str, Any]) -> str:
+    return (
+        "#IlyaSignal\n"
+        f"Type: {sig.get('signal_type') or '—'}\n"
+        f"Asset: {sig.get('asset') or '—'}\n"
+        f"Bias: {sig.get('bias') or '—'}\n"
+        f"Entry: {(sig.get('entry_condition') if sig.get('entry_condition') != '—' else sig.get('entry_zone')) or '—'}\n"
+        f"Stop: {sig.get('stop') or '—'}\n"
+        f"Target: {sig.get('target') or '—'}\n"
+        f"Timeframe: {sig.get('timeframe') or '—'}\n"
+        f"Confidence: {sig.get('confidence')}\n"
+        f"Raw: {sig.get('raw_text') or '—'}"
+    )
 
 
 def _chunk_text(text: str, limit: int = 3500):
@@ -405,7 +492,8 @@ def main() -> None:
     api_hash = str(cfg["TELEGRAM_API_HASH"])
     session_name = str(cfg["SESSION_NAME"])
     bot_token = str(cfg["BOT_TOKEN"])
-    target_channel_ref = parse_ref(cfg["TARGET_CHANNEL_ID"])
+    main_target_ref = parse_ref(cfg.get("MAIN_TARGET_CHANNEL_ID", cfg["TARGET_CHANNEL_ID"]))
+    signal_target_ref = parse_ref(cfg.get("SIGNAL_TARGET_CHANNEL_ID", cfg.get("TARGET_CHANNEL_ID")))
 
     raw_channels = cfg.get("ALLOWED_CHANNELS", cfg.get("ALLOWED_CHANNEL_IDS", []))
     raw_group = cfg.get("ALLOWED_GROUP", cfg.get("ALLOWED_GROUP_ID"))
@@ -418,10 +506,17 @@ def main() -> None:
     dry_run = bool(cfg["DRY_RUN"])
 
     topic_filter_enabled = bool(cfg.get("TOPIC_FILTER_ENABLED", False))
+    ilya_main_filter_enabled = bool(cfg.get("ILYA_MAIN_FILTER_ENABLED", True))
+    signal_parser_enabled = bool(cfg.get("SIGNAL_PARSER_ENABLED", True))
+    ilya_topic_id = int(cfg.get("ILYA_TOPIC_ID", 58866))
     allowed_topic_ids = {int(x) for x in cfg.get("ALLOWED_TOPIC_IDS", []) if str(x).strip().isdigit()}
+    if ilya_topic_id not in allowed_topic_ids:
+        allowed_topic_ids.add(ilya_topic_id)
     blocked_channel_ids = {int(x) for x in cfg.get("BLOCKED_CHANNEL_IDS", []) if str(x).strip().lstrip('-').isdigit()}
     track_group_only = bool(cfg.get("TRACK_GROUP_ONLY", False))
     backfill_enabled = bool(cfg.get("BACKFILL_ENABLED", False))
+    rules = load_ilya_rules(cfg, logger)
+    rules["signal_threshold"] = int(cfg.get("SIGNAL_CONFIDENCE_THRESHOLD", rules.get("signal_threshold", 7)))
 
     logger.info("Starting pipeline. dry_run=%s, debug=%s", dry_run, debug)
     logger.info("Allowed channel refs=%s, allowed_group_ref=%s", allowed_channel_refs, allowed_group_ref)
@@ -430,12 +525,14 @@ def main() -> None:
     logger.info("Folder mode: name=%s include_manual_when_folder=%s", allowed_folder_name or None, include_manual_when_folder)
     logger.info("Track group only=%s", track_group_only)
     logger.info("Backfill enabled=%s (pipeline handles new incoming only)", backfill_enabled)
+    logger.info("Ilya filter enabled=%s signal_parser_enabled=%s ilya_topic_id=%s", ilya_main_filter_enabled, signal_parser_enabled, ilya_topic_id)
 
     client = TelegramClient(session_name, api_id, api_hash, auto_reconnect=True, sequential_updates=True)
 
     allowed_channel_ids: Set[int] = set()
     allowed_group_id: Optional[int] = None
-    target_channel_id: Optional[Union[int, str]] = None
+    main_target_channel_id: Optional[Union[int, str]] = None
+    signal_target_channel_id: Optional[Union[int, str]] = None
     topic_title_map: Dict[int, str] = {}
     allowed_topic_runtime_ids: Set[int] = set(allowed_topic_ids)
 
@@ -516,14 +613,11 @@ def main() -> None:
             text = msg.message or ""
             media_only = bool(msg.media) and not text.strip()
 
-            # Ilya-specific scoring filter (applies to currently allowed Ilya topic only)
-            f = classify_ilya_message(text, has_media=bool(msg.media))
-            if not f["pass"]:
-                logger.info("%s score=%s msg_id=%s topic_id=%s", f["reason"], f["score"], msg.id, topic_id)
-                return
-
-            type_prefix = f"[{f['type']}]\n" if f.get("type") else ""
-            payload = type_prefix + format_payload(chat_title, chat_id, topic_id, text, media_only, topic_title=topic_title)
+            main_result = {"pass": True, "score": 0, "type": "VIEW", "reason": "PASS_VIEW"}
+            if ilya_main_filter_enabled:
+                main_result = classify_main_ilya_message(text, has_media=bool(msg.media), rules=rules)
+                if not main_result["pass"]:
+                    logger.info("%s score=%s msg_id=%s topic_id=%s", main_result["reason"], main_result["score"], msg.id, topic_id)
 
             media_kind = None
             media_bytes = None
@@ -531,51 +625,45 @@ def main() -> None:
             if msg.media:
                 try:
                     if getattr(msg, "photo", None):
-                        media_kind = "photo"
-                        media_name = f"photo_{msg.id}.jpg"
+                        media_kind = "photo"; media_name = f"photo_{msg.id}.jpg"
                     elif getattr(msg, "video", None):
-                        media_kind = "video"
-                        media_name = f"video_{msg.id}.mp4"
+                        media_kind = "video"; media_name = f"video_{msg.id}.mp4"
                     elif getattr(msg, "voice", None):
-                        media_kind = "voice"
-                        media_name = f"voice_{msg.id}.ogg"
+                        media_kind = "voice"; media_name = f"voice_{msg.id}.ogg"
                     elif getattr(msg, "document", None):
-                        media_kind = "document"
-                        media_name = f"document_{msg.id}.bin"
+                        media_kind = "document"; media_name = f"document_{msg.id}.bin"
                     if media_kind:
                         media_bytes = await client.download_media(msg, file=bytes)
                 except Exception as e:
                     logger.warning("Media download failed, fallback to text only: msg_id=%s err=%s", msg.id, e)
-                    media_kind = None
-                    media_bytes = None
+                    media_kind = None; media_bytes = None
 
-            if debug:
-                logger.debug(
-                    "DEBUG event: chat_id=%s title=%s message_id=%s topic_id=%s reply_to=%s is_forum=%s",
-                    chat_id,
-                    chat_title,
-                    msg.id,
-                    topic_id,
-                    getattr(msg, "reply_to_msg_id", None),
-                    getattr(chat, "forum", None),
+            sent_main = False
+            if main_result["pass"] and main_target_channel_id is not None:
+                payload = f"[Type: {main_result.get('type') or 'VIEW'}]\n" + format_payload(chat_title, chat_id, topic_id, text, media_only, topic_title=topic_title)
+                sent_main = send_via_bot_api(
+                    bot_token,
+                    str(main_target_channel_id),
+                    payload,
+                    logger,
+                    dry_run=dry_run,
+                    media_kind=media_kind,
+                    media_bytes=media_bytes,
+                    media_name=media_name,
                 )
+                if sent_main:
+                    logger.info("%s score=%s msg_id=%s topic_id=%s", main_result["reason"], main_result["score"], msg.id, topic_id)
 
-            if target_channel_id is None:
-                logger.error("Target channel is not resolved. Skip send.")
-                return
+            if signal_parser_enabled and signal_target_channel_id is not None:
+                sig = parse_ilya_signal(text, rules)
+                if sig["pass"]:
+                    sig_msg = format_signal_message(sig)
+                    sig_ok = send_via_bot_api(bot_token, str(signal_target_channel_id), sig_msg, logger, dry_run=dry_run)
+                    logger.info("%s confidence=%s msg_id=%s topic_id=%s", "SIGNAL_PASS" if sig_ok else "SIGNAL_DROP", sig["confidence"], msg.id, topic_id)
+                else:
+                    logger.info("%s confidence=%s msg_id=%s topic_id=%s", sig["reason"], sig["confidence"], msg.id, topic_id)
 
-            ok = send_via_bot_api(
-                bot_token,
-                str(target_channel_id),
-                payload,
-                logger,
-                dry_run=dry_run,
-                media_kind=media_kind,
-                media_bytes=media_bytes,
-                media_name=media_name,
-            )
-            if ok:
-                logger.info("%s score=%s msg_id=%s topic_id=%s", f["reason"], f["score"], msg.id, topic_id)
+            if sent_main:
                 state["processed_total"] = int(state.get("processed_total", 0)) + 1
                 state["last_event"] = {
                     "chat_id": chat_id,
@@ -595,7 +683,7 @@ def main() -> None:
             logger.exception("Unhandled pipeline error: %s", e)
 
     async def runner():
-        nonlocal allowed_channel_ids, allowed_group_id, target_channel_id
+        nonlocal allowed_channel_ids, allowed_group_id, main_target_channel_id, signal_target_channel_id
 
         await client.start()
         me = await client.get_me()
@@ -637,19 +725,33 @@ def main() -> None:
             if grp is None:
                 logger.warning("Cannot resolve allowed group ref: %s", allowed_group_ref)
 
-        tgt = await resolve_chat_ref(client, target_channel_ref)
-        if tgt is None:
-            logger.warning("Cannot resolve target channel ref: %s", target_channel_ref)
-            target_channel_id = str(target_channel_ref)
+        main_tgt = await resolve_chat_ref(client, main_target_ref)
+        if main_tgt is None:
+            logger.warning("Cannot resolve MAIN target channel ref: %s", main_target_ref)
+            main_target_channel_id = str(main_target_ref)
         else:
-            if isinstance(target_channel_ref, int):
-                target_channel_id = target_channel_ref
+            if isinstance(main_target_ref, int):
+                main_target_channel_id = main_target_ref
             else:
                 try:
-                    ent_full = await client.get_entity(target_channel_ref)
-                    target_channel_id = int(get_peer_id(ent_full))
+                    ent_full = await client.get_entity(main_target_ref)
+                    main_target_channel_id = int(get_peer_id(ent_full))
                 except Exception:
-                    target_channel_id = tgt
+                    main_target_channel_id = main_tgt
+
+        signal_tgt = await resolve_chat_ref(client, signal_target_ref)
+        if signal_tgt is None:
+            logger.warning("Cannot resolve SIGNAL target channel ref: %s", signal_target_ref)
+            signal_target_channel_id = str(signal_target_ref)
+        else:
+            if isinstance(signal_target_ref, int):
+                signal_target_channel_id = signal_target_ref
+            else:
+                try:
+                    ent_full = await client.get_entity(signal_target_ref)
+                    signal_target_channel_id = int(get_peer_id(ent_full))
+                except Exception:
+                    signal_target_channel_id = signal_tgt
 
         allowed_channel_ids = resolved_channels
 
@@ -671,21 +773,24 @@ def main() -> None:
 
         logger.info("Resolved allowed_channel_ids=%s", sorted(list(allowed_channel_ids)))
         logger.info("Resolved allowed_group_id=%s", allowed_group_id)
-        logger.info("Resolved target_channel_id=%s", target_channel_id)
+        logger.info("Resolved main_target_channel_id=%s", main_target_channel_id)
+        logger.info("Resolved signal_target_channel_id=%s", signal_target_channel_id)
 
         # HARD SAFETY GUARD: never send to source channels/group
         source_ids = set(allowed_channel_ids)
         if allowed_group_id is not None:
             source_ids.add(int(allowed_group_id))
-        try:
-            tgt_int = int(target_channel_id) if target_channel_id is not None else None
-        except Exception:
-            tgt_int = None
-        if tgt_int is not None and tgt_int in source_ids:
-            raise RuntimeError(
-                "Safety guard triggered: TARGET_CHANNEL_ID points to a source chat. "
-                "Refusing to start to prevent any write into source group/topics."
-            )
+
+        for target_label, target_value in [("MAIN", main_target_channel_id), ("SIGNAL", signal_target_channel_id)]:
+            try:
+                tgt_int = int(target_value) if target_value is not None else None
+            except Exception:
+                tgt_int = None
+            if tgt_int is not None and tgt_int in source_ids:
+                raise RuntimeError(
+                    f"Safety guard triggered: {target_label}_TARGET points to a source chat. "
+                    "Refusing to start to prevent any write into source group/topics."
+                )
 
         while not should_stop["value"]:
             if not client.is_connected():
