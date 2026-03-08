@@ -30,6 +30,10 @@
   "DRY_RUN": false,
   "DEBUG": true,
   "ALLOWED_FOLDER_NAME": "Wyckoff team",
+  "INCLUDE_ALLOWED_CHANNELS_WHEN_FOLDER": false,
   "TOPIC_FILTER_ENABLED": false,
-  "ALLOWED_TOPIC_IDS": []
+  "ALLOWED_TOPIC_IDS": [],
+  "BLOCKED_CHANNEL_IDS": [
+    -1001795905023
+  ]
 }

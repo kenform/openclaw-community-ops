@@ -14,6 +14,7 @@ from telethon import TelegramClient, events
 from telethon.errors import FloodWaitError, RPCError
 from telethon.tl.functions.messages import GetDialogFiltersRequest
 from telethon.errors.common import TypeNotFoundError
+from telethon.utils import get_peer_id
 
 BASE_DIR = Path(__file__).resolve().parent
 CONFIG_PATH = BASE_DIR / "config.json"
@@ -205,11 +206,9 @@ async def resolve_from_folder(client: TelegramClient, folder_name: str, logger: 
     for p in peers:
         try:
             entity = await client.get_entity(p)
-            # event.chat_id format for channels/supergroups
-            eid = int(getattr(entity, "id", 0))
-            if not eid:
+            chat_id = int(get_peer_id(entity))
+            if not chat_id:
                 continue
-            chat_id = -1000000000000 + eid
 
             # broadcast=True => channel, megagroup=True => group
             if getattr(entity, "broadcast", False):
@@ -271,15 +270,19 @@ def main() -> None:
     allowed_channel_refs = [parse_ref(x) for x in raw_channels]
     allowed_group_ref = parse_ref(raw_group) if raw_group is not None else None
     allowed_folder_name = str(cfg.get("ALLOWED_FOLDER_NAME", "")).strip()
+    include_manual_when_folder = bool(cfg.get("INCLUDE_ALLOWED_CHANNELS_WHEN_FOLDER", False))
 
     dry_run = bool(cfg["DRY_RUN"])
 
     topic_filter_enabled = bool(cfg.get("TOPIC_FILTER_ENABLED", False))
     allowed_topic_ids = {int(x) for x in cfg.get("ALLOWED_TOPIC_IDS", []) if str(x).strip().isdigit()}
+    blocked_channel_ids = {int(x) for x in cfg.get("BLOCKED_CHANNEL_IDS", []) if str(x).strip().lstrip('-').isdigit()}
 
     logger.info("Starting pipeline. dry_run=%s, debug=%s", dry_run, debug)
     logger.info("Allowed channel refs=%s, allowed_group_ref=%s", allowed_channel_refs, allowed_group_ref)
     logger.info("Topic filter: enabled=%s allowed_topic_ids=%s", topic_filter_enabled, sorted(list(allowed_topic_ids)))
+    logger.info("Blocked channel ids=%s", sorted(list(blocked_channel_ids)))
+    logger.info("Folder mode: name=%s include_manual_when_folder=%s", allowed_folder_name or None, include_manual_when_folder)
 
     client = TelegramClient(session_name, api_id, api_hash, auto_reconnect=True, sequential_updates=True)
 
@@ -304,6 +307,10 @@ def main() -> None:
     @client.on(events.NewMessage(incoming=True))
     async def on_new_message(event):
         chat_id = int(event.chat_id)
+
+        if chat_id in blocked_channel_ids:
+            logger.warning("Blocked channel skipped: chat_id=%s message_id=%s", chat_id, getattr(event.message, 'id', None))
+            return
 
         if chat_id not in allowed_channel_ids and chat_id != allowed_group_id:
             return
@@ -381,23 +388,20 @@ def main() -> None:
                 sorted(list(folder_groups)),
             )
 
-        for ref in allowed_channel_refs:
-            rid = await resolve_chat_ref(client, ref)
-            if rid is None:
-                logger.warning("Cannot resolve channel ref: %s", ref)
-                continue
-            if isinstance(ref, int):
-                resolved_channels.add(ref)
-            else:
-                try:
-                    ent = await client.get_input_entity(ref)
-                    cid = int(getattr(ent, "channel_id", 0) or getattr(ent, "chat_id", 0) or 0)
-                    if cid:
-                        resolved_channels.add(-1000000000000 + cid)
-                    else:
+        if (not allowed_folder_name) or include_manual_when_folder:
+            for ref in allowed_channel_refs:
+                rid = await resolve_chat_ref(client, ref)
+                if rid is None:
+                    logger.warning("Cannot resolve channel ref: %s", ref)
+                    continue
+                if isinstance(ref, int):
+                    resolved_channels.add(ref)
+                else:
+                    try:
+                        ent_full = await client.get_entity(ref)
+                        resolved_channels.add(int(get_peer_id(ent_full)))
+                    except Exception:
                         resolved_channels.add(rid)
-                except Exception:
-                    resolved_channels.add(rid)
 
         grp = None
         if allowed_group_ref is not None:
@@ -414,9 +418,8 @@ def main() -> None:
                 target_channel_id = target_channel_ref
             else:
                 try:
-                    ent = await client.get_input_entity(target_channel_ref)
-                    cid = int(getattr(ent, "channel_id", 0) or getattr(ent, "chat_id", 0) or 0)
-                    target_channel_id = (-1000000000000 + cid) if cid else tgt
+                    ent_full = await client.get_entity(target_channel_ref)
+                    target_channel_id = int(get_peer_id(ent_full))
                 except Exception:
                     target_channel_id = tgt
 
