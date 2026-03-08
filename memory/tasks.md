@@ -1,10 +1,11 @@
 # Active Tasks
 
 ## [2026-03-08-userbot-parser-check] Проверить работу userbot и второго parser
-- **Status**: 🔄 进行中
+- **Status**: ✅ 完成
 - **Requested**: 2026-03-08 17:58 UTC
-- **Updated**: 2026-03-08 17:58 UTC
-- **Notes**: Пользователь сообщил, что другой parser не работает; запускаю диагностику userbot + parser service/logs.
+- **Updated**: 2026-03-08 17:59 UTC
+- **Notes**: Диагностика показала: `userbot.service` работает стабильно (`active/running`, `NRestarts=0`). Проблема была во втором parser (`telegram-pipeline-v1.service`) — завис в `deactivating (stop-sigterm)` и не возвращался в `running`.
+- **Result**: Выполнен безопасный recovery: SIGKILL зависшего процесса + `reset-failed` + чистый restart. Сейчас parser снова `active/running` (PID 1694747), успешно авторизован и загрузил конфиг/топики.
 
 
 ## [2026-03-08-night-openclaw-update] Ночной системный апдейт OpenClaw с sudo
