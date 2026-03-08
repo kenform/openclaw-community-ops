@@ -315,6 +315,37 @@ def transcribe_voice_with_whisper(media_bytes: Optional[bytes]) -> str:
     return ""
 
 
+async def transcribe_voice_preferred(client: TelegramClient, media_bytes: Optional[bytes], logger: logging.Logger) -> str:
+    """MSK 07:00-19:00: try @voice_transcribot first, then Whisper fallback."""
+    if not media_bytes:
+        return ""
+
+    # UTC+3 (MSK)
+    msk_hour = (time.gmtime().tm_hour + 3) % 24
+    use_voicebot_first = 7 <= msk_hour < 19
+
+    if use_voicebot_first:
+        try:
+            with tempfile.TemporaryDirectory() as td:
+                p = Path(td) / "voice.ogg"
+                p.write_bytes(media_bytes)
+                async with client.conversation("@voice_transcribot", timeout=90) as conv:
+                    await conv.send_file(str(p), voice_note=True)
+                    for _ in range(4):
+                        resp = await conv.get_response(timeout=25)
+                        txt = (getattr(resp, "raw_text", None) or getattr(resp, "message", "") or "").strip()
+                        if txt and not txt.startswith("/"):
+                            logger.info("Voice transcribed via @voice_transcribot")
+                            return txt
+        except Exception as e:
+            logger.warning("@voice_transcribot failed, fallback whisper: %s", e)
+
+    txt = transcribe_voice_with_whisper(media_bytes)
+    if txt:
+        logger.info("Voice transcribed via Whisper fallback")
+    return txt
+
+
 def classify_artur_main(text_raw: str) -> Dict[str, Any]:
     text = _norm_text_for_filter(text_raw)
     if not text:
@@ -796,7 +827,7 @@ def main() -> None:
 
             if is_artur_topic or is_artur_channel:
                 if media_kind == "voice" and not text.strip():
-                    text = transcribe_voice_with_whisper(media_bytes)
+                    text = await transcribe_voice_preferred(client, media_bytes, logger)
                     media_only = bool(msg.media) and not text.strip()
                 main_result = classify_artur_main(text)
             else:
