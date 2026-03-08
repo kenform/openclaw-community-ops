@@ -1,5 +1,13 @@
 # Active Tasks
 
+## [2026-03-08-watchdog-3h] Мониторинг состояния каждые 15 минут в течение 3 часов + авто-ремонт
+- **Status**: 🔄 进行中
+- **Requested**: 2026-03-08 19:51 UTC
+- **Updated**: 2026-03-08 19:51 UTC
+- **Background**: dawn-nexus (pid 1740207) on localhost — `scripts/watchdog_3h.sh`
+- **Notes**: Пользователь запросил 3-часовой цикл watchdog (15m): проверка зависаний/статусов сервисов и авто-починка при зависании. Старт выполнен в 19:52 UTC, в 1-м цикле найден `psybot-api` в `activating/auto-restart`, выполнен restart, сервис вернулся в `active/running`.
+
+
 ## [2026-03-08-userbot-parser-check] Проверить работу userbot и второго parser
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-08 17:58 UTC
