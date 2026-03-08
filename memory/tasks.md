@@ -16,9 +16,9 @@
 ## [2026-03-08-evening-status-check] Проверить статус сервера, OpenClaw и userbot (память/очереди/кэш)
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-08 17:31 UTC
-- **Updated**: 2026-03-08 17:36 UTC
-- **Notes**: Проверены host (`uptime/free/df/ps`), OpenClaw (`status --deep/health --json/gateway status/systemd/journalctl`) и userbot (`systemctl/journalctl`, размеры файлов сессии/кэша). Для userbot добавлен reconnect-loop в `bot.py` (перехват `TypeNotFoundError`/общих исключений без падения процесса), сервис перезапущен. Выполнена чистка inbound media cache старше 24ч.
-- **Result**: Сейчас всё зелёное: OpenClaw health `ok=true`, `openclaw-gateway` active (`NRestarts=0`), `userbot` active (`NRestarts=0` после рестарта), ресурсы хоста нормальные. Inbound cache уменьшен `187 -> 45` файлов (`75M -> 14M`). Нерешённое: обновление OpenClaw до 2026.3.7 не применилось автоматически (update skipped/not-git-install + `npm -g` без прав EACCES); нужен апдейт с правами или через user-level package manager.
+- **Updated**: 2026-03-08 17:49 UTC
+- **Notes**: По подтверждению пользователя выполнены безопасные фиксы без ломания текущих задач: (1) userbot уже ранее укреплён reconnect-loop и остаётся стабильным; (2) добавлена ежедневная авто-чистка inbound media cache через user systemd timer (`openclaw-inbound-cleanup.timer`, retention 72h, лог в `workspace/logs/inbound-cleanup.log`); (3) контрольные проверки статуса после изменений.
+- **Result**: `userbot` active/running (`NRestarts=0`), `openclaw-gateway` active/running (`NRestarts=0`), `openclaw health ok=true`. Таймер чистки включён и активен (следующий запуск завтра ~04:22 UTC). Нерешённое: апдейт OpenClaw до 2026.3.7 упирается в права (`npm -g` EACCES на `/usr/lib/node_modules`) — нужен запуск с повышенными правами или смена способа установки.
 
 
 ## [2026-03-08-spring-landing] Создать новый проект сайта-поздравления и подготовить к деплою
