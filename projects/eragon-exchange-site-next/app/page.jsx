@@ -6,28 +6,56 @@ import { exchanges } from '../components/exchange-data';
 
 export default function HomePage() {
   useEffect(() => {
+    const root = document.documentElement;
+    const supportsHover = window.matchMedia('(hover: hover)').matches;
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    let rafId = null;
+    let targetX = 0;
+    let targetY = 0;
+    let prevX = 999;
+    let prevY = 999;
+
+    const applyMove = () => {
+      rafId = null;
+      if (Math.abs(targetX - prevX) < 0.15 && Math.abs(targetY - prevY) < 0.15) return;
+      prevX = targetX;
+      prevY = targetY;
+      root.style.setProperty('--mx', `${targetX}px`);
+      root.style.setProperty('--my', `${targetY}px`);
+    };
+
     const onMove = (e) => {
-      const x = (e.clientX / window.innerWidth - 0.5) * 14;
-      const y = (e.clientY / window.innerHeight - 0.5) * 10;
-      document.documentElement.style.setProperty('--mx', `${x}px`);
-      document.documentElement.style.setProperty('--my', `${y}px`);
+      targetX = (e.clientX / window.innerWidth - 0.5) * 14;
+      targetY = (e.clientY / window.innerHeight - 0.5) * 10;
+      if (!rafId) rafId = requestAnimationFrame(applyMove);
     };
 
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) entry.target.classList.add('in');
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in');
+            observer.unobserve(entry.target);
+          }
         });
       },
       { threshold: 0.14 }
     );
 
     document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
-    window.addEventListener('mousemove', onMove, { passive: true });
+
+    if (supportsHover && !reducedMotion) {
+      window.addEventListener('mousemove', onMove, { passive: true });
+    } else {
+      root.style.setProperty('--mx', '0px');
+      root.style.setProperty('--my', '0px');
+    }
 
     return () => {
       window.removeEventListener('mousemove', onMove);
       observer.disconnect();
+      if (rafId) cancelAnimationFrame(rafId);
     };
   }, []);
   return (
