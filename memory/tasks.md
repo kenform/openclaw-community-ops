@@ -11,9 +11,9 @@
 ## [2026-03-08-userbot-parser-check] Проверить работу userbot и второго parser
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-08 17:58 UTC
-- **Updated**: 2026-03-08 19:45 UTC
-- **Notes**: Повторный тотальный check по запросу пользователя: host + OpenClaw + userbot + parser + смежные сервисы. Все ключевые сервисы сейчас running: `openclaw-gateway`, `userbot`, `telegram-pipeline-v1`, `psybot-api`; рестартов по счётчику нет.
-- **Result**: Система живая и стабильная (`openclaw health ok=true`, RAM/диск/кэш в норме). Потенциальная причина «не работает parser»: текущий фильтр очень жёсткий — `allowed_topic_ids=[58866]`; в логах есть `Dropped (source not configured/topic not allowed)` для других сообщений.
+- **Updated**: 2026-03-08 21:04 UTC
+- **Notes**: По запросу пользователя "Хочу" выполнен точечный hardening userbot без влияния на остальные сервисы: в `userbot/bot.py` для `TelegramClient` включены `auto_reconnect`, `sequential_updates`, повышены retry-параметры (`connection_retries`, `request_retries`, `retry_delay`). После этого `userbot.service` перезапущен.
+- **Result**: userbot после hardening: `active/running`, `NRestarts=0`. Ошибки `TypeNotFoundError` ранее в логах были, но после свежего рестарта в текущем окне проверок новых падений не зафиксировано.
 
 
 ## [2026-03-08-night-openclaw-update] Ночной системный апдейт OpenClaw с sudo
