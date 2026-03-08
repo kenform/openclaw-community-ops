@@ -1,5 +1,22 @@
 export const exchanges = [
   {
+    id: 'orbit',
+    sigil: 'IV',
+    name: 'Orbit',
+    desc: 'Нишевый маршрут для точечных стратегий и ручной проверки условий перед входом.',
+    href: 'https://www.ourbit.com/ru-RU/auth/signup?inviteCode=6B2LY7',
+    note: '⚠️ Orbit: сайт и регистрация работают только с VPN.',
+    highlight: true,
+  },
+  {
+    id: 'mexc',
+    sigil: 'III',
+    name: 'MEXC',
+    desc: 'Широкий листинг и ранние возможности. Больше потенциала — выше дисциплина риска.',
+    href: 'https://promote.mexc.com/r/vu6RfizpRR',
+    highlight: true,
+  },
+  {
     id: 'bybit',
     sigil: 'I',
     name: 'Bybit',
@@ -14,22 +31,5 @@ export const exchanges = [
     desc: 'Социальные механики и копи-трейдинг, если нужен более гибкий стиль входа.',
     href: 'https://www.bitget.com/ru/referral/register?clacCode=GF5KD76T&from=%2Fru%2Fevents%2Freferral-all-program&source=events&utmSource=PremierInviter',
     highlight: false,
-  },
-  {
-    id: 'mexc',
-    sigil: 'III',
-    name: 'MEXC',
-    desc: 'Широкий листинг и ранние возможности. Больше потенциала — выше дисциплина риска.',
-    href: 'https://promote.mexc.com/r/vu6RfizpRR',
-    highlight: true,
-  },
-  {
-    id: 'orbit',
-    sigil: 'IV',
-    name: 'Orbit',
-    desc: 'Нишевый маршрут для точечных стратегий и ручной проверки условий перед входом.',
-    href: 'https://www.ourbit.com/ru-RU/auth/signup?inviteCode=6B2LY7',
-    note: '⚠️ Orbit: сайт и регистрация работают только с VPN.',
-    highlight: true,
   },
 ];
