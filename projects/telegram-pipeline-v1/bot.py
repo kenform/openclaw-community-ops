@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any, Dict, Optional, Set, Union
 
 import requests
+import re
 from telethon import TelegramClient, events
 from telethon.errors import FloodWaitError, RPCError
 from telethon.tl.functions.messages import GetDialogFiltersRequest
@@ -77,8 +78,110 @@ def format_payload(
     media_only: bool,
     topic_title: Optional[str] = None,
 ) -> str:
-    _ = (chat_title, chat_id, topic_id, topic_title)
-    return "[media message]" if media_only else (text.strip() if text else "[empty message]")
+    _ = (chat_title, chat_id, topic_id)
+    title = topic_title.strip() if topic_title else "без названия"
+    body = "[media message]" if media_only else (text.strip() if text else "[empty message]")
+    return f"[TopicTitle: {title}]\n\n{body}"
+
+
+EMOJI_RE = re.compile(
+    "["
+    "\U0001F600-\U0001F64F"
+    "\U0001F300-\U0001F5FF"
+    "\U0001F680-\U0001F6FF"
+    "\U0001F1E0-\U0001F1FF"
+    "\U00002700-\U000027BF"
+    "\U0001F900-\U0001F9FF"
+    "\U00002600-\U000026FF"
+    "\U00002B00-\U00002BFF"
+    "\U0001FA70-\U0001FAFF"
+    "]+",
+    flags=re.UNICODE,
+)
+
+POSITIVE_3 = ["лонг", "шорт", "беру", "взял", "заходим", "открываю", "закрыл", "прикрыл", "фикс"]
+POSITIVE_2 = ["позиция", "поза", "тейк", "тейкнул", "стоп", "стопы", "держу", "перезайду"]
+POSITIVE_1 = ["btc", "биток", "eth", "эфир", "sol", "solana", "альта", "альты", "рынок", "монета"]
+LEVEL_WORDS = ["закреп", "уровень", "под зоной", "над зоной", "под красной зоной"]
+NEGATIVE_3 = ["стрим", "эфир", "ютуб", "интра", "академия", "обучение", "набор"]
+NEGATIVE_2 = ["всем привет", "салам", "доброе утро", "вы там спите", "команда", "в офисе"]
+SHORT_PASS_WORDS = ["лонг", "шорт", "беру", "взял", "тейк", "фикс"]
+
+
+def _norm_text_for_filter(text: str) -> str:
+    text = (text or "").lower()
+    text = EMOJI_RE.sub(" ", text)
+    text = re.sub(r"\s+", " ", text).strip()
+    return text
+
+
+def classify_ilya_message(raw_text: str, has_media: bool = False) -> Dict[str, Any]:
+    text = _norm_text_for_filter(raw_text)
+
+    if has_media and not text:
+        return {"pass": False, "score": -999, "type": None, "reason": "DROP_NO_SIGNAL"}
+
+    score = 0
+
+    for w in POSITIVE_3:
+        if w in text:
+            score += 3
+    for w in POSITIVE_2:
+        if w in text:
+            score += 2
+    for w in POSITIVE_1:
+        if w in text:
+            score += 1
+    for w in LEVEL_WORDS:
+        if w in text:
+            score += 2
+
+    negative3_hit = any(w in text for w in NEGATIVE_3)
+    negative2_hit = any(w in text for w in NEGATIVE_2)
+    if negative3_hit:
+        score -= 3
+    if negative2_hit:
+        score -= 2
+
+    words = [w for w in text.split(" ") if w]
+    short_pass = len(words) <= 6 and any(w in text for w in SHORT_PASS_WORDS)
+
+    msg_type = None
+    if any(w in text for w in ["закрыл", "прикрыл", "фикс", "тейк", "тейкнул"]):
+        msg_type = "EXIT"
+    elif any(w in text for w in ["лонг", "шорт", "беру", "взял", "заходим", "открываю"]):
+        msg_type = "ENTRY"
+    elif any(w in text for w in LEVEL_WORDS):
+        msg_type = "LEVEL"
+    elif any(w in text for w in ["держу", "позиция", "поза"]):
+        msg_type = "HOLD"
+    elif any(w in text for w in ["перезайду", "план", "подготов"]):
+        msg_type = "PLAN"
+
+    is_pass = short_pass or score >= 3
+
+    if is_pass:
+        if msg_type == "ENTRY":
+            reason = "PASS_ENTRY"
+        elif msg_type == "HOLD":
+            reason = "PASS_HOLD"
+        elif msg_type == "EXIT":
+            reason = "PASS_EXIT"
+        elif msg_type == "PLAN":
+            reason = "PASS_PLAN"
+        elif msg_type == "LEVEL":
+            reason = "PASS_LEVEL"
+        else:
+            reason = "PASS_PLAN"
+    else:
+        if negative3_hit:
+            reason = "DROP_PROMO"
+        elif negative2_hit:
+            reason = "DROP_SMALLTALK"
+        else:
+            reason = "DROP_NO_SIGNAL"
+
+    return {"pass": is_pass, "score": score, "type": msg_type, "reason": reason, "text": text}
 
 
 def _chunk_text(text: str, limit: int = 3500):
@@ -334,6 +437,7 @@ def main() -> None:
     allowed_group_id: Optional[int] = None
     target_channel_id: Optional[Union[int, str]] = None
     topic_title_map: Dict[int, str] = {}
+    allowed_topic_runtime_ids: Set[int] = set(allowed_topic_ids)
 
     should_stop = {"value": False}
 
@@ -350,19 +454,38 @@ def main() -> None:
     signal.signal(signal.SIGTERM, _shutdown)
 
     async def refresh_topic_title_map(group_id: Optional[int]):
-        nonlocal topic_title_map
+        nonlocal topic_title_map, allowed_topic_runtime_ids
         if not group_id:
             topic_title_map = {}
+            allowed_topic_runtime_ids = set(allowed_topic_ids)
             return
         try:
             entity = await client.get_entity(group_id)
             resp = await client(GetForumTopicsRequest(channel=entity, offset_date=None, offset_id=0, offset_topic=0, limit=200, q=""))
             topics = getattr(resp, "topics", []) or []
-            topic_title_map = {int(getattr(t, "top_message", 0)): str(getattr(t, "title", "")).strip() for t in topics if getattr(t, "top_message", None)}
+            topic_title_map = {}
+            resolved_runtime = set()
+            for t in topics:
+                t_title = str(getattr(t, "title", "")).strip()
+                t_top = int(getattr(t, "top_message", 0) or 0)
+                t_id = int(getattr(t, "id", 0) or 0)
+                if t_top:
+                    topic_title_map[t_top] = t_title
+                if t_id:
+                    topic_title_map[t_id] = t_title
+
+                if t_top in allowed_topic_ids or t_id in allowed_topic_ids:
+                    if t_top:
+                        resolved_runtime.add(t_top)
+                    if t_id:
+                        resolved_runtime.add(t_id)
+            allowed_topic_runtime_ids = resolved_runtime or set(allowed_topic_ids)
             logger.info("Loaded topic titles: %s", {k: topic_title_map[k] for k in sorted(topic_title_map)[:20]})
+            logger.info("Resolved runtime topic ids=%s", sorted(list(allowed_topic_runtime_ids)))
         except Exception as e:
             logger.warning("Cannot load forum topic titles: %s", e)
             topic_title_map = {}
+            allowed_topic_runtime_ids = set(allowed_topic_ids)
 
     @client.on(events.NewMessage(incoming=True))
     async def on_new_message(event):
@@ -385,14 +508,22 @@ def main() -> None:
             topic_id = extract_topic_id(msg)
 
             if topic_filter_enabled and chat_id == allowed_group_id:
-                if not topic_id or topic_id not in allowed_topic_ids:
+                if not topic_id or topic_id not in allowed_topic_runtime_ids:
                     logger.info("Dropped (topic not allowed): chat_id=%s topic_id=%s msg_id=%s", chat_id, topic_id, msg.id)
                     return
 
             topic_title = topic_title_map.get(topic_id) if topic_id else None
             text = msg.message or ""
             media_only = bool(msg.media) and not text.strip()
-            payload = format_payload(chat_title, chat_id, topic_id, text, media_only, topic_title=topic_title)
+
+            # Ilya-specific scoring filter (applies to currently allowed Ilya topic only)
+            f = classify_ilya_message(text, has_media=bool(msg.media))
+            if not f["pass"]:
+                logger.info("%s score=%s msg_id=%s topic_id=%s", f["reason"], f["score"], msg.id, topic_id)
+                return
+
+            type_prefix = f"[{f['type']}]\n" if f.get("type") else ""
+            payload = type_prefix + format_payload(chat_title, chat_id, topic_id, text, media_only, topic_title=topic_title)
 
             media_kind = None
             media_bytes = None
@@ -444,6 +575,7 @@ def main() -> None:
                 media_name=media_name,
             )
             if ok:
+                logger.info("%s score=%s msg_id=%s topic_id=%s", f["reason"], f["score"], msg.id, topic_id)
                 state["processed_total"] = int(state.get("processed_total", 0)) + 1
                 state["last_event"] = {
                     "chat_id": chat_id,

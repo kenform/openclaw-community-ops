@@ -1,5 +1,12 @@
 # Active Tasks
 
+## [2026-03-08-userbot-parser-check] Проверить работу userbot и второго parser
+- **Status**: 🔄 进行中
+- **Requested**: 2026-03-08 17:58 UTC
+- **Updated**: 2026-03-08 17:58 UTC
+- **Notes**: Пользователь сообщил, что другой parser не работает; запускаю диагностику userbot + parser service/logs.
+
+
 ## [2026-03-08-night-openclaw-update] Ночной системный апдейт OpenClaw с sudo
 - **Status**: 🔄 进行中
 - **Requested**: 2026-03-08 17:48 UTC
