@@ -11,6 +11,8 @@ from typing import Any, Dict, Optional, Set, Union
 
 import requests
 import re
+import tempfile
+import subprocess
 from telethon import TelegramClient, events
 from telethon.errors import FloodWaitError, RPCError
 from telethon.tl.functions.messages import GetDialogFiltersRequest
@@ -209,6 +211,7 @@ def parse_ilya_signal(raw_text: str, rules: Dict[str, Any]) -> Dict[str, Any]:
     has_action = any(w in text for w in action_words)
     has_cond = any(w in text for w in cond_words)
     has_bias = any(w in text for w in bias_words)
+    is_question = ("?" in raw_text) or ("или" in text and ("лонг" in text or "шорт" in text))
 
     nums = re.findall(r"\b\d{2,6}(?:[\.,]\d+)?(?:\s*[kк])?(?:\s*[-–]\s*\d{2,6}(?:[\.,]\d+)?(?:\s*[kк])?)?\b", text)
     asset = "UNKNOWN"
@@ -218,10 +221,11 @@ def parse_ilya_signal(raw_text: str, rules: Dict[str, Any]) -> Dict[str, Any]:
             break
 
     signal_type = "MARKET_VIEW"
-    if "лонг" in text and ("вход" in text or "беру" in text or "взял" in text): signal_type = "LONG_ENTRY"
-    elif "шорт" in text and ("вход" in text or "беру" in text or "взял" in text): signal_type = "SHORT_ENTRY"
-    elif "лонг" in text: signal_type = "LONG_SETUP"
-    elif "шорт" in text: signal_type = "SHORT_SETUP"
+    if not is_question:
+        if "лонг" in text and ("вход" in text or "беру" in text or "взял" in text): signal_type = "LONG_ENTRY"
+        elif "шорт" in text and ("вход" in text or "беру" in text or "взял" in text): signal_type = "SHORT_ENTRY"
+        elif "лонг" in text: signal_type = "LONG_SETUP"
+        elif "шорт" in text: signal_type = "SHORT_SETUP"
     elif any(w in text for w in ["закрыл", "прикрыл", "фикс"]): signal_type = "EXIT"
     elif "держу" in text: signal_type = "HOLD"
     elif has_cond: signal_type = "CONDITIONAL_ENTRY"
@@ -236,6 +240,7 @@ def parse_ilya_signal(raw_text: str, rules: Dict[str, Any]) -> Dict[str, Any]:
     confidence += 2 if has_cond else 0
     confidence += 2 if has_bias else 0
     confidence += 2 if any(w in text for w in ["стоп", "закреп", "зона"]) else 0
+    confidence -= 3 if is_question else 0
     if any(w in text for w in rules.get("negative_2", [])): confidence -= 2
     if any(w in text for w in ["стрим", "эфир", "в офисе", "интра"]): confidence -= 2
 
@@ -249,7 +254,7 @@ def parse_ilya_signal(raw_text: str, rules: Dict[str, Any]) -> Dict[str, Any]:
 
     threshold = int(rules.get("signal_threshold", 7))
     has_structure = bool(nums) or has_cond or (has_dir and has_action)
-    weak_question = ("?" in raw_text) and not has_structure
+    weak_question = is_question and not has_structure
     signal_pass = confidence >= threshold and has_structure and not weak_question and not (asset == "UNKNOWN" and confidence <= threshold + 1)
     if signal_pass:
         reason = "SIGNAL_PASS"
@@ -290,6 +295,120 @@ def format_signal_message(sig: Dict[str, Any]) -> str:
         f"Timeframe: {sig.get('timeframe') or '—'}\n"
         f"Confidence: {sig.get('confidence')}\n"
         f"Raw: {sig.get('raw_text') or '—'}"
+    )
+
+
+def transcribe_voice_with_whisper(media_bytes: Optional[bytes]) -> str:
+    if not media_bytes:
+        return ""
+    try:
+        with tempfile.TemporaryDirectory() as td:
+            in_path = Path(td) / "voice.ogg"
+            out_txt = Path(td) / "voice.txt"
+            in_path.write_bytes(media_bytes)
+            cmd = ["python3", "-m", "whisper", str(in_path), "--model", "tiny", "--language", "ru", "--output_format", "txt", "--output_dir", td]
+            subprocess.run(cmd, check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=90)
+            if out_txt.exists():
+                return out_txt.read_text(encoding="utf-8").strip()
+    except Exception:
+        pass
+    return ""
+
+
+def classify_artur_main(text_raw: str) -> Dict[str, Any]:
+    text = _norm_text_for_filter(text_raw)
+    if not text:
+        return {"pass": False, "reason": "DROP_NO_SIGNAL", "type": None}
+
+    smalltalk = ["всем привет", "доброе утро", "красиво", "жесть", "работаем", "ну что", "как вам"]
+    if any(w in text for w in smalltalk):
+        return {"pass": False, "reason": "DROP_SMALLTALK", "type": None}
+
+    hold_words = ["держу", "держим", "пока тяну позиции", "держу до стопа", "позицию держу", "не закрываю"]
+    if any(w in text for w in hold_words):
+        return {"pass": True, "reason": "PASS_HOLD", "type": "HOLD", "hold_only": True}
+
+    return {"pass": True, "reason": "PASS_VIEW", "type": "VIEW", "hold_only": False}
+
+
+def parse_artur_signal(text_raw: str) -> Dict[str, Any]:
+    text = _norm_text_for_filter(text_raw)
+    entry_words = ["лонг", "шорт", "шорчу", "взял", "беру", "открыл", "вход", "вход по рынку", "лимитка", "лимитный вход", "добавку лимиткой", "в сделку зашел"]
+    stop_words = ["стоп", "stop", "стопы", "stop loss"]
+    target_words = ["цель", "тейк", "тейки", "take"]
+
+    has_entry = any(w in text for w in entry_words)
+    has_stop = any(w in text for w in stop_words)
+    has_target = any(w in text for w in target_words)
+
+    # explicit levels
+    entry_val = "—"
+    stop_val = "—"
+    target_val = "—"
+
+    nums = re.findall(r"\b[A-Z]{2,8}/USDT\b|\b\d{1,6}(?:[\.,]\d+)?\b", text_raw.upper())
+    levels = [n for n in nums if "/USDT" not in n]
+
+    ms = re.search(r"(?:стоп|stop|stop loss)\s*[🛑:\-]?\s*(\d{1,6}(?:[\.,]\d+)?)", text, flags=re.IGNORECASE)
+    mt = re.search(r"(?:цель|тейк|take)\s*[:\-]?\s*(\d{1,6}(?:[\.,]\d+)?)", text, flags=re.IGNORECASE)
+    if ms:
+        stop_val = ms.group(1)
+    if mt:
+        target_val = mt.group(1)
+    if levels:
+        entry_val = levels[0]
+
+    asset = "UNKNOWN"
+    asset_list = ["BTC", "ETH", "SOL", "APT", "LINK", "BCH", "MATIC", "ALT"]
+    for a in asset_list:
+        if a in text_raw.upper() or a.lower() in text:
+            asset = a
+            break
+    m_pair = re.search(r"\b([A-Z]{2,8})/USDT\b", text_raw.upper())
+    if m_pair:
+        asset = m_pair.group(1)
+
+    confidence = 0
+    confidence += 3 if has_entry else 0
+    confidence += 3 if has_stop else 0
+    confidence += 3 if has_target else 0
+    confidence += 2 if asset != "UNKNOWN" else 0
+    confidence += 1 if bool(levels) else 0
+
+    signal_pass = sum([has_entry, has_stop, has_target]) >= 2 and confidence >= 6
+    if signal_pass:
+        reason = "ARTUR_SIGNAL_PASS"
+    elif confidence < 6:
+        reason = "ARTUR_LOW_CONFIDENCE"
+    else:
+        reason = "ARTUR_SIGNAL_DROP"
+
+    stype = "LONG_ENTRY" if "лонг" in text else ("SHORT_ENTRY" if "шорт" in text or "шорчу" in text else "LONG_ENTRY")
+
+    return {
+        "pass": signal_pass,
+        "reason": reason,
+        "confidence": confidence,
+        "asset": asset,
+        "signal_type": stype,
+        "entry": entry_val,
+        "stop": stop_val,
+        "target": target_val,
+        "raw": text_raw.strip() or "—",
+    }
+
+
+def format_artur_signal(sig: Dict[str, Any]) -> str:
+    return (
+        "#ArturSignal\n\n"
+        f"Asset: {sig.get('asset','UNKNOWN')}\n"
+        f"Type: {sig.get('signal_type','—')}\n"
+        f"Entry: {sig.get('entry','—')}\n"
+        f"Stop: {sig.get('stop','—')}\n"
+        f"Target: {sig.get('target','—')}\n"
+        f"Confidence: {sig.get('confidence',0)}\n\n"
+        "Raw:\n"
+        f"{sig.get('raw','—')}"
     )
 
 
@@ -531,6 +650,9 @@ def main() -> None:
     ilya_main_filter_enabled = bool(cfg.get("ILYA_MAIN_FILTER_ENABLED", True))
     signal_parser_enabled = bool(cfg.get("SIGNAL_PARSER_ENABLED", True))
     ilya_topic_id = int(cfg.get("ILYA_TOPIC_ID", 58866))
+    artur_enabled = bool(cfg.get("ARTUR_ENABLED", True))
+    artur_channel_ref = parse_ref(cfg.get("ARTUR_CHANNEL_ID", -1001699376756))
+    artur_topic_id = int(cfg.get("ARTUR_TOPIC_ID", 57974))
     allowed_topic_ids = {int(x) for x in cfg.get("ALLOWED_TOPIC_IDS", []) if str(x).strip().isdigit()}
     if ilya_topic_id not in allowed_topic_ids:
         allowed_topic_ids.add(ilya_topic_id)
@@ -548,6 +670,7 @@ def main() -> None:
     logger.info("Track group only=%s", track_group_only)
     logger.info("Backfill enabled=%s (pipeline handles new incoming only)", backfill_enabled)
     logger.info("Ilya filter enabled=%s signal_parser_enabled=%s ilya_topic_id=%s", ilya_main_filter_enabled, signal_parser_enabled, ilya_topic_id)
+    logger.info("Artur enabled=%s artur_channel_ref=%s artur_topic_id=%s", artur_enabled, artur_channel_ref, artur_topic_id)
 
     client = TelegramClient(session_name, api_id, api_hash, auto_reconnect=True, sequential_updates=True)
 
@@ -557,6 +680,8 @@ def main() -> None:
     signal_target_channel_id: Optional[Union[int, str]] = None
     topic_title_map: Dict[int, str] = {}
     allowed_topic_runtime_ids: Set[int] = set(allowed_topic_ids)
+    artur_topic_runtime_ids: Set[int] = {artur_topic_id}
+    artur_channel_id: Optional[int] = None
 
     should_stop = {"value": False}
 
@@ -573,7 +698,7 @@ def main() -> None:
     signal.signal(signal.SIGTERM, _shutdown)
 
     async def refresh_topic_title_map(group_id: Optional[int]):
-        nonlocal topic_title_map, allowed_topic_runtime_ids
+        nonlocal topic_title_map, allowed_topic_runtime_ids, artur_topic_runtime_ids
         if not group_id:
             topic_title_map = {}
             allowed_topic_runtime_ids = set(allowed_topic_ids)
@@ -599,8 +724,21 @@ def main() -> None:
                     if t_id:
                         resolved_runtime.add(t_id)
             allowed_topic_runtime_ids = resolved_runtime or set(allowed_topic_ids)
+
+            artur_resolved = set()
+            for t in topics:
+                t_top = int(getattr(t, "top_message", 0) or 0)
+                t_id = int(getattr(t, "id", 0) or 0)
+                if t_top == artur_topic_id or t_id == artur_topic_id:
+                    if t_top:
+                        artur_resolved.add(t_top)
+                    if t_id:
+                        artur_resolved.add(t_id)
+            artur_topic_runtime_ids = artur_resolved or {artur_topic_id}
+
             logger.info("Loaded topic titles: %s", {k: topic_title_map[k] for k in sorted(topic_title_map)[:20]})
             logger.info("Resolved runtime topic ids=%s", sorted(list(allowed_topic_runtime_ids)))
+            logger.info("Resolved artur topic runtime ids=%s", sorted(list(artur_topic_runtime_ids)))
         except Exception as e:
             logger.warning("Cannot load forum topic titles: %s", e)
             topic_title_map = {}
@@ -614,7 +752,7 @@ def main() -> None:
             logger.warning("Blocked channel skipped: chat_id=%s message_id=%s", chat_id, getattr(event.message, 'id', None))
             return
 
-        if track_group_only and chat_id != allowed_group_id:
+        if track_group_only and chat_id != allowed_group_id and chat_id != artur_channel_id:
             return
 
         if chat_id not in allowed_channel_ids and chat_id != allowed_group_id:
@@ -626,20 +764,16 @@ def main() -> None:
             chat_title = getattr(chat, "title", None) or getattr(chat, "username", None) or str(chat_id)
             topic_id = extract_topic_id(msg)
 
-            if topic_filter_enabled and chat_id == allowed_group_id:
-                if not topic_id or topic_id not in allowed_topic_runtime_ids:
-                    logger.info("Dropped (topic not allowed): chat_id=%s topic_id=%s msg_id=%s", chat_id, topic_id, msg.id)
-                    return
-
             topic_title = topic_title_map.get(topic_id) if topic_id else None
             text = msg.message or ""
             media_only = bool(msg.media) and not text.strip()
 
-            main_result = {"pass": True, "score": 0, "type": "VIEW", "reason": "PASS_VIEW"}
-            if ilya_main_filter_enabled:
-                main_result = classify_main_ilya_message(text, has_media=bool(msg.media), rules=rules)
-                if not main_result["pass"]:
-                    logger.info("%s score=%s msg_id=%s topic_id=%s", main_result["reason"], main_result["score"], msg.id, topic_id)
+            is_ilya = chat_id == allowed_group_id and topic_id in allowed_topic_runtime_ids
+            is_artur_topic = artur_enabled and chat_id == allowed_group_id and topic_id in artur_topic_runtime_ids
+            is_artur_channel = artur_enabled and artur_channel_id is not None and chat_id == artur_channel_id
+            if not (is_ilya or is_artur_topic or is_artur_channel):
+                logger.info("Dropped (source not configured): chat_id=%s topic_id=%s msg_id=%s", chat_id, topic_id, msg.id)
+                return
 
             media_kind = None
             media_bytes = None
@@ -660,6 +794,17 @@ def main() -> None:
                     logger.warning("Media download failed, fallback to text only: msg_id=%s err=%s", msg.id, e)
                     media_kind = None; media_bytes = None
 
+            if is_artur_topic or is_artur_channel:
+                if media_kind == "voice" and not text.strip():
+                    text = transcribe_voice_with_whisper(media_bytes)
+                    media_only = bool(msg.media) and not text.strip()
+                main_result = classify_artur_main(text)
+            else:
+                main_result = classify_main_ilya_message(text, has_media=bool(msg.media), rules=rules) if ilya_main_filter_enabled else {"pass": True, "score": 0, "type": "VIEW", "reason": "PASS_VIEW"}
+
+            if not main_result["pass"]:
+                logger.info("%s score=%s msg_id=%s topic_id=%s", main_result.get("reason"), main_result.get("score", 0), msg.id, topic_id)
+
             sent_main = False
             if main_result["pass"] and main_target_channel_id is not None:
                 payload = f"[Type: {main_result.get('type') or 'VIEW'}]\n" + format_payload(chat_title, chat_id, topic_id, text, media_only, topic_title=topic_title)
@@ -673,17 +818,27 @@ def main() -> None:
                     media_bytes=media_bytes,
                     media_name=media_name,
                 )
-                if sent_main:
-                    logger.info("%s score=%s msg_id=%s topic_id=%s", main_result["reason"], main_result["score"], msg.id, topic_id)
 
-            if signal_parser_enabled and signal_target_channel_id is not None:
-                sig = parse_ilya_signal(text, rules)
-                if sig["pass"]:
-                    sig_msg = format_signal_message(sig)
-                    sig_ok = send_via_bot_api(bot_token, str(signal_target_channel_id), sig_msg, logger, dry_run=dry_run)
-                    logger.info("%s confidence=%s msg_id=%s topic_id=%s", "SIGNAL_PASS" if sig_ok else "SIGNAL_DROP", sig["confidence"], msg.id, topic_id)
+            if signal_parser_enabled and signal_target_channel_id is not None and not main_result.get("hold_only", False):
+                if is_artur_topic or is_artur_channel:
+                    if not text.strip():
+                        sig = {"pass": False, "reason": "ARTUR_SIGNAL_DROP", "confidence": 0}
+                    else:
+                        sig = parse_artur_signal(text)
+                    if sig.get("pass"):
+                        sig_msg = format_artur_signal(sig)
+                        sig_ok = send_via_bot_api(bot_token, str(signal_target_channel_id), sig_msg, logger, dry_run=dry_run)
+                        logger.info("%s confidence=%s msg_id=%s", "ARTUR_SIGNAL_PASS" if sig_ok else "ARTUR_SIGNAL_DROP", sig.get("confidence"), msg.id)
+                    else:
+                        logger.info("%s confidence=%s msg_id=%s", sig.get("reason"), sig.get("confidence"), msg.id)
                 else:
-                    logger.info("%s confidence=%s msg_id=%s topic_id=%s", sig["reason"], sig["confidence"], msg.id, topic_id)
+                    sig = parse_ilya_signal(text, rules)
+                    if sig["pass"]:
+                        sig_msg = format_signal_message(sig)
+                        sig_ok = send_via_bot_api(bot_token, str(signal_target_channel_id), sig_msg, logger, dry_run=dry_run)
+                        logger.info("%s confidence=%s msg_id=%s topic_id=%s", "SIGNAL_PASS" if sig_ok else "SIGNAL_DROP", sig["confidence"], msg.id, topic_id)
+                    else:
+                        logger.info("%s confidence=%s msg_id=%s topic_id=%s", sig["reason"], sig["confidence"], msg.id, topic_id)
 
             if sent_main:
                 state["processed_total"] = int(state.get("processed_total", 0)) + 1
@@ -705,7 +860,7 @@ def main() -> None:
             logger.exception("Unhandled pipeline error: %s", e)
 
     async def runner():
-        nonlocal allowed_channel_ids, allowed_group_id, main_target_channel_id, signal_target_channel_id
+        nonlocal allowed_channel_ids, allowed_group_id, main_target_channel_id, signal_target_channel_id, artur_channel_id
 
         await client.start()
         me = await client.get_me()
@@ -747,6 +902,14 @@ def main() -> None:
             if grp is None:
                 logger.warning("Cannot resolve allowed group ref: %s", allowed_group_ref)
 
+        if artur_enabled:
+            ac = await resolve_chat_ref(client, artur_channel_ref)
+            if ac is not None:
+                artur_channel_id = int(ac)
+                allowed_channel_ids.add(int(ac))
+            else:
+                logger.warning("Cannot resolve ARTUR channel ref: %s", artur_channel_ref)
+
         main_tgt = await resolve_chat_ref(client, main_target_ref)
         if main_tgt is None:
             logger.warning("Cannot resolve MAIN target channel ref: %s", main_target_ref)
@@ -776,6 +939,8 @@ def main() -> None:
                     signal_target_channel_id = signal_tgt
 
         allowed_channel_ids = resolved_channels
+        if artur_channel_id is not None:
+            allowed_channel_ids.add(int(artur_channel_id))
 
         if grp is not None:
             allowed_group_id = int(grp)
