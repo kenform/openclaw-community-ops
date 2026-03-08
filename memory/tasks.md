@@ -10,9 +10,9 @@
 ## [2026-03-08-evening-status-check] Проверить статус сервера, OpenClaw и userbot (память/очереди/кэш)
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-08 17:31 UTC
-- **Updated**: 2026-03-08 17:33 UTC
-- **Notes**: Проверены host (`uptime/free/df/ps`), OpenClaw (`status --deep/health --json/gateway status/systemd/journalctl`) и userbot (`systemctl/journalctl`, размеры файлов сессии/кэша). Дополнительно проверен inbound media cache (`~/.openclaw/media/inbound`) и размер `~/.openclaw`.
-- **Result**: Сервер в норме по ресурсам (RAM свободно ~2.2GiB, swap ~137MiB, load ~0.6–0.7). OpenClaw: gateway active/running, NRestarts=0, health ok=true; есть update до 2026.3.7 и стандартный doctor warning по groupAllowFrom. Userbot: active/running, но был crash-loop ранее (NRestarts=12) с `Telethon TypeNotFoundError`, сейчас поднят. Очереди userbot не забиты (autolearn_inbox.jsonl=0B, events~99K). Inbound media cache: 187 файлов, ~75MB (рост, но не критично).
+- **Updated**: 2026-03-08 17:36 UTC
+- **Notes**: Проверены host (`uptime/free/df/ps`), OpenClaw (`status --deep/health --json/gateway status/systemd/journalctl`) и userbot (`systemctl/journalctl`, размеры файлов сессии/кэша). Для userbot добавлен reconnect-loop в `bot.py` (перехват `TypeNotFoundError`/общих исключений без падения процесса), сервис перезапущен. Выполнена чистка inbound media cache старше 24ч.
+- **Result**: Сейчас всё зелёное: OpenClaw health `ok=true`, `openclaw-gateway` active (`NRestarts=0`), `userbot` active (`NRestarts=0` после рестарта), ресурсы хоста нормальные. Inbound cache уменьшен `187 -> 45` файлов (`75M -> 14M`). Нерешённое: обновление OpenClaw до 2026.3.7 не применилось автоматически (update skipped/not-git-install + `npm -g` без прав EACCES); нужен апдейт с правами или через user-level package manager.
 
 
 ## [2026-03-08-spring-landing] Создать новый проект сайта-поздравления и подготовить к деплою
