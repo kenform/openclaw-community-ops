@@ -183,6 +183,23 @@ def classify_main_ilya_message(raw_text: str, has_media: bool, rules: Dict[str, 
 
 def parse_ilya_signal(raw_text: str, rules: Dict[str, Any]) -> Dict[str, Any]:
     text = _norm_text_for_filter(raw_text)
+    trash_patterns = ["заранее спасибо", "смотря на картину", "чисто", "а эту", "брали ?", "брали?"]
+    if any(p in text for p in trash_patterns):
+        return {
+            "pass": False,
+            "reason": "SIGNAL_NO_STRUCTURE",
+            "confidence": 0,
+            "asset": "UNKNOWN",
+            "signal_type": "MARKET_VIEW",
+            "bias": "—",
+            "entry_condition": "—",
+            "entry_zone": "—",
+            "stop": "—",
+            "target": "—",
+            "timeframe": "—",
+            "raw_text": text,
+        }
+
     direction_words = ["лонг", "шорт", "лонгами", "шортить"]
     action_words = ["беру", "взял", "держу", "прикрыл", "закрыл", "перезайду", "открываю"]
     cond_words = ["закреп", "вход", "входы", "стоп", "цель", "если пробьют", "если удержат", "если выкупят", "будут давать вход"]
@@ -222,17 +239,22 @@ def parse_ilya_signal(raw_text: str, rules: Dict[str, Any]) -> Dict[str, Any]:
     if any(w in text for w in rules.get("negative_2", [])): confidence -= 2
     if any(w in text for w in ["стрим", "эфир", "в офисе", "интра"]): confidence -= 2
 
+    zone_context = any(z in text for z in ["зона", "зону", "в зоне", "к зоне", "под зоной", "над зоной"])
     entry_zone = nums[0] if nums else "—"
-    target = nums[1] if len(nums) > 1 else (nums[0] if "цель" in text and nums else "—")
-    stop = "есть" if "стоп" in text else "—"
+    target = nums[1] if len(nums) > 1 else (nums[0] if ("цель" in text and nums and not zone_context) else "—")
+    stop = "есть" if ("стоп" in text and not zone_context) else "—"
     timeframe = "—"
     tf = re.search(r"\b(\d+[mhd]|\d+\s*(мин|час|дн|дней))\b", text)
     if tf: timeframe = tf.group(1)
 
     threshold = int(rules.get("signal_threshold", 7))
-    signal_pass = confidence >= threshold and (has_dir or has_action or has_cond or has_bias)
+    has_structure = bool(nums) or has_cond or (has_dir and has_action)
+    weak_question = ("?" in raw_text) and not has_structure
+    signal_pass = confidence >= threshold and has_structure and not weak_question and not (asset == "UNKNOWN" and confidence <= threshold + 1)
     if signal_pass:
         reason = "SIGNAL_PASS"
+    elif not has_structure or weak_question:
+        reason = "SIGNAL_NO_STRUCTURE"
     elif confidence < threshold:
         reason = "SIGNAL_LOW_CONFIDENCE"
     elif asset == "UNKNOWN":
