@@ -4,7 +4,7 @@ export const exchanges = [
     sigil: 'I',
     name: 'Bybit',
     desc: 'Сильная ликвидность и понятный интерфейс для базовых и продвинутых сценариев.',
-    href: 'https://example.com/bybit',
+    href: 'https://www.bybit.com/invite?ref=W2DDND',
     highlight: false,
   },
   {
@@ -12,7 +12,7 @@ export const exchanges = [
     sigil: 'II',
     name: 'Bitget',
     desc: 'Социальные механики и копи-трейдинг, если нужен более гибкий стиль входа.',
-    href: 'https://example.com/bitget',
+    href: 'https://www.bitget.com/ru/referral/register?clacCode=GF5KD76T&from=%2Fru%2Fevents%2Freferral-all-program&source=events&utmSource=PremierInviter',
     highlight: false,
   },
   {
