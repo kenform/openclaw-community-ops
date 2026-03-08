@@ -4,36 +4,34 @@
   "SESSION_NAME": "/home/openclawuser/.openclaw/workspace/projects/telegram-pipeline-v1/reader_session",
   "BOT_TOKEN": "8617238029:AAGam-NB17QOzmB_VLxsWXCGBGjmDT94Ak0",
   "TARGET_CHANNEL_ID": -1003891349981,
-  "ALLOWED_CHANNELS": [
-    "+tFEGc2srSnlhNjAy",
-    "BornWeb3",
-    "CryptoAmbitions",
-    "DEFI_spekulyant",
-    "DifloksDi",
-    "Digita_Gold",
-    "Fr0ZiCrypto",
-    "GhoulsInCrypto",
-    "Neironka_live",
-    "RTMscalp",
-    "SearcherTribe",
-    "Smik_Live",
-    "SweetCryptoCrumps",
-    "TeddyinCrypto",
-    "Vorkaem_crypto",
-    "abuzersruma",
-    "adel_aggregator",
-    "adel_crypta",
-    "adelkastyle",
-    "algorithm_0x"
-  ],
-  "ALLOWED_GROUP": null,
+  "ALLOWED_CHANNELS": [],
+  "ALLOWED_GROUP": -1003398914047,
   "DRY_RUN": false,
   "DEBUG": true,
   "ALLOWED_FOLDER_NAME": "Wyckoff team",
   "INCLUDE_ALLOWED_CHANNELS_WHEN_FOLDER": false,
-  "TOPIC_FILTER_ENABLED": false,
-  "ALLOWED_TOPIC_IDS": [],
+  "TOPIC_FILTER_ENABLED": true,
+  "ALLOWED_TOPIC_IDS": [
+    58829,
+    58926,
+    58920,
+    58866,
+    58221,
+    58567
+  ],
   "BLOCKED_CHANNEL_IDS": [
     -1001795905023
-  ]
+  ],
+  "ALLOWED_TOPIC_TITLES": [
+    "Чат Ирины ученицы",
+    "Чат Эвелины",
+    "Чат Ильи",
+    "мысли Альтадора",
+    "Чат психолога + трейды",
+    "Закрытые стримы от команды"
+  ],
+  "TRACK_GROUP_ONLY": true,
+  "ALLOWED_CHANNEL_IDS": [],
+  "PIPELINE_MODE": "wyckoff_topics_only_lock",
+  "BACKFILL_ENABLED": false
 }

@@ -1,5 +1,12 @@
 # Active Tasks
 
+## [2026-03-08-wyckoff-topics-lock] Зафиксировать pipeline: только группа и 6 topic_id, добавить медиа-отправку
+- **Status**: ✅ 完成
+- **Requested**: 2026-03-08 17:23 UTC
+- **Updated**: 2026-03-08 17:36 UTC
+- **Notes**: Зафиксирован режим group-only + topic filter, backfill off; каналы остаются видимыми, но sender игнорирует. Добавлена отправка photo/video/voice/document с caption/fallback.
+- **Result**: Сервис активен после перезапуска, ограничения применены.
+
 ## [2026-03-08-evening-status-check] Проверить статус сервера, OpenClaw и userbot (память/очереди/кэш)
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-08 17:31 UTC

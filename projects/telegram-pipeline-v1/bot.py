@@ -13,6 +13,7 @@ import requests
 from telethon import TelegramClient, events
 from telethon.errors import FloodWaitError, RPCError
 from telethon.tl.functions.messages import GetDialogFiltersRequest
+from telethon.tl.functions.channels import GetForumTopicsRequest
 from telethon.errors.common import TypeNotFoundError
 from telethon.utils import get_peer_id
 
@@ -68,15 +69,21 @@ def extract_topic_id(message) -> Optional[int]:
     return getattr(rt, "top_msg_id", None)
 
 
-def format_payload(chat_title: str, chat_id: int, topic_id: Optional[int], text: str, media_only: bool) -> str:
-    if media_only:
-        return f"[media message]\n[Source: {chat_title}]"
-
+def format_payload(
+    chat_title: str,
+    chat_id: int,
+    topic_id: Optional[int],
+    text: str,
+    media_only: bool,
+    topic_title: Optional[str] = None,
+) -> str:
     header = [f"[Source: {chat_title}]", f"[ChatID: {chat_id}]"]
     if topic_id:
         header.append(f"[TopicID: {topic_id}]")
+    if topic_title:
+        header.append(f"[TopicTitle: {topic_title}]")
 
-    body = text.strip() if text else "[empty message]"
+    body = "[media message]" if media_only else (text.strip() if text else "[empty message]")
     return "\n".join(header) + "\n\n" + body
 
 
@@ -98,48 +105,87 @@ def _chunk_text(text: str, limit: int = 3500):
     return parts
 
 
-def send_via_bot_api(bot_token: str, target_channel_id: str, text: str, logger: logging.Logger, dry_run: bool = False) -> bool:
+def _post_bot_api(bot_token: str, method: str, logger: logging.Logger, *, json_payload=None, data_payload=None, files=None) -> bool:
+    url = f"https://api.telegram.org/bot{bot_token}/{method}"
+    for attempt in range(1, 4):
+        try:
+            if json_payload is not None:
+                r = requests.post(url, json=json_payload, timeout=40)
+            else:
+                r = requests.post(url, data=data_payload, files=files, timeout=60)
+            if r.status_code == 429:
+                retry_after = r.json().get("parameters", {}).get("retry_after", 2)
+                logger.warning("Bot API rate limit. retry_after=%s", retry_after)
+                time.sleep(retry_after)
+                continue
+            if r.status_code >= 400:
+                logger.error("Bot API %s: %s", r.status_code, r.text[:300])
+            r.raise_for_status()
+            data = r.json()
+            if not data.get("ok"):
+                logger.error("Bot API responded ok=false: %s", data)
+                return False
+            return True
+        except requests.RequestException as e:
+            logger.error("Bot API %s attempt %s/3 failed: %s", method, attempt, e)
+            time.sleep(1.5 * attempt)
+    return False
+
+
+def send_via_bot_api(
+    bot_token: str,
+    target_channel_id: str,
+    text: str,
+    logger: logging.Logger,
+    dry_run: bool = False,
+    media_kind: Optional[str] = None,
+    media_bytes: Optional[bytes] = None,
+    media_name: str = "media.bin",
+) -> bool:
     chunks = _chunk_text(text)
+    first_chunk = chunks[0] if chunks else ""
 
     if dry_run:
-        logger.info("[DRY_RUN] Skip send. chunks=%s first_payload:\n%s", len(chunks), chunks[0])
+        logger.info("[DRY_RUN] Skip send. media=%s chunks=%s first_payload:\n%s", media_kind, len(chunks), first_chunk)
         return True
 
-    url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
-
-    for idx, chunk in enumerate(chunks, start=1):
-        payload = {
-            "chat_id": target_channel_id,
-            "text": chunk,
-            "disable_web_page_preview": True,
+    if media_kind and media_bytes is not None:
+        method_map = {
+            "photo": ("sendPhoto", "photo"),
+            "video": ("sendVideo", "video"),
+            "voice": ("sendVoice", "voice"),
+            "document": ("sendDocument", "document"),
         }
+        if media_kind in method_map:
+            method, field = method_map[media_kind]
+            ok = _post_bot_api(
+                bot_token,
+                method,
+                logger,
+                data_payload={"chat_id": target_channel_id, "caption": first_chunk or "[media message]"},
+                files={field: (media_name, media_bytes)},
+            )
+            if not ok:
+                return False
+            if len(chunks) > 1:
+                for extra in chunks[1:]:
+                    if not _post_bot_api(
+                        bot_token,
+                        "sendMessage",
+                        logger,
+                        json_payload={"chat_id": target_channel_id, "text": extra, "disable_web_page_preview": True},
+                    ):
+                        return False
+            return True
 
-        sent = False
-        for attempt in range(1, 4):
-            try:
-                r = requests.post(url, json=payload, timeout=20)
-                if r.status_code == 429:
-                    retry_after = r.json().get("parameters", {}).get("retry_after", 2)
-                    logger.warning("Bot API rate limit. retry_after=%s", retry_after)
-                    time.sleep(retry_after)
-                    continue
-
-                if r.status_code >= 400:
-                    logger.error("Bot API %s: %s", r.status_code, r.text[:300])
-                r.raise_for_status()
-                data = r.json()
-                if not data.get("ok"):
-                    logger.error("Bot API responded ok=false: %s", data)
-                    return False
-                sent = True
-                break
-            except requests.RequestException as e:
-                logger.error("Bot API send error chunk %s/%s attempt %s/3: %s", idx, len(chunks), attempt, e)
-                time.sleep(1.5 * attempt)
-
-        if not sent:
+    for chunk in chunks:
+        if not _post_bot_api(
+            bot_token,
+            "sendMessage",
+            logger,
+            json_payload={"chat_id": target_channel_id, "text": chunk, "disable_web_page_preview": True},
+        ):
             return False
-
     return True
 
 
@@ -277,18 +323,23 @@ def main() -> None:
     topic_filter_enabled = bool(cfg.get("TOPIC_FILTER_ENABLED", False))
     allowed_topic_ids = {int(x) for x in cfg.get("ALLOWED_TOPIC_IDS", []) if str(x).strip().isdigit()}
     blocked_channel_ids = {int(x) for x in cfg.get("BLOCKED_CHANNEL_IDS", []) if str(x).strip().lstrip('-').isdigit()}
+    track_group_only = bool(cfg.get("TRACK_GROUP_ONLY", False))
+    backfill_enabled = bool(cfg.get("BACKFILL_ENABLED", False))
 
     logger.info("Starting pipeline. dry_run=%s, debug=%s", dry_run, debug)
     logger.info("Allowed channel refs=%s, allowed_group_ref=%s", allowed_channel_refs, allowed_group_ref)
     logger.info("Topic filter: enabled=%s allowed_topic_ids=%s", topic_filter_enabled, sorted(list(allowed_topic_ids)))
     logger.info("Blocked channel ids=%s", sorted(list(blocked_channel_ids)))
     logger.info("Folder mode: name=%s include_manual_when_folder=%s", allowed_folder_name or None, include_manual_when_folder)
+    logger.info("Track group only=%s", track_group_only)
+    logger.info("Backfill enabled=%s (pipeline handles new incoming only)", backfill_enabled)
 
     client = TelegramClient(session_name, api_id, api_hash, auto_reconnect=True, sequential_updates=True)
 
     allowed_channel_ids: Set[int] = set()
     allowed_group_id: Optional[int] = None
     target_channel_id: Optional[Union[int, str]] = None
+    topic_title_map: Dict[int, str] = {}
 
     should_stop = {"value": False}
 
@@ -304,12 +355,30 @@ def main() -> None:
     signal.signal(signal.SIGINT, _shutdown)
     signal.signal(signal.SIGTERM, _shutdown)
 
+    async def refresh_topic_title_map(group_id: Optional[int]):
+        nonlocal topic_title_map
+        if not group_id:
+            topic_title_map = {}
+            return
+        try:
+            entity = await client.get_entity(group_id)
+            resp = await client(GetForumTopicsRequest(channel=entity, offset_date=None, offset_id=0, offset_topic=0, limit=200, q=""))
+            topics = getattr(resp, "topics", []) or []
+            topic_title_map = {int(getattr(t, "top_message", 0)): str(getattr(t, "title", "")).strip() for t in topics if getattr(t, "top_message", None)}
+            logger.info("Loaded topic titles: %s", {k: topic_title_map[k] for k in sorted(topic_title_map)[:20]})
+        except Exception as e:
+            logger.warning("Cannot load forum topic titles: %s", e)
+            topic_title_map = {}
+
     @client.on(events.NewMessage(incoming=True))
     async def on_new_message(event):
         chat_id = int(event.chat_id)
 
         if chat_id in blocked_channel_ids:
             logger.warning("Blocked channel skipped: chat_id=%s message_id=%s", chat_id, getattr(event.message, 'id', None))
+            return
+
+        if track_group_only and chat_id != allowed_group_id:
             return
 
         if chat_id not in allowed_channel_ids and chat_id != allowed_group_id:
@@ -321,15 +390,39 @@ def main() -> None:
             chat_title = getattr(chat, "title", None) or getattr(chat, "username", None) or str(chat_id)
             topic_id = extract_topic_id(msg)
 
-            # topic filter scaffold (off by default)
             if topic_filter_enabled and chat_id == allowed_group_id:
                 if not topic_id or topic_id not in allowed_topic_ids:
-                    logger.debug("Topic filtered out: chat_id=%s topic_id=%s", chat_id, topic_id)
+                    logger.info("Dropped (topic not allowed): chat_id=%s topic_id=%s msg_id=%s", chat_id, topic_id, msg.id)
                     return
 
+            topic_title = topic_title_map.get(topic_id) if topic_id else None
             text = msg.message or ""
             media_only = bool(msg.media) and not text.strip()
-            payload = format_payload(chat_title, chat_id, topic_id, text, media_only)
+            payload = format_payload(chat_title, chat_id, topic_id, text, media_only, topic_title=topic_title)
+
+            media_kind = None
+            media_bytes = None
+            media_name = "media.bin"
+            if msg.media:
+                try:
+                    if getattr(msg, "photo", None):
+                        media_kind = "photo"
+                        media_name = f"photo_{msg.id}.jpg"
+                    elif getattr(msg, "video", None):
+                        media_kind = "video"
+                        media_name = f"video_{msg.id}.mp4"
+                    elif getattr(msg, "voice", None):
+                        media_kind = "voice"
+                        media_name = f"voice_{msg.id}.ogg"
+                    elif getattr(msg, "document", None):
+                        media_kind = "document"
+                        media_name = f"document_{msg.id}.bin"
+                    if media_kind:
+                        media_bytes = await client.download_media(msg, file=bytes)
+                except Exception as e:
+                    logger.warning("Media download failed, fallback to text only: msg_id=%s err=%s", msg.id, e)
+                    media_kind = None
+                    media_bytes = None
 
             if debug:
                 logger.debug(
@@ -346,7 +439,16 @@ def main() -> None:
                 logger.error("Target channel is not resolved. Skip send.")
                 return
 
-            ok = send_via_bot_api(bot_token, str(target_channel_id), payload, logger, dry_run=dry_run)
+            ok = send_via_bot_api(
+                bot_token,
+                str(target_channel_id),
+                payload,
+                logger,
+                dry_run=dry_run,
+                media_kind=media_kind,
+                media_bytes=media_bytes,
+                media_name=media_name,
+            )
             if ok:
                 state["processed_total"] = int(state.get("processed_total", 0)) + 1
                 state["last_event"] = {
@@ -438,6 +540,8 @@ def main() -> None:
                 )
         else:
             allowed_group_id = None
+
+        await refresh_topic_title_map(allowed_group_id)
 
         logger.info("Resolved allowed_channel_ids=%s", sorted(list(allowed_channel_ids)))
         logger.info("Resolved allowed_group_id=%s", allowed_group_id)
