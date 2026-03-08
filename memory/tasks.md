@@ -3,8 +3,8 @@
 ## [2026-03-08-night-openclaw-update] Ночной системный апдейт OpenClaw с sudo
 - **Status**: 🔄 进行中
 - **Requested**: 2026-03-08 17:48 UTC
-- **Updated**: 2026-03-08 17:49 UTC
-- **Notes**: Пользователь дал разрешение на ночной системный апдейт (sudo). План: backup конфига/версии -> `npm i -g openclaw@latest` -> `openclaw doctor` -> controlled `openclaw gateway restart` -> post-check (`openclaw health --json`, systemd status).
+- **Updated**: 2026-03-08 17:52 UTC
+- **Notes**: Пользователь дал разрешение на ночной системный апдейт (sudo) и подтвердил окно выполнения: 04:00–06:00 (ночью, МСК). План: backup конфига/версии -> `npm i -g openclaw@latest` -> `openclaw doctor` -> controlled `openclaw gateway restart` -> post-check (`openclaw health --json`, systemd status).
 
 
 ## [2026-03-08-post-format-filter] Настроить фильтр и формат постов для канала parser
