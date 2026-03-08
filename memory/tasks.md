@@ -3,9 +3,9 @@
 ## [2026-03-08-userbot-parser-check] Проверить работу userbot и второго parser
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-08 17:58 UTC
-- **Updated**: 2026-03-08 17:59 UTC
-- **Notes**: Диагностика показала: `userbot.service` работает стабильно (`active/running`, `NRestarts=0`). Проблема была во втором parser (`telegram-pipeline-v1.service`) — завис в `deactivating (stop-sigterm)` и не возвращался в `running`.
-- **Result**: Выполнен безопасный recovery: SIGKILL зависшего процесса + `reset-failed` + чистый restart. Сейчас parser снова `active/running` (PID 1694747), успешно авторизован и загрузил конфиг/топики.
+- **Updated**: 2026-03-08 19:45 UTC
+- **Notes**: Повторный тотальный check по запросу пользователя: host + OpenClaw + userbot + parser + смежные сервисы. Все ключевые сервисы сейчас running: `openclaw-gateway`, `userbot`, `telegram-pipeline-v1`, `psybot-api`; рестартов по счётчику нет.
+- **Result**: Система живая и стабильная (`openclaw health ok=true`, RAM/диск/кэш в норме). Потенциальная причина «не работает parser»: текущий фильтр очень жёсткий — `allowed_topic_ids=[58866]`; в логах есть `Dropped (source not configured/topic not allowed)` для других сообщений.
 
 
 ## [2026-03-08-night-openclaw-update] Ночной системный апдейт OpenClaw с sudo
