@@ -6,11 +6,12 @@ import signal
 import sys
 import time
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Set, Union
 
 import requests
 from telethon import TelegramClient, events
-from telethon.errors import FloodWaitError, RpcError
+from telethon.errors import FloodWaitError, RPCError
+from telethon.tl.functions.messages import GetDialogFiltersRequest
 
 BASE_DIR = Path(__file__).resolve().parent
 CONFIG_PATH = BASE_DIR / "config.json"
@@ -110,8 +111,87 @@ def send_via_bot_api(bot_token: str, target_channel_id: str, text: str, logger: 
     return False
 
 
-def normalize_ids(raw_ids):
-    return {int(x) for x in raw_ids}
+def parse_ref(value: Union[int, str]) -> Union[int, str]:
+    if isinstance(value, int):
+        return value
+    s = str(value).strip()
+    if s.startswith("-100") or (s.startswith("-") and s[1:].isdigit()) or s.isdigit():
+        try:
+            return int(s)
+        except Exception:
+            return s
+    if s.startswith("https://t.me/"):
+        return s.rsplit("/", 1)[-1].lstrip("@")
+    return s.lstrip("@")
+
+
+async def resolve_chat_ref(client: TelegramClient, ref: Union[int, str]) -> Optional[int]:
+    if isinstance(ref, int):
+        return ref
+    try:
+        entity = await client.get_entity(ref)
+        return int(getattr(entity, "id")) if getattr(entity, "id", None) is not None else None
+    except Exception:
+        return None
+
+
+async def resolve_from_folder(client: TelegramClient, folder_name: str, logger: logging.Logger):
+    channel_ids: Set[int] = set()
+    group_ids: Set[int] = set()
+
+    try:
+        filters_resp = await client(GetDialogFiltersRequest())
+        filters = getattr(filters_resp, "filters", filters_resp)
+    except Exception as e:
+        logger.error("Cannot load Telegram folders: %s", e)
+        return channel_ids, group_ids
+
+    target = None
+    normalized = folder_name.strip().lower()
+
+    for f in filters:
+        title = getattr(f, "title", None)
+        title_str = str(title) if title is not None else ""
+        if title_str.strip().lower() == normalized:
+            target = f
+            break
+
+    if not target:
+        # fuzzy fallback: contains
+        for f in filters:
+            title = getattr(f, "title", None)
+            title_str = str(title) if title is not None else ""
+            if normalized and normalized in title_str.strip().lower():
+                target = f
+                logger.info("Folder fuzzy-matched: requested='%s' matched='%s'", folder_name, title_str)
+                break
+
+    if not target:
+        logger.warning("Folder '%s' not found", folder_name)
+        return channel_ids, group_ids
+
+    peers = getattr(target, "include_peers", []) or []
+    for p in peers:
+        try:
+            entity = await client.get_entity(p)
+            # event.chat_id format for channels/supergroups
+            eid = int(getattr(entity, "id", 0))
+            if not eid:
+                continue
+            chat_id = -1000000000000 + eid
+
+            # broadcast=True => channel, megagroup=True => group
+            if getattr(entity, "broadcast", False):
+                channel_ids.add(chat_id)
+            elif getattr(entity, "megagroup", False):
+                group_ids.add(chat_id)
+            else:
+                # fallback to channel bucket
+                channel_ids.add(chat_id)
+        except Exception:
+            continue
+
+    return channel_ids, group_ids
 
 
 def main() -> None:
@@ -123,13 +203,19 @@ def main() -> None:
         "SESSION_NAME",
         "BOT_TOKEN",
         "TARGET_CHANNEL_ID",
-        "ALLOWED_CHANNEL_IDS",
-        "ALLOWED_GROUP_ID",
         "DRY_RUN",
     ]
     missing = [k for k in required if k not in cfg]
     if missing:
         raise SystemExit(f"Missing config keys: {', '.join(missing)}")
+
+    folder_mode = bool(cfg.get("ALLOWED_FOLDER_NAME"))
+
+    if not folder_mode and "ALLOWED_CHANNEL_IDS" not in cfg and "ALLOWED_CHANNELS" not in cfg:
+        raise SystemExit("Missing config key: ALLOWED_CHANNELS (or ALLOWED_CHANNEL_IDS), or set ALLOWED_FOLDER_NAME")
+
+    if not folder_mode and "ALLOWED_GROUP_ID" not in cfg and "ALLOWED_GROUP" not in cfg:
+        raise SystemExit("Missing config key: ALLOWED_GROUP (or ALLOWED_GROUP_ID), or set ALLOWED_FOLDER_NAME")
 
     debug = bool(cfg.get("DEBUG", False))
     logger = setup_logger(debug=debug)
@@ -146,15 +232,25 @@ def main() -> None:
     api_hash = str(cfg["TELEGRAM_API_HASH"])
     session_name = str(cfg["SESSION_NAME"])
     bot_token = str(cfg["BOT_TOKEN"])
-    target_channel_id = str(cfg["TARGET_CHANNEL_ID"])
-    allowed_channels = normalize_ids(cfg["ALLOWED_CHANNEL_IDS"])
-    allowed_group_id = int(cfg["ALLOWED_GROUP_ID"])
+    target_channel_ref = parse_ref(cfg["TARGET_CHANNEL_ID"])
+
+    raw_channels = cfg.get("ALLOWED_CHANNELS", cfg.get("ALLOWED_CHANNEL_IDS", []))
+    raw_group = cfg.get("ALLOWED_GROUP", cfg.get("ALLOWED_GROUP_ID"))
+
+    allowed_channel_refs = [parse_ref(x) for x in raw_channels]
+    allowed_group_ref = parse_ref(raw_group) if raw_group is not None else None
+    allowed_folder_name = str(cfg.get("ALLOWED_FOLDER_NAME", "")).strip()
+
     dry_run = bool(cfg["DRY_RUN"])
 
     logger.info("Starting pipeline. dry_run=%s, debug=%s", dry_run, debug)
-    logger.info("Allowed channels=%s, allowed_group=%s", sorted(allowed_channels), allowed_group_id)
+    logger.info("Allowed channel refs=%s, allowed_group_ref=%s", allowed_channel_refs, allowed_group_ref)
 
     client = TelegramClient(session_name, api_id, api_hash, auto_reconnect=True, sequential_updates=True)
+
+    allowed_channel_ids: Set[int] = set()
+    allowed_group_id: Optional[int] = None
+    target_channel_id: Optional[Union[int, str]] = None
 
     should_stop = {"value": False}
 
@@ -169,7 +265,7 @@ def main() -> None:
     async def on_new_message(event):
         chat_id = int(event.chat_id)
 
-        if chat_id not in allowed_channels and chat_id != allowed_group_id:
+        if chat_id not in allowed_channel_ids and chat_id != allowed_group_id:
             return
 
         try:
@@ -193,7 +289,11 @@ def main() -> None:
                     getattr(chat, "forum", None),
                 )
 
-            ok = send_via_bot_api(bot_token, target_channel_id, payload, logger, dry_run=dry_run)
+            if target_channel_id is None:
+                logger.error("Target channel is not resolved. Skip send.")
+                return
+
+            ok = send_via_bot_api(bot_token, str(target_channel_id), payload, logger, dry_run=dry_run)
             if ok:
                 state["processed_total"] = int(state.get("processed_total", 0)) + 1
                 state["last_event"] = {
@@ -208,15 +308,105 @@ def main() -> None:
         except FloodWaitError as e:
             logger.warning("FloodWaitError: sleep %ss", e.seconds)
             time.sleep(e.seconds)
-        except RpcError as e:
+        except RPCError as e:
             logger.error("Telethon RPC error: %s", e)
         except Exception as e:
             logger.exception("Unhandled pipeline error: %s", e)
 
     async def runner():
+        nonlocal allowed_channel_ids, allowed_group_id, target_channel_id
+
         await client.start()
         me = await client.get_me()
         logger.info("Reader authorized as %s", getattr(me, "username", me.id))
+
+        # Resolve refs -> numeric ids where possible
+        resolved_channels: Set[int] = set()
+        resolved_group_ids: Set[int] = set()
+
+        if allowed_folder_name:
+            folder_channels, folder_groups = await resolve_from_folder(client, allowed_folder_name, logger)
+            resolved_channels.update(folder_channels)
+            resolved_group_ids.update(folder_groups)
+            logger.info(
+                "Folder '%s' resolved: channels=%s groups=%s",
+                allowed_folder_name,
+                sorted(list(folder_channels)),
+                sorted(list(folder_groups)),
+            )
+
+        for ref in allowed_channel_refs:
+            rid = await resolve_chat_ref(client, ref)
+            if rid is None:
+                logger.warning("Cannot resolve channel ref: %s", ref)
+                continue
+            if isinstance(ref, int):
+                resolved_channels.add(ref)
+            else:
+                try:
+                    ent = await client.get_input_entity(ref)
+                    cid = int(getattr(ent, "channel_id", 0) or getattr(ent, "chat_id", 0) or 0)
+                    if cid:
+                        resolved_channels.add(-1000000000000 + cid)
+                    else:
+                        resolved_channels.add(rid)
+                except Exception:
+                    resolved_channels.add(rid)
+
+        grp = None
+        if allowed_group_ref is not None:
+            grp = await resolve_chat_ref(client, allowed_group_ref)
+            if grp is None:
+                logger.warning("Cannot resolve allowed group ref: %s", allowed_group_ref)
+
+        tgt = await resolve_chat_ref(client, target_channel_ref)
+        if tgt is None:
+            logger.warning("Cannot resolve target channel ref: %s", target_channel_ref)
+            target_channel_id = str(target_channel_ref)
+        else:
+            if isinstance(target_channel_ref, int):
+                target_channel_id = target_channel_ref
+            else:
+                try:
+                    ent = await client.get_input_entity(target_channel_ref)
+                    cid = int(getattr(ent, "channel_id", 0) or getattr(ent, "chat_id", 0) or 0)
+                    target_channel_id = (-1000000000000 + cid) if cid else tgt
+                except Exception:
+                    target_channel_id = tgt
+
+        allowed_channel_ids = resolved_channels
+
+        if grp is not None:
+            allowed_group_id = int(grp)
+        elif allowed_group_ref is not None:
+            allowed_group_id = int(allowed_group_ref) if isinstance(allowed_group_ref, int) else None
+        elif resolved_group_ids:
+            allowed_group_id = sorted(list(resolved_group_ids))[0]
+            if len(resolved_group_ids) > 1:
+                logger.warning(
+                    "Folder contains multiple groups. Using first=%s. Set ALLOWED_GROUP to pin specific one.",
+                    allowed_group_id,
+                )
+        else:
+            allowed_group_id = None
+
+        logger.info("Resolved allowed_channel_ids=%s", sorted(list(allowed_channel_ids)))
+        logger.info("Resolved allowed_group_id=%s", allowed_group_id)
+        logger.info("Resolved target_channel_id=%s", target_channel_id)
+
+        # HARD SAFETY GUARD: never send to source channels/group
+        source_ids = set(allowed_channel_ids)
+        if allowed_group_id is not None:
+            source_ids.add(int(allowed_group_id))
+        try:
+            tgt_int = int(target_channel_id) if target_channel_id is not None else None
+        except Exception:
+            tgt_int = None
+        if tgt_int is not None and tgt_int in source_ids:
+            raise RuntimeError(
+                "Safety guard triggered: TARGET_CHANNEL_ID points to a source chat. "
+                "Refusing to start to prevent any write into source group/topics."
+            )
 
         while not should_stop["value"]:
             if not client.is_connected():
