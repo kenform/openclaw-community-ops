@@ -825,10 +825,12 @@ def main() -> None:
                     logger.warning("Media download failed, fallback to text only: msg_id=%s err=%s", msg.id, e)
                     media_kind = None; media_bytes = None
 
+            # For any monitored source: prefer @voice_transcribot in working window, then fallback.
+            if media_kind == "voice" and not text.strip():
+                text = await transcribe_voice_preferred(client, media_bytes, logger)
+                media_only = bool(msg.media) and not text.strip()
+
             if is_artur_topic or is_artur_channel:
-                if media_kind == "voice" and not text.strip():
-                    text = await transcribe_voice_preferred(client, media_bytes, logger)
-                    media_only = bool(msg.media) and not text.strip()
                 main_result = classify_artur_main(text)
             else:
                 main_result = classify_main_ilya_message(text, has_media=bool(msg.media), rules=rules) if ilya_main_filter_enabled else {"pass": True, "score": 0, "type": "VIEW", "reason": "PASS_VIEW"}
