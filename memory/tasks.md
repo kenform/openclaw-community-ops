@@ -1,5 +1,13 @@
 # Active Tasks
 
+## [2026-03-09-post-dedup-2966] Проверить защиту от одинаковых постов в userbot
+- **Status**: ✅ 完成
+- **Requested**: 2026-03-09 05:09 UTC
+- **Updated**: 2026-03-09 05:11 UTC
+- **Notes**: Проверен и усилен антидубль в `userbot/bot.py`: (1) `digest_post_history` теперь хранит нормализованный текст и ловит near-duplicate (SequenceMatcher >= 0.93), а не только exact hash; (2) добавлен structure-guard для channel publish — блокирует multi-card payload с повторяющимися секциями `Источник/Главное`.
+- **Result**: userbot перезапущен, `active/running`, `NRestarts=0`. Повторы одинаковых/почти одинаковых дайджестов и «склейка из нескольких карточек» теперь должны отсекаться до публикации.
+
+
 ## [2026-03-09-quick-health-2958] Быстрая проверка userbot/sessions/logs/cache
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-09 05:04 UTC
