@@ -25,6 +25,13 @@
     58926,
     58990
   ],
+  "PRIORITY_TRADERS": [
+    "altador",
+    "artur",
+    "evelina",
+    "eli",
+    "ilya"
+  ],
   "BLOCKED_CHANNEL_IDS": [
     -1001795905023
   ],
