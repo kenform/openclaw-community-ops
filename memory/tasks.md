@@ -7,11 +7,12 @@
 - **Notes**: Пользователь поставил сайт на паузу; приоритет — завершить behavior layer и предоставить полный отчёт по текущему состоянию/что сделано/что осталось.
 
 
-## [2026-03-09-portfolio-local-run] Запустить локально сайт из github.com/kenform/Portfolio
-- **Status**: ⏸️ 暂停
+## [2026-03-09-portfolio-local-run] Проверить локальный запуск сайта из github.com/kenform/Portfolio (без старта)
+- **Status**: ✅ 完成
 - **Requested**: 2026-03-09 15:43 UTC
-- **Updated**: 2026-03-09 15:51 UTC
-- **Notes**: По команде пользователя задача остановлена и отложена до завершения behavior-layer.
+- **Updated**: 2026-03-09 17:00 UTC
+- **Notes**: Репозиторий клонирован в `/home/openclawuser/.openclaw/workspace/Portfolio`. Проверена структура: `package.json`, `public/index.html`, `src/`, CRA README.
+- **Result**: Стек — React (Create React App, `react-scripts`). Команда запуска: `npm install` (если зависимости не установлены) и `npm start`. Порт по умолчанию: `3000` (`http://localhost:3000`).
 
 ## [2026-03-09-disable-userbot-parser-3041] Временно отключить parser-контур userbot (~100 каналов)
 - **Status**: ✅ 完成
