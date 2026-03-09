@@ -1,5 +1,20 @@
 # Active Tasks
 
+## [2026-03-09-quick-health-2958] Быстрая проверка userbot/sessions/logs/cache
+- **Status**: ✅ 完成
+- **Requested**: 2026-03-09 05:04 UTC
+- **Updated**: 2026-03-09 05:07 UTC
+- **Notes**: Выполнен read-only срез: `openclaw status`, `systemctl --user show userbot`, `journalctl` по userbot/gateway, проверка таймера cleanup и размеров кэша.
+- **Result**: userbot активен (NRestarts=0), cleanup timer активен; сессии OpenClaw есть и живые. Найдено: `openclaw` не в PATH для non-login shell (использован абсолютный путь) и в логах userbot продолжаются `Telethon TypeNotFoundError` с reconnect-loop.
+
+
+## [2026-03-09-night-report-2956] Запрошен отчёт по ночному автономному прогону
+- **Status**: ✅ 完成
+- **Requested**: 2026-03-09 05:03 UTC
+- **Updated**: 2026-03-09 05:05 UTC
+- **Notes**: Проверил память задач, git-активность и процессы. Ночного автономного прогона с полным чеклистом (stability→cleanup→voice hardening→TradingView verification→dry-runs→metrics/report) не зафиксировано.
+- **Result**: Подготовлен честный статус-отчёт + предложен немедленный запуск полного прогона.
+
 ## [2026-03-08-watchdog-3h] Мониторинг состояния каждые 15 минут в течение 3 часов + авто-ремонт
 - **Status**: 🔄 进行中
 - **Requested**: 2026-03-08 19:51 UTC
