@@ -15,11 +15,11 @@
 - **Result**: Стек — React (Create React App, `react-scripts`). Команда запуска: `npm install` (если зависимости не установлены) и `npm start`. Порт по умолчанию: `3000` (`http://localhost:3000`).
 
 ## [2026-03-09-disable-userbot-parser-3041] Временно отключить parser-контур userbot (~100 каналов)
-- **Status**: ✅ 完成
+- **Status**: ✅ 完成 (реверс выполнен)
 - **Requested**: 2026-03-09 09:53 UTC
-- **Updated**: 2026-03-09 09:54 UTC
-- **Notes**: Пользователь попросил отключить старый parser в userbot (мониторил ~100 каналов). Применено мягкое отключение без остановки процессов.
-- **Result**: В `/home/openclawuser/userbot/digest_config.json` выставлен `enabled=false`. Scheduler читает конфиг циклически (каждую минуту), поэтому parser-контур отключён без рестарта `userbot.service`.
+- **Updated**: 2026-03-09 17:02 UTC
+- **Notes**: По новому запросу пользователя старый parser возвращён в обычный режим.
+- **Result**: В `/home/openclawuser/userbot/digest_config.json` выставлен `enabled=true`; `userbot.service` enabled+active/running.
 
 
 ## [2026-03-09-pipeline-hardening-checklist] No-history + dedupe + cache + auto-restart + flow/usage/TV confirmation
