@@ -1,5 +1,13 @@
 # Active Tasks
 
+## [2026-03-09-disable-userbot-parser-3041] Временно отключить parser-контур userbot (~100 каналов)
+- **Status**: ✅ 完成
+- **Requested**: 2026-03-09 09:53 UTC
+- **Updated**: 2026-03-09 09:54 UTC
+- **Notes**: Пользователь попросил отключить старый parser в userbot (мониторил ~100 каналов). Применено мягкое отключение без остановки процессов.
+- **Result**: В `/home/openclawuser/userbot/digest_config.json` выставлен `enabled=false`. Scheduler читает конфиг циклически (каждую минуту), поэтому parser-контур отключён без рестарта `userbot.service`.
+
+
 ## [2026-03-09-pipeline-hardening-checklist] No-history + dedupe + cache + auto-restart + flow/usage/TV confirmation
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-09 08:21 UTC
