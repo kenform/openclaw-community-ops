@@ -1,5 +1,18 @@
 # Active Tasks
 
+## [2026-03-09-topic-autopost-check] Проверка автопостинга из топиков в канал по последним сообщениям
+- **Status**: ✅ 完成
+- **Requested**: 2026-03-09 07:03 UTC
+- **Updated**: 2026-03-09 07:08 UTC
+- **Notes**: Проверены runtime-конфиг, актуальные логи pipeline, dryrun_report и tail signals.jsonl.
+- **Result**: Применено по запросу: в `projects/telegram-pipeline-v1/config.json` отключён фильтр тем (`TOPIC_FILTER_ENABLED=false`), выполнен controlled restart `telegram-pipeline-v1.service` (active). Новая конфигурация подхватилась: `Topic filter: enabled=False`.
+
+## [2026-03-09-night-window-apply] Применить оптимизации в тихое окно ночью с 04:00
+- **Status**: ⏸️ 暂停
+- **Requested**: 2026-03-09 05:44 UTC
+- **Updated**: 2026-03-09 05:45 UTC
+- **Notes**: Пользователь подтвердил применение изменений в ночное окно. Нужна фиксация таймзоны и даты запуска (сегодня/завтра), затем выполнить controlled restart/checklist.
+
 ## [2026-03-09-obsidian-note-2986] Добавить в Obsidian заметку по интерпретации мыслей (зоны/стопы)
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-09 05:42 UTC
