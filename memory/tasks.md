@@ -1,5 +1,12 @@
 # Active Tasks
 
+## [2026-03-09-pipeline-hardening-checklist] No-history + dedupe + cache + auto-restart + flow/usage/TV confirmation
+- **Status**: ✅ 完成
+- **Requested**: 2026-03-09 08:21 UTC
+- **Updated**: 2026-03-09 08:24 UTC
+- **Notes**: В `telegram-pipeline-v1` добавлена защита `skip_duplicate_message` с persistent cache последних 500 ключей `chat_id:message_id` (`memory.json`). Добавлен явный flow-log при старте и reconnect backoff/streak protection для Telethon decode glitches.
+- **Validation**: Логи подтверждают `Backfill enabled=False`, flow line присутствует, сервис active после рестарта, memory current ~46MB, RSS ~58MB, TasksCurrent=1.
+
 ## [2026-03-09-evelina-implicit-stop] Добавить implicit stop/invalidation для профиля Эвелины
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-09 07:35 UTC
