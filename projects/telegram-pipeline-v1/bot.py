@@ -60,17 +60,77 @@ def setup_logger(debug: bool) -> logging.Logger:
 
 
 def extract_topic_id(message) -> Optional[int]:
-    if not getattr(message, "reply_to", None):
-        return None
+    rt = getattr(message, "reply_to", None)
+    if rt is not None:
+        # For forum topics in supergroups this is usually reply_to_top_id
+        topic_id = getattr(rt, "reply_to_top_id", None)
+        if topic_id:
+            return topic_id
 
-    rt = message.reply_to
-    # For forum topics in supergroups this is usually reply_to_top_id
-    topic_id = getattr(rt, "reply_to_top_id", None)
-    if topic_id:
-        return topic_id
+        # fallback for possible alternate shape
+        topic_id = getattr(rt, "top_msg_id", None)
+        if topic_id:
+            return topic_id
 
-    # fallback for possible alternate shape
-    return getattr(rt, "top_msg_id", None)
+    # Some updates may carry topic linkage directly.
+    for k in ("reply_to_top_id", "top_msg_id", "topic_id"):
+        v = getattr(message, k, None)
+        if v:
+            return v
+    return None
+
+
+def _trader_tag(trader_id: Optional[str]) -> str:
+    t = (trader_id or "").strip().lower()
+    m = {
+        "altador": "#Altador",
+        "artur": "#Artur",
+        "evelina": "#Evelina",
+        "eli": "#Evelina",
+        "ilya": "#Ilya",
+        "irina": "#Irina",
+    }
+    return m.get(t, "#Trader")
+
+
+def _post_type_tag(main_type: Optional[str], text: str) -> str:
+    mt = (main_type or "").upper()
+    t = (text or "").lower()
+    if any(k in t for k in ["держу", "позиция", "в позиции"]):
+        return "#Позиция"
+    if any(k in t for k in ["обнов", "апдейт", "bu", "б/у", "безуб", "перенес стоп", "стоп в бу"]):
+        return "#Обновление"
+    if mt in {"SIGNAL", "ENTRY", "LONG_ENTRY", "SHORT_ENTRY"}:
+        return "#Сигнал"
+    if mt in {"VIEW", "MARKET_VIEW"}:
+        return "#Обзор"
+    if any(k in t for k in ["идея", "сценар", "план"]):
+        return "#Идея"
+    return "#Обзор"
+
+
+def _summarize_for_channel(text: str, max_len: int = 500) -> str:
+    t = re.sub(r"\s+", " ", (text or "")).strip()
+    if not t:
+        return ""
+    if len(t) <= max_len:
+        return t
+    cut = t[:max_len]
+    p = max(cut.rfind("."), cut.rfind("!"), cut.rfind("?"))
+    if p > 120:
+        return cut[:p+1]
+    return cut + "…"
+
+
+def _asset_tag(text: str) -> str:
+    t = (text or "").upper()
+    pair = re.search(r"\b([A-Z]{2,10})/USDT\b", t)
+    if pair:
+        return f"#{pair.group(1)}"
+    for a in ["BTC", "ETH", "SOL", "BCH", "BRENT", "BNB", "XRP", "DOGE", "TON", "LINK", "NEAR", "APT"]:
+        if a in t:
+            return f"#{a}"
+    return "#UNKNOWN"
 
 
 def format_payload(
@@ -80,11 +140,17 @@ def format_payload(
     text: str,
     media_only: bool,
     topic_title: Optional[str] = None,
+    trader_id: Optional[str] = None,
+    main_type: Optional[str] = None,
 ) -> str:
-    _ = (chat_title, chat_id, topic_id)
-    title = topic_title.strip() if topic_title else "без названия"
-    body = "[media message]" if media_only else (text.strip() if text else "[empty message]")
-    return f"[TopicTitle: {title}]\n\n{body}"
+    _ = (chat_title, chat_id, topic_id, topic_title)
+    body = "[медиа]" if media_only else (text.strip() if text else "[пусто]")
+    tags = [
+        _post_type_tag(main_type, body),
+        _trader_tag(trader_id),
+        _asset_tag(body),
+    ]
+    return "\n".join(tags) + "\n\n" + body
 
 
 EMOJI_RE = re.compile(
@@ -618,9 +684,10 @@ def send_via_bot_api(
         return True
 
     if media_kind and media_bytes is not None:
+        # Send charts/videos as files (document) to avoid Telegram compression.
         method_map = {
-            "photo": ("sendPhoto", "photo"),
-            "video": ("sendVideo", "video"),
+            "photo": ("sendDocument", "document"),
+            "video": ("sendDocument", "document"),
             "voice": ("sendVoice", "voice"),
             "document": ("sendDocument", "document"),
         }
@@ -836,6 +903,7 @@ def main() -> None:
     artur_channel_id: Optional[int] = None
 
     should_stop = {"value": False}
+    recent_context: Dict[str, List[Dict[str, Any]]] = {}
 
     def _shutdown(*_args):
         should_stop["value"] = True
@@ -966,9 +1034,13 @@ def main() -> None:
                     media_kind = None; media_bytes = None
 
             # For any monitored source: prefer @voice_transcribot in working window, then fallback.
-            if media_kind == "voice" and not text.strip():
-                text = await transcribe_voice_preferred(client, media_bytes, logger)
-                media_only = bool(msg.media) and not text.strip()
+            if media_kind == "voice":
+                raw_voice_text = await transcribe_voice_preferred(client, media_bytes, logger)
+                text = _summarize_for_channel(raw_voice_text)
+                # Never forward raw voice to output channel; publish text summary only.
+                media_kind = None
+                media_bytes = None
+                media_only = not text.strip()
 
             if trader_id == "artur":
                 main_result = classify_artur_main(text)
@@ -986,7 +1058,16 @@ def main() -> None:
 
             sent_main = False
             if main_result.get("pass") and main_target_channel_id is not None:
-                payload = f"[Type: {main_result.get('type') or 'VIEW'}]\n" + format_payload(chat_title, chat_id, topic_id, text, media_only, topic_title=topic_title)
+                payload = format_payload(
+                    chat_title,
+                    chat_id,
+                    topic_id,
+                    text,
+                    media_only,
+                    topic_title=topic_title,
+                    trader_id=trader_id,
+                    main_type=main_result.get('type') or 'VIEW',
+                )
                 sent_main = send_via_bot_api(
                     bot_token,
                     str(main_target_channel_id),
