@@ -23,6 +23,7 @@ from telethon.utils import get_peer_id
 BASE_DIR = Path(__file__).resolve().parent
 CONFIG_PATH = BASE_DIR / "config.json"
 MEMORY_PATH = BASE_DIR / "memory.json"
+MSG_CACHE_LIMIT = 500
 LOG_PATH = BASE_DIR / "userbot.log"
 
 
@@ -768,8 +769,11 @@ def main() -> None:
         default={
             "processed_total": 0,
             "last_event": None,
+            "recent_message_keys": [],
         },
     )
+    if not isinstance(state.get("recent_message_keys"), list):
+        state["recent_message_keys"] = []
 
     api_id = int(cfg["TELEGRAM_API_ID"])
     api_hash = str(cfg["TELEGRAM_API_HASH"])
@@ -818,6 +822,7 @@ def main() -> None:
     logger.info("Backfill enabled=%s (pipeline handles new incoming only)", backfill_enabled)
     logger.info("Ilya filter enabled=%s signal_parser_enabled=%s ilya_topic_id=%s", ilya_main_filter_enabled, signal_parser_enabled, ilya_topic_id)
     logger.info("Artur enabled=%s artur_channel_ref=%s artur_topic_id=%s", artur_enabled, artur_channel_ref, artur_topic_id)
+    logger.info("Pipeline flow: source -> topic filter -> trader filter -> signal parser -> router")
 
     client = TelegramClient(session_name, api_id, api_hash, auto_reconnect=True, sequential_updates=True)
 
@@ -912,6 +917,18 @@ def main() -> None:
             topic_id = extract_topic_id(msg)
 
             topic_title = topic_title_map.get(topic_id) if topic_id else None
+
+            msg_key = f"{chat_id}:{int(getattr(msg, 'id', 0) or 0)}"
+            recent_keys = state.get("recent_message_keys", [])
+            if msg_key in recent_keys:
+                logger.info("skip_duplicate_message key=%s", msg_key)
+                return
+            recent_keys.append(msg_key)
+            if len(recent_keys) > MSG_CACHE_LIMIT:
+                recent_keys = recent_keys[-MSG_CACHE_LIMIT:]
+            state["recent_message_keys"] = recent_keys
+            save_json(MEMORY_PATH, state)
+
             text = msg.message or ""
             media_only = bool(msg.media) and not text.strip()
 
@@ -1047,6 +1064,7 @@ def main() -> None:
 
     async def runner():
         nonlocal allowed_channel_ids, allowed_group_id, main_target_channel_id, signal_target_channel_id, artur_channel_id
+        crash_streak = 0
 
         await client.start()
         me = await client.get_me()
@@ -1177,21 +1195,26 @@ def main() -> None:
 
             try:
                 await client.run_until_disconnected()
+                crash_streak = 0
             except TypeNotFoundError as e:
-                logger.warning("Telethon update decode glitch (TypeNotFoundError). Reconnecting: %s", e)
+                crash_streak += 1
+                wait_s = min(30, 2 + crash_streak * 2)
+                logger.warning("Telethon update decode glitch (TypeNotFoundError). Reconnecting in %ss (streak=%s): %s", wait_s, crash_streak, e)
                 try:
                     await client.disconnect()
                 except Exception:
                     pass
-                await asyncio.sleep(2)
+                await asyncio.sleep(wait_s)
                 continue
             except Exception as e:
-                logger.error("run_until_disconnected error: %s", e)
+                crash_streak += 1
+                wait_s = min(30, 3 + crash_streak * 2)
+                logger.error("run_until_disconnected error. Reconnecting in %ss (streak=%s): %s", wait_s, crash_streak, e)
                 try:
                     await client.disconnect()
                 except Exception:
                     pass
-                await asyncio.sleep(3)
+                await asyncio.sleep(wait_s)
                 continue
 
     try:
