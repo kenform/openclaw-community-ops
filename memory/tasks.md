@@ -5,7 +5,7 @@
 - **Requested**: 2026-03-09 05:04 UTC
 - **Updated**: 2026-03-09 05:08 UTC
 - **Notes**: Выполнен read-only срез + точечный hardening по подтверждению пользователя: `openclaw gateway probe`, фикс PATH (`~/.local/bin/openclaw` symlink), обновлён обработчик `TypeNotFoundError` в `userbot/bot.py` (без гигантского дампа байт, с ctor-id), перезапуск `userbot.service`.
-- **Result**: gateway probe `ok=true`; userbot после рестарта `active/running`, `NRestarts=0`; openclaw CLI доступна по PATH в shell. Корневая причина decode-ошибок Telethon полностью не устранена (ошибки связаны с конкретными каналами/разницей updates), но reconnect-loop стабилизирован и лог-шум снижен для новых срабатываний.
+- **Result**: gateway probe `ok=true`; userbot после рестарта `active/running`, `NRestarts=0`; openclaw CLI доступна по PATH в shell. Корневая причина decode-ошибок Telethon полностью не устранена (ошибки связаны с конкретными каналами/разницей updates), но reconnect-loop стабилизирован и лог-шум снижен для новых срабатываний. Пользователь подтвердил: пока без ре-авторизации и без изоляции/mute каналов.
 
 
 ## [2026-03-09-night-report-2956] Запрошен отчёт по ночному автономному прогону
