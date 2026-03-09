@@ -1,5 +1,13 @@
 # Active Tasks
 
+## [2026-03-09-topic-backfill-20x] Прогон 20 последних сообщений по whitelisted топикам и отправка PASS в каналы
+- **Status**: ⚠️ 阻塞
+- **Requested**: 2026-03-09 07:08 UTC
+- **Updated**: 2026-03-09 07:16 UTC
+- **Notes**: Запущен one-shot backfill-скрипт `/tmp/topic_backfill_send.py` по whitelisted runtime topics.
+- **Blocker**: Telethon `TypeNotFoundError` (Constructor ID `9815cec8`) при чтении истории `iter_messages`, из-за чего скрипт падает до завершения 20x per-topic цикла.
+- **Result**: Отчёт по allowlist готов; массовый backfill-send не завершён из-за decode-glitch Telegram API.
+
 ## [2026-03-09-topic-autopost-check] Проверка автопостинга из топиков в канал по последним сообщениям
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-09 07:03 UTC
@@ -12,6 +20,14 @@
 - **Requested**: 2026-03-09 05:44 UTC
 - **Updated**: 2026-03-09 05:45 UTC
 - **Notes**: Пользователь подтвердил применение изменений в ночное окно. Нужна фиксация таймзоны и даты запуска (сегодня/завтра), затем выполнить controlled restart/checklist.
+
+## [2026-03-09-monitor-3005] Мониторинг системы каждые 10 минут + мягкий автофикс без рестартов
+- **Status**: 🔄 进行中
+- **Requested**: 2026-03-09 07:26 UTC
+- **Updated**: 2026-03-09 07:27 UTC
+- **Background**: delta-shoal (PID 2018108) on localhost — `scripts/watchdog_10m_softfix.sh`
+- **Notes**: По запросу пользователя запущен постоянный watchdog 10m: checks userbot/gateway/probe/disk/timer + soft-fix (без остановки процессов). Если нужен restart для лечения — только алерт пользователю.
+- **Result**: Логи: `logs/watchdog-state.log`, алерты: `logs/watchdog-alerts.log`, stdout: `logs/watchdog-10m.out`.
 
 ## [2026-03-09-obsidian-note-2986] Добавить в Obsidian заметку по интерпретации мыслей (зоны/стопы)
 - **Status**: ✅ 完成
