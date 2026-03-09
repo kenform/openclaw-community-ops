@@ -1,0 +1,9 @@
+{
+  "max_events_per_hour": 300,
+  "max_gpt_calls_per_hour": 60,
+  "max_gpt_calls_per_source_per_hour": 20,
+  "dedup_ttl_min": 90,
+  "max_retries": 1,
+  "request_timeout_sec": 25,
+  "max_input_chars": 2200
+}
