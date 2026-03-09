@@ -1,5 +1,18 @@
 # Active Tasks
 
+## [2026-03-09-behavior-layer-3124] Доделать behavior layer и выдать полный отчёт
+- **Status**: 🔄 进行中
+- **Requested**: 2026-03-09 15:51 UTC
+- **Updated**: 2026-03-09 15:52 UTC
+- **Notes**: Пользователь поставил сайт на паузу; приоритет — завершить behavior layer и предоставить полный отчёт по текущему состоянию/что сделано/что осталось.
+
+
+## [2026-03-09-portfolio-local-run] Запустить локально сайт из github.com/kenform/Portfolio
+- **Status**: ⏸️ 暂停
+- **Requested**: 2026-03-09 15:43 UTC
+- **Updated**: 2026-03-09 15:51 UTC
+- **Notes**: По команде пользователя задача остановлена и отложена до завершения behavior-layer.
+
 ## [2026-03-09-disable-userbot-parser-3041] Временно отключить parser-контур userbot (~100 каналов)
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-09 09:53 UTC
@@ -52,12 +65,19 @@
 - **Notes**: Пользователь подтвердил применение изменений в ночное окно. Нужна фиксация таймзоны и даты запуска (сегодня/завтра), затем выполнить controlled restart/checklist.
 
 ## [2026-03-09-monitor-3005] Мониторинг системы каждые 10 минут + мягкий автофикс без рестартов
-- **Status**: 🔄 进行中
+- **Status**: ⏸️ 暂停
 - **Requested**: 2026-03-09 07:26 UTC
-- **Updated**: 2026-03-09 11:04 UTC
-- **Background**: delta-shoal (PID 2018108) on localhost — `scripts/watchdog_10m_softfix.sh`
-- **Notes**: По запросу пользователя запущен постоянный watchdog 10m: checks userbot/gateway/probe/disk/timer + soft-fix (без остановки процессов). Если нужен restart для лечения — только алерт пользователю.
-- **Result**: На текущей проверке: `userbot.service inactive/dead`, `openclaw-gateway active/running`, `gateway probe ok=true`. Для восстановления userbot потребуется явное подтверждение на restart.
+- **Updated**: 2026-03-09 14:33 UTC
+- **Background**: watchdog process stopped by user request during full restart sequence.
+- **Notes**: После подтверждения пользователя выполнен controlled restart стека и остановка фонового watchdog (как часть «поставить текущие задачи на стоп»).
+- **Result**: `userbot.service active/running`, `openclaw-gateway.service active/running`, `gateway probe ok=true`.
+
+## [2026-03-09-full-restart-3089] Поставить задачи на стоп и перезапустить систему (без ломки)
+- **Status**: ✅ 完成
+- **Requested**: 2026-03-09 13:06 UTC
+- **Updated**: 2026-03-09 14:33 UTC
+- **Notes**: По прямому подтверждению пользователя выполнен безопасный рестарт рабочего стека без reboot ОС.
+- **Result**: Остановлен фон `watchdog_10m_softfix.sh`; перезапущены `openclaw-gateway.service` и `userbot.service`; обе службы в `active/running`, `NRestarts=0`, probe успешный.
 
 ## [2026-03-09-token-saver-night-3050] Ночью включить режим экономии лимита GPT
 - **Status**: 🔄 进行中
