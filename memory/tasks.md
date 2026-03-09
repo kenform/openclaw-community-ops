@@ -3,17 +3,17 @@
 ## [2026-03-09-quick-health-2958] Быстрая проверка userbot/sessions/logs/cache
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-09 05:04 UTC
-- **Updated**: 2026-03-09 05:07 UTC
-- **Notes**: Выполнен read-only срез: `openclaw status`, `systemctl --user show userbot`, `journalctl` по userbot/gateway, проверка таймера cleanup и размеров кэша.
-- **Result**: userbot активен (NRestarts=0), cleanup timer активен; сессии OpenClaw есть и живые. Найдено: `openclaw` не в PATH для non-login shell (использован абсолютный путь) и в логах userbot продолжаются `Telethon TypeNotFoundError` с reconnect-loop.
+- **Updated**: 2026-03-09 05:08 UTC
+- **Notes**: Выполнен read-only срез + точечный hardening по подтверждению пользователя: `openclaw gateway probe`, фикс PATH (`~/.local/bin/openclaw` symlink), обновлён обработчик `TypeNotFoundError` в `userbot/bot.py` (без гигантского дампа байт, с ctor-id), перезапуск `userbot.service`.
+- **Result**: gateway probe `ok=true`; userbot после рестарта `active/running`, `NRestarts=0`; openclaw CLI доступна по PATH в shell. Корневая причина decode-ошибок Telethon полностью не устранена (ошибки связаны с конкретными каналами/разницей updates), но reconnect-loop стабилизирован и лог-шум снижен для новых срабатываний.
 
 
 ## [2026-03-09-night-report-2956] Запрошен отчёт по ночному автономному прогону
-- **Status**: ✅ 完成
+- **Status**: 🔄 进行中
 - **Requested**: 2026-03-09 05:03 UTC
-- **Updated**: 2026-03-09 05:05 UTC
-- **Notes**: Проверил память задач, git-активность и процессы. Ночного автономного прогона с полным чеклистом (stability→cleanup→voice hardening→TradingView verification→dry-runs→metrics/report) не зафиксировано.
-- **Result**: Подготовлен честный статус-отчёт + предложен немедленный запуск полного прогона.
+- **Updated**: 2026-03-09 05:06 UTC
+- **Background**: tender-prairie (pid 1962859) on localhost — `night full run checks + dry-run + journald snapshot`
+- **Notes**: Пользователь подтвердил запуск полного прогона. Запущен цикл: stability/crash-protection → cleanup TTL/limits → voice/transcription hardening check → TradingView rules verification → dry-run tests → metrics/log/storage safety.
 
 ## [2026-03-08-watchdog-3h] Мониторинг состояния каждые 15 минут в течение 3 часов + авто-ремонт
 - **Status**: 🔄 进行中
