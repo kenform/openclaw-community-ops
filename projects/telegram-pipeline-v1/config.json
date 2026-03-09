@@ -10,9 +10,20 @@
   "DEBUG": true,
   "ALLOWED_FOLDER_NAME": "Wyckoff team",
   "INCLUDE_ALLOWED_CHANNELS_WHEN_FOLDER": false,
-  "TOPIC_FILTER_ENABLED": false,
+  "TOPIC_FILTER_ENABLED": true,
   "ALLOWED_TOPIC_IDS": [
-    58866
+    4,
+    6,
+    8,
+    10,
+    14,
+    13810,
+    57974,
+    58567,
+    58829,
+    58866,
+    58926,
+    58990
   ],
   "BLOCKED_CHANNEL_IDS": [
     -1001795905023

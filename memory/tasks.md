@@ -5,7 +5,7 @@
 - **Requested**: 2026-03-09 07:03 UTC
 - **Updated**: 2026-03-09 07:08 UTC
 - **Notes**: Проверены runtime-конфиг, актуальные логи pipeline, dryrun_report и tail signals.jsonl.
-- **Result**: Применено по запросу: в `projects/telegram-pipeline-v1/config.json` отключён фильтр тем (`TOPIC_FILTER_ENABLED=false`), выполнен controlled restart `telegram-pipeline-v1.service` (active). Новая конфигурация подхватилась: `Topic filter: enabled=False`.
+- **Result**: Применено по уточнению: включён whitelist-only режим по нужным топикам (`TOPIC_FILTER_ENABLED=true`) и задан список разрешённых topic IDs (Irina/Psy/Altador/Evelina/Ilya/Artur). Выполнен controlled restart `telegram-pipeline-v1.service`; конфиг подхватился: `Topic filter: enabled=True ...` и runtime IDs резолвятся корректно.
 
 ## [2026-03-09-night-window-apply] Применить оптимизации в тихое окно ночью с 04:00
 - **Status**: ⏸️ 暂停
