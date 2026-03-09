@@ -54,10 +54,10 @@
 ## [2026-03-09-monitor-3005] Мониторинг системы каждые 10 минут + мягкий автофикс без рестартов
 - **Status**: 🔄 进行中
 - **Requested**: 2026-03-09 07:26 UTC
-- **Updated**: 2026-03-09 10:08 UTC
+- **Updated**: 2026-03-09 11:04 UTC
 - **Background**: delta-shoal (PID 2018108) on localhost — `scripts/watchdog_10m_softfix.sh`
 - **Notes**: По запросу пользователя запущен постоянный watchdog 10m: checks userbot/gateway/probe/disk/timer + soft-fix (без остановки процессов). Если нужен restart для лечения — только алерт пользователю.
-- **Result**: Логи: `logs/watchdog-state.log`, алерты: `logs/watchdog-alerts.log`, stdout: `logs/watchdog-10m.out`.
+- **Result**: На текущей проверке: `userbot.service inactive/dead`, `openclaw-gateway active/running`, `gateway probe ok=true`. Для восстановления userbot потребуется явное подтверждение на restart.
 
 ## [2026-03-09-token-saver-night-3050] Ночью включить режим экономии лимита GPT
 - **Status**: 🔄 进行中
