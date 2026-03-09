@@ -476,7 +476,35 @@ def resolve_trader_by_source(chat_id: int, topic_id: Optional[int], sources) -> 
     return None
 
 
-def parse_generic_signal(text_raw: str, threshold: int = 6) -> Dict[str, Any]:
+def _infer_invalidation_level(text_raw: str) -> Optional[str]:
+    text = _norm_text_for_filter(text_raw)
+    stop_markers = [
+        "нельзя терять", "не терять", "если потеряем", "если не удержим",
+        "нужно удержать", "надо удержать", "важно удержать",
+        "не должны терять", "ниже нельзя", "ниже не уходить",
+    ]
+    if not any(m in text for m in stop_markers):
+        return None
+
+    nums = re.findall(r"\b\d{1,6}(?:[\.,]\d+)?\b", text)
+    if not nums:
+        return None
+
+    for m in stop_markers:
+        if m in text:
+            idx = text.find(m)
+            before = text[max(0, idx - 24):idx]
+            after = text[idx + len(m):idx + len(m) + 24]
+            n_after = re.findall(r"\d{1,6}(?:[\.,]\d+)?", after)
+            if n_after:
+                return n_after[0]
+            n_before = re.findall(r"\d{1,6}(?:[\.,]\d+)?", before)
+            if n_before:
+                return n_before[-1]
+    return nums[0]
+
+
+def parse_generic_signal(text_raw: str, threshold: int = 6, trader_id: Optional[str] = None) -> Dict[str, Any]:
     text = _norm_text_for_filter(text_raw)
     entry_words = ["лонг", "шорт", "взял", "беру", "открыл", "вход", "лимитка"]
     stop_words = ["стоп", "stop", "stop loss"]
@@ -491,10 +519,31 @@ def parse_generic_signal(text_raw: str, threshold: int = 6) -> Dict[str, Any]:
         if a.lower() in text:
             asset = a
             break
+
+    invalidation_level = None
+    stop_inferred = False
+    if (trader_id or "").lower() in {"evelina", "eli"}:
+        invalidation_level = _infer_invalidation_level(text_raw)
+        if invalidation_level:
+            has_stop = True
+            stop_inferred = True
+
     conf = (3 if has_entry else 0) + (3 if has_stop else 0) + (3 if has_target else 0) + (2 if asset != "UNKNOWN" else 0) + (1 if nums else 0)
     passed = conf >= threshold and sum([has_entry, has_stop, has_target]) >= 2
     stype = "LONG_ENTRY" if "лонг" in text else ("SHORT_ENTRY" if "шорт" in text else "MARKET_VIEW")
-    return {"pass": passed, "confidence": conf, "signal_type": stype, "asset": asset, "entry": nums[0] if nums else "—", "stop": "есть" if has_stop else "—", "target": nums[1] if len(nums)>1 else "—", "raw": text_raw}
+    stop_val = invalidation_level if invalidation_level else ("есть" if has_stop else "—")
+    return {
+        "pass": passed,
+        "confidence": conf,
+        "signal_type": stype,
+        "asset": asset,
+        "entry": nums[0] if nums else "—",
+        "stop": stop_val,
+        "target": nums[1] if len(nums) > 1 else "—",
+        "invalidation_level": invalidation_level if invalidation_level else "—",
+        "stop_inferred": stop_inferred,
+        "raw": text_raw,
+    }
 
 
 def append_signal_jsonl(path: Path, row: Dict[str, Any], logger: logging.Logger):
@@ -952,7 +1001,7 @@ def main() -> None:
                         logger.info("%s confidence=%s msg_id=%s topic_id=%s", sig["reason"], sig["confidence"], msg.id, topic_id)
                 else:
                     threshold = int((trader_profiles.get(trader_id, {}) or {}).get("signal_threshold", 6))
-                    sig = parse_generic_signal(text, threshold=threshold)
+                    sig = parse_generic_signal(text, threshold=threshold, trader_id=trader_id)
                     if sig.get("pass"):
                         sig_msg = f"#Signal\nTrader: {trader_id}\nAsset: {sig.get('asset')}\nType: {sig.get('signal_type')}\nEntry: {sig.get('entry')}\nStop: {sig.get('stop')}\nTarget: {sig.get('target')}\nConfidence: {sig.get('confidence')}\n\nRaw:\n{sig.get('raw')}"
                         send_via_bot_api(bot_token, str(signal_target_channel_id), sig_msg, logger, dry_run=dry_run)
@@ -967,6 +1016,9 @@ def main() -> None:
                 "asset": sig.get("asset", "UNKNOWN"),
                 "signal_type": sig.get("signal_type", "NO_SIGNAL"),
                 "confidence": sig.get("confidence", 0),
+                "stop": sig.get("stop", "—"),
+                "invalidation_level": sig.get("invalidation_level", "—"),
+                "stop_inferred": bool(sig.get("stop_inferred", False)),
                 "raw_text": text,
                 "has_tradingview_link": tv_link,
                 "has_image": bool(getattr(msg, "photo", None)),

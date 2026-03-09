@@ -1,5 +1,12 @@
 # Active Tasks
 
+## [2026-03-09-evelina-implicit-stop] Добавить implicit stop/invalidation для профиля Эвелины
+- **Status**: ✅ 完成
+- **Requested**: 2026-03-09 07:35 UTC
+- **Updated**: 2026-03-09 07:38 UTC
+- **Notes**: Реализовано правило для `trader_id in {evelina, eli}`: при фразах `нельзя терять|если потеряем|если не удержим|нужно/надо/важно удержать|не должны терять|ниже нельзя|ниже не уходить` ближайший уровень интерпретируется как `invalidation_level` и выводится как `Stop`.
+- **Result**: В generic signal добавлены поля `invalidation_level`, `stop_inferred`; в storage JSONL теперь пишутся `stop`, `invalidation_level`, `stop_inferred`.
+
 ## [2026-03-09-topic-backfill-20x] Прогон 20 последних сообщений по whitelisted топикам и отправка PASS в каналы
 - **Status**: ⚠️ 阻塞
 - **Requested**: 2026-03-09 07:08 UTC
