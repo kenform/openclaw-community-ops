@@ -1,11 +1,19 @@
 # Active Tasks
 
+## [2026-03-09-obsidian-note-2986] Добавить в Obsidian заметку по интерпретации мыслей (зоны/стопы)
+- **Status**: ✅ 完成
+- **Requested**: 2026-03-09 05:42 UTC
+- **Updated**: 2026-03-09 05:43 UTC
+- **Notes**: Пользователь попросил зафиксировать в Obsidian: мысль «зоны нельзя терять» интерпретировать как правило постановки стопа.
+- **Result**: Создана заметка `/home/openclawuser/.openclaw/workspace/Obsidian-Telegram-KB/00_Inbox/2026-03-09__мысли-зоны-и-стопы.md` с интерпретацией и шаблоном действий (вход/invalidation/стоп/риск%).
+
+
 ## [2026-03-09-capacity-forecast] Оценить нагрузку 1+2 parser и порог апгрейда сервера
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-09 05:23 UTC
 - **Updated**: 2026-03-09 05:39 UTC
 - **Notes**: Пользователь уточнил 2 активных parser. Проведена быстрая проверка `psybot_api`: это отдельный aiogram MVP для /scan и записи в storage; `.env` пустой, при этом service с `Restart=always`, из-за чего шёл цикл рестартов.
-- **Result**: Подготовлен точный план оптимизации GPT-расхода для 2 parser + даны рекомендации по безопасной заморозке `psybot-api`.
+- **Result**: Выполнено: `psybot-api` заморожен (`systemctl --user disable --now`, status=inactive/disabled). В `userbot` внедрены runtime-ограничители GPT (max_input_chars, hourly quota global/source, dedup TTL, quota/dedup event logging) через `ai_limits.json` без принудительного рестарта. Для parser-v1 добавлен шаблон `projects/telegram-pipeline-v1/limits.json`. Изменения в workspace закоммичены (`7b70edb`).
 
 ## [2026-03-09-userbot-live-check-opt] Проверить и оптимизировать userbot без остановки текущих задач
 - **Status**: ✅ 完成
