@@ -7,6 +7,14 @@
 - **Notes**: Реализовано правило для `trader_id in {evelina, eli}`: при фразах `нельзя терять|если потеряем|если не удержим|нужно/надо/важно удержать|не должны терять|ниже нельзя|ниже не уходить` ближайший уровень интерпретируется как `invalidation_level` и выводится как `Stop`.
 - **Result**: В generic signal добавлены поля `invalidation_level`, `stop_inferred`; в storage JSONL теперь пишутся `stop`, `invalidation_level`, `stop_inferred`.
 
+## [2026-03-09-unified-layer-and-backfill] Unified behavior-layer + backfill 20x per topic
+- **Status**: 🔄 进行中 (приоритет)
+- **Requested**: 2026-03-09 07:08 UTC
+- **Updated**: 2026-03-09 08:13 UTC
+- **Notes**: Пользователь поднял задачу в приоритет. Дополнительно по запросу: остановлен и disabled `userbot.service` (широкий парсер по ~100 каналам), оценена его ресурсная/лимитная нагрузка.
+- **Result (interim)**: `userbot` inactive+disabled; исторически memory peak ~50–62MB, CPU time по рестартам низкий. В userbot_events.jsonl за 24ч доминируют `collect_channel_posts_error`/`telethon_decode_error`; вызовы `ask_openclaw_*` почти отсутствуют в последние сутки, значит расход GPT-кредитов по этому парсеру сейчас минимальный.
+- **Patch applied**: в `/home/openclawuser/userbot/bot.py` исправлен критичный контур стабильности: `collect_channel_posts` теперь пробрасывает исключение вверх (чтобы `fetch_channel_posts_safe` включал backoff/auto-mute вместо тихого флуда), добавлен skip для пустых prompt (`ask_openclaw_skip_empty_prompt`), и усилен cooldown для decode/RPC ошибок.
+
 ## [2026-03-09-topic-backfill-20x] Прогон 20 последних сообщений по whitelisted топикам и отправка PASS в каналы
 - **Status**: ⚠️ 阻塞
 - **Requested**: 2026-03-09 07:08 UTC
