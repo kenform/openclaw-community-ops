@@ -54,10 +54,16 @@
 ## [2026-03-09-monitor-3005] Мониторинг системы каждые 10 минут + мягкий автофикс без рестартов
 - **Status**: 🔄 进行中
 - **Requested**: 2026-03-09 07:26 UTC
-- **Updated**: 2026-03-09 07:27 UTC
+- **Updated**: 2026-03-09 10:08 UTC
 - **Background**: delta-shoal (PID 2018108) on localhost — `scripts/watchdog_10m_softfix.sh`
 - **Notes**: По запросу пользователя запущен постоянный watchdog 10m: checks userbot/gateway/probe/disk/timer + soft-fix (без остановки процессов). Если нужен restart для лечения — только алерт пользователю.
 - **Result**: Логи: `logs/watchdog-state.log`, алерты: `logs/watchdog-alerts.log`, stdout: `logs/watchdog-10m.out`.
+
+## [2026-03-09-token-saver-night-3050] Ночью включить режим экономии лимита GPT
+- **Status**: 🔄 进行中
+- **Requested**: 2026-03-09 10:07 UTC
+- **Updated**: 2026-03-09 10:08 UTC
+- **Notes**: Пользователь подтвердил включение «эконом-режима» ночью: короткие ответы по умолчанию, минимум промежуточных отчётов, алерты только по важному, детализация по запросу «подробно».
 
 ## [2026-03-09-obsidian-note-2986] Добавить в Obsidian заметку по интерпретации мыслей (зоны/стопы)
 - **Status**: ✅ 完成
