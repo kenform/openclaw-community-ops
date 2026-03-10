@@ -1,11 +1,11 @@
 # Active Tasks
 
 ## [2026-03-10-pipeline-output-evelina-dryrun] Dry-run фиксы telegram-pipeline-v1 (output + Evelina parser)
-- **Status**: 🔄 进行中
+- **Status**: ✅ 完成
 - **Requested**: 2026-03-10 08:22 UTC
-- **Updated**: 2026-03-10 09:30 UTC
-- **Notes**: Этап-3: аккуратный рестарт `telegram-pipeline-v1` для применения Evelina EXIT/CONDITIONAL_ENTRY в рантайме, затем post-check (status/runtime semantics), coverage и formatted примеры.
-- **Result**: в работе
+- **Updated**: 2026-03-10 09:33 UTC
+- **Notes**: Выполнен controlled restart `telegram-pipeline-v1` после внесённых правок Evelina semantics. Проведён post-check runtime и dry-run coverage/format samples.
+- **Result**: Сервис active/running (`NRestarts=0`), semantics в рантайме активны (EXIT/CONDITIONAL_ENTRY), выданы sources list + coverage + 2 MAIN/2 SIGNAL/2 DROP примеры.
 
 ## [2026-03-09-portfolio-revive-vercel-3181] Реанимировать портфолио-сайт и подготовить деплой на Vercel
 - **Status**: ✅ 完成
