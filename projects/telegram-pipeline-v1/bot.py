@@ -19,6 +19,7 @@ from telethon.tl.functions.messages import GetDialogFiltersRequest
 from telethon.tl.functions.channels import GetForumTopicsRequest
 from telethon.errors.common import TypeNotFoundError
 from telethon.utils import get_peer_id
+from behavior_layer import update_context, apply_behavior_profile
 
 BASE_DIR = Path(__file__).resolve().parent
 CONFIG_PATH = BASE_DIR / "config.json"
@@ -122,6 +123,12 @@ def _summarize_for_channel(text: str, max_len: int = 500) -> str:
     return cut + "…"
 
 
+def _clean_post_text(text: str) -> str:
+    t = re.sub(r"\[\s*media\s*\]", " ", text or "", flags=re.IGNORECASE)
+    t = re.sub(r"\s+", " ", t).strip()
+    return t
+
+
 def _asset_tag(text: str) -> str:
     t = (text or "").upper()
     pair = re.search(r"\b([A-Z]{2,10})/USDT\b", t)
@@ -144,13 +151,17 @@ def format_payload(
     main_type: Optional[str] = None,
 ) -> str:
     _ = (chat_title, chat_id, topic_id, topic_title)
-    body = "[медиа]" if media_only else (text.strip() if text else "[пусто]")
+    body = _clean_post_text(text)
     tags = [
         _post_type_tag(main_type, body),
         _trader_tag(trader_id),
         _asset_tag(body),
     ]
-    return "\n".join(tags) + "\n\n" + body
+    pair = re.search(r"\b([A-Z]{2,10}/USDT)\b", body.upper())
+    pair_line = pair.group(1) if pair else ""
+    if body:
+        return "\n".join(tags) + (f"\n\n{pair_line}\n\n" if pair_line else "\n\n") + body
+    return "\n".join(tags)
 
 
 EMOJI_RE = re.compile(
@@ -351,18 +362,15 @@ def parse_ilya_signal(raw_text: str, rules: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def format_signal_message(sig: Dict[str, Any]) -> str:
-    return (
-        "#IlyaSignal\n"
-        f"Type: {sig.get('signal_type') or '—'}\n"
-        f"Asset: {sig.get('asset') or '—'}\n"
-        f"Bias: {sig.get('bias') or '—'}\n"
-        f"Entry: {(sig.get('entry_condition') if sig.get('entry_condition') != '—' else sig.get('entry_zone')) or '—'}\n"
-        f"Stop: {sig.get('stop') or '—'}\n"
-        f"Target: {sig.get('target') or '—'}\n"
-        f"Timeframe: {sig.get('timeframe') or '—'}\n"
-        f"Confidence: {sig.get('confidence')}\n"
-        f"Raw: {sig.get('raw_text') or '—'}"
-    )
+    asset = (sig.get("asset") or "UNKNOWN").upper()
+    pair = f"{asset}/USDT" if asset != "UNKNOWN" else ""
+    raw = _clean_post_text(sig.get("raw_text") or "")
+    lines = ["#Сигнал", "#Ilya", f"#{asset}" if asset != "UNKNOWN" else "#UNKNOWN"]
+    if pair:
+        lines.extend(["", pair])
+    if raw:
+        lines.extend(["", raw])
+    return "\n".join(lines)
 
 
 def transcribe_voice_with_whisper(media_bytes: Optional[bytes]) -> str:
@@ -497,17 +505,15 @@ def parse_artur_signal(text_raw: str) -> Dict[str, Any]:
 
 
 def format_artur_signal(sig: Dict[str, Any]) -> str:
-    return (
-        "#ArturSignal\n\n"
-        f"Asset: {sig.get('asset','UNKNOWN')}\n"
-        f"Type: {sig.get('signal_type','—')}\n"
-        f"Entry: {sig.get('entry','—')}\n"
-        f"Stop: {sig.get('stop','—')}\n"
-        f"Target: {sig.get('target','—')}\n"
-        f"Confidence: {sig.get('confidence',0)}\n\n"
-        "Raw:\n"
-        f"{sig.get('raw','—')}"
-    )
+    asset = (sig.get("asset") or "UNKNOWN").upper()
+    pair = f"{asset}/USDT" if asset != "UNKNOWN" else ""
+    raw = _clean_post_text(sig.get("raw") or "")
+    lines = ["#Сигнал", "#Artur", f"#{asset}" if asset != "UNKNOWN" else "#UNKNOWN"]
+    if pair:
+        lines.extend(["", pair])
+    if raw:
+        lines.extend(["", raw])
+    return "\n".join(lines)
 
 
 def load_engine_configs(base_dir: Path, logger: logging.Logger) -> Dict[str, Any]:
@@ -571,9 +577,14 @@ def _infer_invalidation_level(text_raw: str) -> Optional[str]:
     return nums[0]
 
 
+def _evelina_action_signal(text: str) -> bool:
+    action_words = ["взяла", "беру", "набрала", "зашла", "шорт", "лонг", "добираю", "чуть по чуть"]
+    return any(w in text for w in action_words)
+
+
 def parse_generic_signal(text_raw: str, threshold: int = 6, trader_id: Optional[str] = None) -> Dict[str, Any]:
     text = _norm_text_for_filter(text_raw)
-    entry_words = ["лонг", "шорт", "взял", "беру", "открыл", "вход", "лимитка"]
+    entry_words = ["лонг", "шорт", "взял", "взяла", "беру", "набрала", "зашла", "добираю", "открыл", "вход", "лимитка", "чуть по чуть"]
     stop_words = ["стоп", "stop", "stop loss"]
     target_words = ["цель", "тейк", "тейки", "take"]
     has_entry = any(w in text for w in entry_words)
@@ -589,14 +600,22 @@ def parse_generic_signal(text_raw: str, threshold: int = 6, trader_id: Optional[
 
     invalidation_level = None
     stop_inferred = False
-    if (trader_id or "").lower() in {"evelina", "eli"}:
+    force_main_view = False
+    is_evelina = (trader_id or "").lower() in {"evelina", "eli"}
+    if is_evelina:
         invalidation_level = _infer_invalidation_level(text_raw)
         if invalidation_level:
             has_stop = True
             stop_inferred = True
 
+        evelina_view_phrases = ["если потеряем", "нельзя терять"]
+        if any(p in text for p in evelina_view_phrases) or ("лонговать пока" in text and "не настроена" in text):
+            force_main_view = True
+
     conf = (3 if has_entry else 0) + (3 if has_stop else 0) + (3 if has_target else 0) + (2 if asset != "UNKNOWN" else 0) + (1 if nums else 0)
     passed = conf >= threshold and sum([has_entry, has_stop, has_target]) >= 2
+    if is_evelina:
+        passed = _evelina_action_signal(text) and not force_main_view
     stype = "LONG_ENTRY" if "лонг" in text else ("SHORT_ENTRY" if "шорт" in text else "MARKET_VIEW")
     stop_val = invalidation_level if invalidation_level else ("есть" if has_stop else "—")
     return {
@@ -684,11 +703,11 @@ def send_via_bot_api(
         return True
 
     if media_kind and media_bytes is not None:
-        # Send charts/videos as files (document) to avoid Telegram compression.
+        # Always send media as file/document for stable channel output.
         method_map = {
             "photo": ("sendDocument", "document"),
             "video": ("sendDocument", "document"),
-            "voice": ("sendVoice", "voice"),
+            "voice": ("sendDocument", "document"),
             "document": ("sendDocument", "document"),
         }
         if media_kind in method_map:
@@ -697,7 +716,7 @@ def send_via_bot_api(
                 bot_token,
                 method,
                 logger,
-                data_payload={"chat_id": target_channel_id, "caption": first_chunk or "[media message]"},
+                data_payload={"chat_id": target_channel_id, "caption": first_chunk or ""},
                 files={field: (media_name, media_bytes)},
             )
             if not ok:
@@ -876,6 +895,14 @@ def main() -> None:
     rules["signal_threshold"] = int(cfg.get("SIGNAL_CONFIDENCE_THRESHOLD", rules.get("signal_threshold", 7)))
     engine_cfg = load_engine_configs(BASE_DIR, logger)
     engine_sources = engine_cfg.get("sources", [])
+    ilya_topic_ids_from_sources = {
+        int(x)
+        for s in engine_sources
+        if (s.get("trader") or "").lower() == "ilya" and s.get("type") == "topic"
+        for x in (s.get("topic_ids") or [])
+        if str(x).strip().lstrip("-").isdigit()
+    }
+    ilya_topic_ids = set(ilya_topic_ids_from_sources) or {ilya_topic_id}
     trader_profiles = engine_cfg.get("traders", {})
     tv_patterns = engine_cfg.get("tradingview_patterns", ["tradingview.com"])
     storage_path = BASE_DIR / str(engine_cfg.get("routing", {}).get("storage_jsonl", "signals.jsonl"))
@@ -899,6 +926,7 @@ def main() -> None:
     signal_target_channel_id: Optional[Union[int, str]] = None
     topic_title_map: Dict[int, str] = {}
     allowed_topic_runtime_ids: Set[int] = set(allowed_topic_ids)
+    ilya_topic_runtime_ids: Set[int] = set(ilya_topic_ids)
     artur_topic_runtime_ids: Set[int] = {artur_topic_id}
     artur_channel_id: Optional[int] = None
 
@@ -918,10 +946,11 @@ def main() -> None:
     signal.signal(signal.SIGTERM, _shutdown)
 
     async def refresh_topic_title_map(group_id: Optional[int]):
-        nonlocal topic_title_map, allowed_topic_runtime_ids, artur_topic_runtime_ids
+        nonlocal topic_title_map, allowed_topic_runtime_ids, ilya_topic_runtime_ids, artur_topic_runtime_ids
         if not group_id:
             topic_title_map = {}
             allowed_topic_runtime_ids = set(allowed_topic_ids)
+            ilya_topic_runtime_ids = set(ilya_topic_ids)
             return
         try:
             entity = await client.get_entity(group_id)
@@ -945,6 +974,17 @@ def main() -> None:
                         resolved_runtime.add(t_id)
             allowed_topic_runtime_ids = resolved_runtime or set(allowed_topic_ids)
 
+            ilya_resolved = set()
+            for t in topics:
+                t_top = int(getattr(t, "top_message", 0) or 0)
+                t_id = int(getattr(t, "id", 0) or 0)
+                if t_top in ilya_topic_ids or t_id in ilya_topic_ids:
+                    if t_top:
+                        ilya_resolved.add(t_top)
+                    if t_id:
+                        ilya_resolved.add(t_id)
+            ilya_topic_runtime_ids = ilya_resolved or set(ilya_topic_ids)
+
             artur_resolved = set()
             for t in topics:
                 t_top = int(getattr(t, "top_message", 0) or 0)
@@ -958,11 +998,13 @@ def main() -> None:
 
             logger.info("Loaded topic titles: %s", {k: topic_title_map[k] for k in sorted(topic_title_map)[:20]})
             logger.info("Resolved runtime topic ids=%s", sorted(list(allowed_topic_runtime_ids)))
+            logger.info("Resolved ilya topic runtime ids=%s", sorted(list(ilya_topic_runtime_ids)))
             logger.info("Resolved artur topic runtime ids=%s", sorted(list(artur_topic_runtime_ids)))
         except Exception as e:
             logger.warning("Cannot load forum topic titles: %s", e)
             topic_title_map = {}
             allowed_topic_runtime_ids = set(allowed_topic_ids)
+            ilya_topic_runtime_ids = set(ilya_topic_ids)
 
     @client.on(events.NewMessage(incoming=True))
     async def on_new_message(event):
@@ -1000,15 +1042,16 @@ def main() -> None:
             text = msg.message or ""
             media_only = bool(msg.media) and not text.strip()
 
-            is_ilya = chat_id == allowed_group_id and topic_id in allowed_topic_runtime_ids
+            is_ilya = chat_id == allowed_group_id and topic_id in ilya_topic_runtime_ids
             is_artur_topic = artur_enabled and chat_id == allowed_group_id and topic_id in artur_topic_runtime_ids
             is_artur_channel = artur_enabled and artur_channel_id is not None and chat_id == artur_channel_id
 
             trader_id = resolve_trader_by_source(chat_id, topic_id, engine_sources)
-            if is_ilya:
-                trader_id = "ilya"
-            elif is_artur_topic or is_artur_channel:
-                trader_id = "artur"
+            if not trader_id:
+                if is_ilya:
+                    trader_id = "ilya"
+                elif is_artur_topic or is_artur_channel:
+                    trader_id = "artur"
 
             if not trader_id:
                 logger.info("Dropped (source not configured): chat_id=%s topic_id=%s msg_id=%s", chat_id, topic_id, msg.id)
@@ -1042,67 +1085,69 @@ def main() -> None:
                 media_bytes = None
                 media_only = not text.strip()
 
-            if trader_id == "artur":
-                main_result = classify_artur_main(text)
-            elif trader_id == "ilya":
-                main_result = classify_main_ilya_message(text, has_media=bool(msg.media), rules=rules) if ilya_main_filter_enabled else {"pass": True, "score": 0, "type": "VIEW", "reason": "PASS_VIEW"}
-            else:
-                main_result = {"pass": True, "type": "VIEW", "reason": "PASS_MAIN_MARKET_VIEW"}
-
             tv_link = has_tradingview_link(text, tv_patterns)
-            if tv_link:
-                main_result = {"pass": True, "type": main_result.get("type") or "VIEW", "reason": "PASS_MAIN_TRADINGVIEW", "hold_only": False}
 
-            if not main_result.get("pass"):
-                logger.info("%s score=%s msg_id=%s topic_id=%s", main_result.get("reason"), main_result.get("score", 0), msg.id, topic_id)
+            update_context(recent_context, trader_id, {"msg_id": msg.id, "text": text, "has_media": bool(msg.media)})
+
+            callbacks = {
+                "classify_artur_main": classify_artur_main,
+                "parse_artur_signal": parse_artur_signal,
+                "classify_main_ilya_message": classify_main_ilya_message,
+                "parse_ilya_signal": parse_ilya_signal,
+                "parse_generic_signal": parse_generic_signal,
+                "rules": rules,
+                "ilya_main_filter_enabled": ilya_main_filter_enabled,
+            }
+            threshold = int((trader_profiles.get(trader_id) or {}).get("signal_threshold", 6))
+            ctx_window = recent_context.get(f"{trader_id}", [])
+
+            decision = apply_behavior_profile(
+                trader_id=trader_id,
+                text=text,
+                has_media=bool(msg.media),
+                media_kind=media_kind,
+                context_window=ctx_window,
+                callbacks=callbacks,
+                tv_link=tv_link,
+                signal_threshold=threshold,
+            )
+
+            main_result = decision["main_result"]
+            sig = decision["signal_data"]
+            state_type = decision["state_type"]
+            debug_reasons = decision["debug_reasons"]
+            _raw_bundle = decision["bundle_text"] or ""
+            effective_text = _clean_post_text(_raw_bundle) or _clean_post_text(text)
+
+            logger.info("pipeline trader=%s state=%s main=%s signal=%s reasons=%s msg_id=%s",
+                trader_id, state_type, decision["main_pass"], decision["signal_pass"], debug_reasons, msg.id)
 
             sent_main = False
-            if main_result.get("pass") and main_target_channel_id is not None:
-                payload = format_payload(
-                    chat_title,
-                    chat_id,
-                    topic_id,
-                    text,
-                    media_only,
-                    topic_title=topic_title,
-                    trader_id=trader_id,
-                    main_type=main_result.get('type') or 'VIEW',
-                )
-                sent_main = send_via_bot_api(
-                    bot_token,
-                    str(main_target_channel_id),
-                    payload,
-                    logger,
-                    dry_run=dry_run,
-                    media_kind=media_kind,
-                    media_bytes=media_bytes,
-                    media_name=media_name,
-                )
+            if decision["main_pass"] and main_target_channel_id is not None:
+                payload = format_payload(chat_title, chat_id, topic_id,
+                    effective_text, media_only, topic_title=topic_title,
+                    trader_id=trader_id, main_type=main_result.get("type") or "VIEW")
+                sent_main = send_via_bot_api(bot_token, str(main_target_channel_id), payload, logger,
+                    dry_run=dry_run, media_kind=media_kind, media_bytes=media_bytes, media_name=media_name)
 
-            sig = {"pass": False, "reason": "SIGNAL_NO_STRUCTURE", "confidence": 0}
-            if signal_parser_enabled and signal_target_channel_id is not None and not main_result.get("hold_only", False):
+            if signal_parser_enabled and signal_target_channel_id is not None and decision["signal_pass"]:
                 if trader_id == "artur":
-                    sig = parse_artur_signal(text) if text.strip() else {"pass": False, "reason": "ARTUR_SIGNAL_DROP", "confidence": 0}
-                    if sig.get("pass"):
-                        sig_msg = format_artur_signal(sig)
-                        sig_ok = send_via_bot_api(bot_token, str(signal_target_channel_id), sig_msg, logger, dry_run=dry_run)
-                        logger.info("%s confidence=%s msg_id=%s", "ARTUR_SIGNAL_PASS" if sig_ok else "ARTUR_SIGNAL_DROP", sig.get("confidence"), msg.id)
-                    else:
-                        logger.info("%s confidence=%s msg_id=%s", sig.get("reason"), sig.get("confidence"), msg.id)
+                    sig_msg = format_artur_signal(sig)
                 elif trader_id == "ilya":
-                    sig = parse_ilya_signal(text, rules)
-                    if sig["pass"]:
-                        sig_msg = format_signal_message(sig)
-                        sig_ok = send_via_bot_api(bot_token, str(signal_target_channel_id), sig_msg, logger, dry_run=dry_run)
-                        logger.info("%s confidence=%s msg_id=%s topic_id=%s", "SIGNAL_PASS" if sig_ok else "SIGNAL_DROP", sig["confidence"], msg.id, topic_id)
-                    else:
-                        logger.info("%s confidence=%s msg_id=%s topic_id=%s", sig["reason"], sig["confidence"], msg.id, topic_id)
+                    sig_msg = format_signal_message(sig)
                 else:
-                    threshold = int((trader_profiles.get(trader_id, {}) or {}).get("signal_threshold", 6))
-                    sig = parse_generic_signal(text, threshold=threshold, trader_id=trader_id)
-                    if sig.get("pass"):
-                        sig_msg = f"#Signal\nTrader: {trader_id}\nAsset: {sig.get('asset')}\nType: {sig.get('signal_type')}\nEntry: {sig.get('entry')}\nStop: {sig.get('stop')}\nTarget: {sig.get('target')}\nConfidence: {sig.get('confidence')}\n\nRaw:\n{sig.get('raw')}"
-                        send_via_bot_api(bot_token, str(signal_target_channel_id), sig_msg, logger, dry_run=dry_run)
+                    asset = (sig.get("asset") or "UNKNOWN").upper()
+                    pair = f"{asset}/USDT" if asset != "UNKNOWN" else ""
+                    raw = _clean_post_text(sig.get("raw") or "")
+                    sig_lines = ["#Сигнал", _trader_tag(trader_id), f"#{asset}" if asset != "UNKNOWN" else "#UNKNOWN"]
+                    if pair:
+                        sig_lines.extend(["", pair])
+                    if raw:
+                        sig_lines.extend(["", raw])
+                    sig_msg = "\n".join(sig_lines)
+                sig_ok = send_via_bot_api(bot_token, str(signal_target_channel_id), sig_msg, logger, dry_run=dry_run)
+                logger.info("SIGNAL_%s trader=%s confidence=%s msg_id=%s",
+                    "PASS" if sig_ok else "DROP", trader_id, sig.get("confidence", 0), msg.id)
 
             # storage JSONL
             store_row = {
@@ -1117,6 +1162,8 @@ def main() -> None:
                 "stop": sig.get("stop", "—"),
                 "invalidation_level": sig.get("invalidation_level", "—"),
                 "stop_inferred": bool(sig.get("stop_inferred", False)),
+                "state_type": state_type,
+                "debug_reasons": debug_reasons,
                 "raw_text": text,
                 "has_tradingview_link": tv_link,
                 "has_image": bool(getattr(msg, "photo", None)),
