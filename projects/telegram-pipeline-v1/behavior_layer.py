@@ -212,9 +212,14 @@ def apply_behavior_profile(
             signal_data = parse_generic_signal(text, threshold=signal_threshold, trader_id=trader)
             signal_pass = bool(signal_data.get("pass"))
 
-    min_signal_conf = int(callbacks.get("signal_min_confidence", 4) or 4)
+    base_min_signal_conf = int(callbacks.get("signal_min_confidence", 4) or 4)
+    min_conf_by_trader = {"evelina": 2, "eli": 2, "altador": 2, "ilya": 4, "artur": 4}
+    min_signal_conf = int(min_conf_by_trader.get(trader, base_min_signal_conf))
     conf_final = int(signal_data.get("confidence_final", signal_data.get("confidence", 0)) or 0)
-    if signal_pass and conf_final < min_signal_conf:
+    sig_type = (signal_data.get("signal_type") or "").upper()
+    explicit_exit_words = ["закрыла", "закрыл", "вышла", "вышел"]
+    explicit_exit = sig_type == "EXIT" and any(w in (text or "").lower() for w in explicit_exit_words)
+    if signal_pass and (conf_final < min_signal_conf) and not explicit_exit:
         signal_pass = False
         reasons.append(f"SIGNAL_CONF_LT_{min_signal_conf}")
         if not main_pass:
