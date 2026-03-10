@@ -182,11 +182,11 @@ def format_payload(
 ) -> str:
     _ = (chat_title, chat_id, topic_id, topic_title)
     body = _clean_post_text(text)
-    tags = [
+    tags = _dedupe_tags([
         _post_type_tag(main_type, body),
         _trader_tag(trader_id),
         _asset_tag(body),
-    ]
+    ])
     pair = re.search(r"\b([A-Z]{2,10}/USDT)\b", body.upper())
     pair_line = pair.group(1) if pair else ""
     if body:
@@ -208,6 +208,48 @@ EMOJI_RE = re.compile(
     "]+",
     flags=re.UNICODE,
 )
+
+TRADER_RELIABILITY = {
+    "ilya": 8,
+    "artur": 7,
+    "evelina": 7,
+    "eli": 7,
+    "altador": 6,
+    "irina": 6,
+}
+
+
+def _dedupe_tags(tags):
+    out = []
+    for t in tags:
+        if t and t not in out:
+            out.append(t)
+    return out
+
+
+def _has_promo_spam(text_raw: str) -> bool:
+    t = _norm_text_for_filter(text_raw)
+    promo = ["vip", "марафон", "обучени", "реферал", "подпис", "места осталось"]
+    market_keep = ["лонг", "шорт", "взял", "взяла", "закрыл", "закрыла", "позицию", "позиция"]
+    return any(p in t for p in promo) and not any(m in t for m in market_keep)
+
+
+def _signal_confidence_0_10(text_raw: str, has_entry: bool, has_stop: bool, has_target: bool, trader_id: Optional[str], has_chart: bool = False) -> int:
+    t = _norm_text_for_filter(text_raw)
+    tf_words = ["m", "h", "d", "мин", "час", "день", "днев", "недель", "таймфрейм", "tf"]
+    has_timeframe = bool(re.search(r"\b\d+\s*(m|h|d|мин|час)\b", t)) or any(w in t for w in tf_words)
+    wc = len([w for w in t.split(" ") if w])
+    score = 0
+    score += 2 if has_entry else 0
+    score += 2 if has_stop else 0
+    score += 2 if has_target else 0
+    score += 1 if has_timeframe else 0
+    score += 1 if has_chart else 0
+    score += 1 if wc > 15 else 0
+    rel = TRADER_RELIABILITY.get((trader_id or "").lower(), 6)
+    score = round(score * (rel / 7.0))
+    return max(0, min(10, score))
+
 
 DEFAULT_RULES = {
     "main_threshold": 3,
@@ -293,6 +335,22 @@ def classify_main_ilya_message(raw_text: str, has_media: bool, rules: Dict[str, 
 
 def parse_ilya_signal(raw_text: str, rules: Dict[str, Any]) -> Dict[str, Any]:
     text = _norm_text_for_filter(raw_text)
+    if _has_promo_spam(raw_text):
+        return {
+            "pass": False,
+            "reason": "DROP_PROMO_SPAM",
+            "confidence": 0,
+            "confidence_final": 0,
+            "asset": _infer_asset(raw_text),
+            "signal_type": "DROP",
+            "bias": "—",
+            "entry_condition": "—",
+            "entry_zone": "—",
+            "stop": "—",
+            "target": "—",
+            "timeframe": "—",
+            "raw_text": text,
+        }
     trash_patterns = ["заранее спасибо", "смотря на картину", "чисто", "а эту", "брали ?", "брали?"]
     if any(p in text for p in trash_patterns):
         return {
@@ -322,11 +380,7 @@ def parse_ilya_signal(raw_text: str, rules: Dict[str, Any]) -> Dict[str, Any]:
     is_question = ("?" in raw_text) or ("или" in text and ("лонг" in text or "шорт" in text))
 
     nums = re.findall(r"\b\d{2,6}(?:[\.,]\d+)?(?:\s*[kк])?(?:\s*[-–]\s*\d{2,6}(?:[\.,]\d+)?(?:\s*[kк])?)?\b", text)
-    asset = "UNKNOWN"
-    for a in rules.get("asset_aliases", []):
-        if a in text:
-            asset = a.upper()
-            break
+    asset = _infer_asset(raw_text)
 
     signal_type = "MARKET_VIEW"
     if not is_question:
@@ -375,10 +429,12 @@ def parse_ilya_signal(raw_text: str, rules: Dict[str, Any]) -> Dict[str, Any]:
     else:
         reason = "SIGNAL_DROP"
 
+    conf_final = _signal_confidence_0_10(raw_text, has_dir or has_action, ("стоп" in text), ("цель" in text), "ilya", has_chart=has_tradingview_link(raw_text, ["tradingview.com"]))
     return {
         "pass": signal_pass,
         "reason": reason,
         "confidence": confidence,
+        "confidence_final": conf_final,
         "asset": asset,
         "signal_type": signal_type,
         "bias": "UP" if "вверх" in text else ("DOWN" if "вниз" in text else "—"),
@@ -395,11 +451,15 @@ def format_signal_message(sig: Dict[str, Any]) -> str:
     asset = (sig.get("asset") or "UNKNOWN").upper()
     pair = f"{asset}/USDT" if asset != "UNKNOWN" else ""
     raw = _clean_post_text(sig.get("raw_text") or "")
-    lines = [_signal_type_tag(sig.get("signal_type")), "#Ilya", f"#{asset}" if asset != "UNKNOWN" else "#UNKNOWN"]
+    tags = _dedupe_tags([_signal_type_tag(sig.get("signal_type")), "#Ilya", f"#{asset}" if asset != "UNKNOWN" else "#UNKNOWN"])
+    lines = list(tags)
     if pair:
         lines.extend(["", pair])
     if raw:
         lines.extend(["", raw])
+    conf = sig.get("confidence_final", sig.get("confidence"))
+    if conf is not None:
+        lines.extend(["", f"Confidence: {conf}"])
     return "\n".join(lines)
 
 
@@ -469,6 +529,19 @@ def classify_artur_main(text_raw: str) -> Dict[str, Any]:
 
 def parse_artur_signal(text_raw: str) -> Dict[str, Any]:
     text = _norm_text_for_filter(text_raw)
+    if _has_promo_spam(text_raw):
+        return {
+            "pass": False,
+            "reason": "DROP_PROMO_SPAM",
+            "confidence": 0,
+            "confidence_final": 0,
+            "asset": _infer_asset(text_raw),
+            "signal_type": "DROP",
+            "entry": "—",
+            "stop": "—",
+            "target": "—",
+            "raw": text_raw.strip() or "—",
+        }
     entry_words = ["лонг", "шорт", "шорчу", "взял", "беру", "открыл", "вход", "вход по рынку", "лимитка", "лимитный вход", "добавку лимиткой", "в сделку зашел"]
     stop_words = ["стоп", "stop", "стопы", "stop loss"]
     target_words = ["цель", "тейк", "тейки", "take"]
@@ -513,10 +586,12 @@ def parse_artur_signal(text_raw: str) -> Dict[str, Any]:
 
     stype = "LONG_ENTRY" if "лонг" in text else ("SHORT_ENTRY" if "шорт" in text or "шорчу" in text else "LONG_ENTRY")
 
+    conf_final = _signal_confidence_0_10(text_raw, has_entry, has_stop, has_target, "artur", has_chart=has_tradingview_link(text_raw, ["tradingview.com"]))
     return {
         "pass": signal_pass,
         "reason": reason,
         "confidence": confidence,
+        "confidence_final": conf_final,
         "asset": asset,
         "signal_type": stype,
         "entry": entry_val,
@@ -530,11 +605,15 @@ def format_artur_signal(sig: Dict[str, Any]) -> str:
     asset = (sig.get("asset") or "UNKNOWN").upper()
     pair = f"{asset}/USDT" if asset != "UNKNOWN" else ""
     raw = _clean_post_text(sig.get("raw") or "")
-    lines = [_signal_type_tag(sig.get("signal_type")), "#Artur", f"#{asset}" if asset != "UNKNOWN" else "#UNKNOWN"]
+    tags = _dedupe_tags([_signal_type_tag(sig.get("signal_type")), "#Artur", f"#{asset}" if asset != "UNKNOWN" else "#UNKNOWN"])
+    lines = list(tags)
     if pair:
         lines.extend(["", pair])
     if raw:
         lines.extend(["", raw])
+    conf = sig.get("confidence_final", sig.get("confidence"))
+    if conf is not None:
+        lines.extend(["", f"Confidence: {conf}"])
     return "\n".join(lines)
 
 
@@ -606,6 +685,21 @@ def _evelina_action_signal(text: str) -> bool:
 
 def parse_generic_signal(text_raw: str, threshold: int = 6, trader_id: Optional[str] = None) -> Dict[str, Any]:
     text = _norm_text_for_filter(text_raw)
+    if _has_promo_spam(text_raw):
+        return {
+            "pass": False,
+            "reason": "DROP_PROMO_SPAM",
+            "confidence": 0,
+            "confidence_final": 0,
+            "signal_type": "DROP",
+            "asset": _infer_asset(text_raw),
+            "entry": "—",
+            "stop": "—",
+            "target": "—",
+            "invalidation_level": "—",
+            "stop_inferred": False,
+            "raw": text_raw,
+        }
     entry_words = ["лонг", "шорт", "взял", "взяла", "беру", "набрала", "зашла", "добираю", "открыл", "вход", "лимитка", "чуть по чуть", "зайду"]
     stop_words = ["стоп", "stop", "stop loss"]
     target_words = ["цель", "тейк", "тейки", "take"]
@@ -654,9 +748,11 @@ def parse_generic_signal(text_raw: str, threshold: int = 6, trader_id: Optional[
             passed = _evelina_action_signal(text) and not force_main_view
 
     stop_val = invalidation_level if invalidation_level else ("есть" if has_stop else "—")
+    conf_final = _signal_confidence_0_10(text_raw, has_entry or is_conditional_entry, has_stop, has_target, trader_id, has_chart=has_tradingview_link(text_raw, ["tradingview.com"]))
     return {
         "pass": passed,
         "confidence": conf,
+        "confidence_final": conf_final,
         "signal_type": stype,
         "asset": asset,
         "entry": nums[0] if nums else "—",
@@ -892,10 +988,13 @@ def main() -> None:
             "processed_total": 0,
             "last_event": None,
             "recent_message_keys": [],
+            "recent_signals": {},
         },
     )
     if not isinstance(state.get("recent_message_keys"), list):
         state["recent_message_keys"] = []
+    if not isinstance(state.get("recent_signals"), dict):
+        state["recent_signals"] = {}
 
     api_id = int(cfg["TELEGRAM_API_ID"])
     api_hash = str(cfg["TELEGRAM_API_HASH"])
@@ -1131,6 +1230,7 @@ def main() -> None:
                 "classify_main_ilya_message": classify_main_ilya_message,
                 "parse_ilya_signal": parse_ilya_signal,
                 "parse_generic_signal": parse_generic_signal,
+                "has_promo_spam": _has_promo_spam,
                 "rules": rules,
                 "ilya_main_filter_enabled": ilya_main_filter_enabled,
             }
@@ -1167,23 +1267,41 @@ def main() -> None:
                     dry_run=dry_run, media_kind=media_kind, media_bytes=media_bytes, media_name=media_name)
 
             if signal_parser_enabled and signal_target_channel_id is not None and decision["signal_pass"]:
-                if trader_id == "artur":
-                    sig_msg = format_artur_signal(sig)
-                elif trader_id == "ilya":
-                    sig_msg = format_signal_message(sig)
+                sig_asset = (sig.get("asset") or "UNKNOWN").upper()
+                sig_type = (sig.get("signal_type") or "UNKNOWN").upper()
+                dedupe_key = f"{trader_id}:{sig_asset}:{sig_type}"
+                now_ts = int(time.time())
+                prev_ts = int(state.get("recent_signals", {}).get(dedupe_key, 0) or 0)
+                if now_ts - prev_ts <= 600:
+                    logger.info("SIGNAL_DEDUP_SKIP key=%s delta=%ss msg_id=%s", dedupe_key, now_ts - prev_ts, msg.id)
                 else:
-                    asset = (sig.get("asset") or "UNKNOWN").upper()
-                    pair = f"{asset}/USDT" if asset != "UNKNOWN" else ""
-                    raw = _clean_post_text(sig.get("raw") or "")
-                    sig_lines = [_signal_type_tag(sig.get("signal_type")), _trader_tag(trader_id), f"#{asset}" if asset != "UNKNOWN" else "#UNKNOWN"]
-                    if pair:
-                        sig_lines.extend(["", pair])
-                    if raw:
-                        sig_lines.extend(["", raw])
-                    sig_msg = "\n".join(sig_lines)
-                sig_ok = send_via_bot_api(bot_token, str(signal_target_channel_id), sig_msg, logger, dry_run=dry_run)
-                logger.info("SIGNAL_%s trader=%s confidence=%s msg_id=%s",
-                    "PASS" if sig_ok else "DROP", trader_id, sig.get("confidence", 0), msg.id)
+                    if trader_id == "artur":
+                        sig_msg = format_artur_signal(sig)
+                    elif trader_id == "ilya":
+                        sig_msg = format_signal_message(sig)
+                    else:
+                        asset = sig_asset
+                        pair = f"{asset}/USDT" if asset != "UNKNOWN" else ""
+                        raw = _clean_post_text(sig.get("raw") or "")
+                        sig_lines = _dedupe_tags([_signal_type_tag(sig.get("signal_type")), _trader_tag(trader_id), f"#{asset}" if asset != "UNKNOWN" else "#UNKNOWN"])
+                        if pair:
+                            sig_lines.extend(["", pair])
+                        if raw:
+                            sig_lines.extend(["", raw])
+                        conf = sig.get("confidence_final", sig.get("confidence"))
+                        if conf is not None:
+                            sig_lines.extend(["", f"Confidence: {conf}"])
+                        sig_msg = "\n".join(sig_lines)
+                    sig_ok = send_via_bot_api(bot_token, str(signal_target_channel_id), sig_msg, logger, dry_run=dry_run)
+                    logger.info("SIGNAL_%s trader=%s confidence=%s msg_id=%s",
+                        "PASS" if sig_ok else "DROP", trader_id, sig.get("confidence_final", sig.get("confidence", 0)), msg.id)
+                    if sig_ok:
+                        state.setdefault("recent_signals", {})[dedupe_key] = now_ts
+                        # keep map bounded
+                        if len(state["recent_signals"]) > 500:
+                            items = sorted(state["recent_signals"].items(), key=lambda kv: kv[1], reverse=True)[:500]
+                            state["recent_signals"] = {k: v for k, v in items}
+                        save_json(MEMORY_PATH, state)
 
             # storage JSONL
             store_row = {
