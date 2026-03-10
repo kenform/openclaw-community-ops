@@ -3,9 +3,9 @@
 ## [2026-03-10-pipeline-output-evelina-dryrun] Dry-run фиксы telegram-pipeline-v1 (output + Evelina parser)
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-10 08:22 UTC
-- **Updated**: 2026-03-10 09:33 UTC
-- **Notes**: Выполнен controlled restart `telegram-pipeline-v1` после внесённых правок Evelina semantics. Проведён post-check runtime и dry-run coverage/format samples.
-- **Result**: Сервис active/running (`NRestarts=0`), semantics в рантайме активны (EXIT/CONDITIONAL_ENTRY), выданы sources list + coverage + 2 MAIN/2 SIGNAL/2 DROP примеры.
+- **Updated**: 2026-03-10 10:25 UTC
+- **Notes**: Asset extraction дожат (алиасы BTC/ETH/SOL/LINK/APT/BRENT/BCH), сервис перезапущен и стабилен. Проведена финальная проверка с примерами post-format и pre-live GO/NO-GO.
+- **Result**: Готово к безопасному первому live-тесту (20 последних по source, отправка только PASS в каналы).
 
 ## [2026-03-09-portfolio-revive-vercel-3181] Реанимировать портфолио-сайт и подготовить деплой на Vercel
 - **Status**: ✅ 完成

@@ -138,15 +138,36 @@ def _clean_post_text(text: str) -> str:
     return t
 
 
-def _asset_tag(text: str) -> str:
-    t = (text or "").upper()
-    pair = re.search(r"\b([A-Z]{2,10})/USDT\b", t)
+def _infer_asset(text: str) -> str:
+    raw = text or ""
+    t_up = raw.upper()
+    pair = re.search(r"\b([A-Z]{2,10})/USDT\b", t_up)
     if pair:
-        return f"#{pair.group(1)}"
+        return pair.group(1)
+
+    t = _norm_text_for_filter(raw)
+    alias_patterns = {
+        "BTC": [r"(?<!\w)btc(?!\w)", r"(?<!\w)bitcoin(?!\w)", r"(?<!\w)биток\w*", r"(?<!\w)битк\w*", r"(?<!\w)дед\w*"],
+        "ETH": [r"(?<!\w)eth(?!\w)", r"(?<!\w)ethereum(?!\w)", r"(?<!\w)эфир\w*"],
+        "SOL": [r"(?<!\w)sol(?!\w)", r"(?<!\w)solana(?!\w)", r"(?<!\w)сол\w*"],
+        "LINK": [r"(?<!\w)link(?!\w)", r"(?<!\w)линк\w*"],
+        "APT": [r"(?<!\w)apt(?!\w)", r"(?<!\w)aptos(?!\w)", r"(?<!\w)апт\w*"],
+        "BRENT": [r"(?<!\w)brent(?!\w)", r"(?<!\w)брент\w*"],
+        "BCH": [r"(?<!\w)bch(?!\w)"],
+    }
+    for asset, pats in alias_patterns.items():
+        for pat in pats:
+            if re.search(pat, t):
+                return asset
+
     for a in ["BTC", "ETH", "SOL", "BCH", "BRENT", "BNB", "XRP", "DOGE", "TON", "LINK", "NEAR", "APT"]:
-        if a in t:
-            return f"#{a}"
-    return "#UNKNOWN"
+        if a in t_up:
+            return a
+    return "UNKNOWN"
+
+
+def _asset_tag(text: str) -> str:
+    return f"#{_infer_asset(text)}"
 
 
 def format_payload(
@@ -473,15 +494,7 @@ def parse_artur_signal(text_raw: str) -> Dict[str, Any]:
     if levels:
         entry_val = levels[0]
 
-    asset = "UNKNOWN"
-    asset_list = ["BTC", "ETH", "SOL", "APT", "LINK", "BCH", "MATIC", "ALT"]
-    for a in asset_list:
-        if a in text_raw.upper() or a.lower() in text:
-            asset = a
-            break
-    m_pair = re.search(r"\b([A-Z]{2,8})/USDT\b", text_raw.upper())
-    if m_pair:
-        asset = m_pair.group(1)
+    asset = _infer_asset(text_raw)
 
     confidence = 0
     confidence += 3 if has_entry else 0
@@ -604,12 +617,7 @@ def parse_generic_signal(text_raw: str, threshold: int = 6, trader_id: Optional[
     has_exit = any(w in text for w in exit_words)
 
     nums = re.findall(r"\b\d{1,6}(?:[\.,]\d+)?\b", text)
-    pair = re.search(r"\b([A-Z]{2,8})/USDT\b", text_raw.upper())
-    asset = pair.group(1) if pair else "UNKNOWN"
-    for a in ["BTC", "ETH", "SOL", "APT", "LINK", "BCH", "MATIC", "ALT"]:
-        if a.lower() in text:
-            asset = a
-            break
+    asset = _infer_asset(text_raw)
 
     invalidation_level = None
     stop_inferred = False
