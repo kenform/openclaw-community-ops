@@ -94,6 +94,15 @@ def _trader_tag(trader_id: Optional[str]) -> str:
     return m.get(t, "#Trader")
 
 
+def _signal_type_tag(signal_type: Optional[str]) -> str:
+    st = (signal_type or "").upper()
+    if st == "EXIT":
+        return "#Закрытие"
+    if st == "CONDITIONAL_ENTRY":
+        return "#Сценарий"
+    return "#Сигнал"
+
+
 def _post_type_tag(main_type: Optional[str], text: str) -> str:
     mt = (main_type or "").upper()
     t = (text or "").lower()
@@ -365,7 +374,7 @@ def format_signal_message(sig: Dict[str, Any]) -> str:
     asset = (sig.get("asset") or "UNKNOWN").upper()
     pair = f"{asset}/USDT" if asset != "UNKNOWN" else ""
     raw = _clean_post_text(sig.get("raw_text") or "")
-    lines = ["#Сигнал", "#Ilya", f"#{asset}" if asset != "UNKNOWN" else "#UNKNOWN"]
+    lines = [_signal_type_tag(sig.get("signal_type")), "#Ilya", f"#{asset}" if asset != "UNKNOWN" else "#UNKNOWN"]
     if pair:
         lines.extend(["", pair])
     if raw:
@@ -508,7 +517,7 @@ def format_artur_signal(sig: Dict[str, Any]) -> str:
     asset = (sig.get("asset") or "UNKNOWN").upper()
     pair = f"{asset}/USDT" if asset != "UNKNOWN" else ""
     raw = _clean_post_text(sig.get("raw") or "")
-    lines = ["#Сигнал", "#Artur", f"#{asset}" if asset != "UNKNOWN" else "#UNKNOWN"]
+    lines = [_signal_type_tag(sig.get("signal_type")), "#Artur", f"#{asset}" if asset != "UNKNOWN" else "#UNKNOWN"]
     if pair:
         lines.extend(["", pair])
     if raw:
@@ -584,12 +593,16 @@ def _evelina_action_signal(text: str) -> bool:
 
 def parse_generic_signal(text_raw: str, threshold: int = 6, trader_id: Optional[str] = None) -> Dict[str, Any]:
     text = _norm_text_for_filter(text_raw)
-    entry_words = ["лонг", "шорт", "взял", "взяла", "беру", "набрала", "зашла", "добираю", "открыл", "вход", "лимитка", "чуть по чуть"]
+    entry_words = ["лонг", "шорт", "взял", "взяла", "беру", "набрала", "зашла", "добираю", "открыл", "вход", "лимитка", "чуть по чуть", "зайду"]
     stop_words = ["стоп", "stop", "stop loss"]
     target_words = ["цель", "тейк", "тейки", "take"]
+    exit_words = ["закрыла", "закрыл", "закрыла все", "закрыл все", "вышла", "вышел", "зафиксировала", "фиксирую", "фикс"]
+
     has_entry = any(w in text for w in entry_words)
     has_stop = any(w in text for w in stop_words)
     has_target = any(w in text for w in target_words)
+    has_exit = any(w in text for w in exit_words)
+
     nums = re.findall(r"\b\d{1,6}(?:[\.,]\d+)?\b", text)
     pair = re.search(r"\b([A-Z]{2,8})/USDT\b", text_raw.upper())
     asset = pair.group(1) if pair else "UNKNOWN"
@@ -602,6 +615,9 @@ def parse_generic_signal(text_raw: str, threshold: int = 6, trader_id: Optional[
     stop_inferred = False
     force_main_view = False
     is_evelina = (trader_id or "").lower() in {"evelina", "eli"}
+
+    is_conditional_entry = ("если" in text) and any(w in text for w in ["зайду", "вход", "беру", "взяла", "лонг", "шорт"])
+
     if is_evelina:
         invalidation_level = _infer_invalidation_level(text_raw)
         if invalidation_level:
@@ -612,11 +628,23 @@ def parse_generic_signal(text_raw: str, threshold: int = 6, trader_id: Optional[
         if any(p in text for p in evelina_view_phrases) or ("лонговать пока" in text and "не настроена" in text):
             force_main_view = True
 
-    conf = (3 if has_entry else 0) + (3 if has_stop else 0) + (3 if has_target else 0) + (2 if asset != "UNKNOWN" else 0) + (1 if nums else 0)
+    conf = (3 if has_entry else 0) + (3 if has_stop else 0) + (3 if has_target else 0) + (2 if asset != "UNKNOWN" else 0) + (1 if nums else 0) + (3 if has_exit else 0)
     passed = conf >= threshold and sum([has_entry, has_stop, has_target]) >= 2
-    if is_evelina:
-        passed = _evelina_action_signal(text) and not force_main_view
+
     stype = "LONG_ENTRY" if "лонг" in text else ("SHORT_ENTRY" if "шорт" in text else "MARKET_VIEW")
+    if has_exit:
+        stype = "EXIT"
+    elif is_conditional_entry:
+        stype = "CONDITIONAL_ENTRY"
+
+    if is_evelina:
+        if has_exit:
+            passed = True
+        elif is_conditional_entry:
+            passed = True
+        else:
+            passed = _evelina_action_signal(text) and not force_main_view
+
     stop_val = invalidation_level if invalidation_level else ("есть" if has_stop else "—")
     return {
         "pass": passed,
@@ -1139,7 +1167,7 @@ def main() -> None:
                     asset = (sig.get("asset") or "UNKNOWN").upper()
                     pair = f"{asset}/USDT" if asset != "UNKNOWN" else ""
                     raw = _clean_post_text(sig.get("raw") or "")
-                    sig_lines = ["#Сигнал", _trader_tag(trader_id), f"#{asset}" if asset != "UNKNOWN" else "#UNKNOWN"]
+                    sig_lines = [_signal_type_tag(sig.get("signal_type")), _trader_tag(trader_id), f"#{asset}" if asset != "UNKNOWN" else "#UNKNOWN"]
                     if pair:
                         sig_lines.extend(["", pair])
                     if raw:
