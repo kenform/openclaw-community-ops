@@ -1,11 +1,18 @@
 # Active Tasks
 
-## [2026-03-10-pipeline-output-evelina-dryrun] Dry-run фиксы telegram-pipeline-v1 (output + Evelina parser)
+## [2026-03-10-remove-psybot-legacy] Безопасно удалить старый psybot_api проект
 - **Status**: ✅ 完成
+- **Requested**: 2026-03-10 18:45 UTC
+- **Updated**: 2026-03-10 18:45 UTC
+- **Notes**: По просьбе пользователя удалён legacy psybot_api без риска: сначала disable/stop/reset-failed юнит, затем файлы перемещены в корзину (recoverable), не через rm.
+- **Result**: Перемещено в `/home/openclawuser/.Trash/old_projects_cleanup_20260310_184552`; `psybot-api.service` now not-found/inactive; `telegram-pipeline-v1.service` active.
+
+## [2026-03-10-pipeline-output-evelina-dryrun] Dry-run фиксы telegram-pipeline-v1 (output + Evelina parser)
+- **Status**: 🔄 进行中
 - **Requested**: 2026-03-10 08:22 UTC
-- **Updated**: 2026-03-10 13:09 UTC
-- **Notes**: Доп.калибровка: confidence gate по трейдерам (evelina/altador >=2; ilya/artur >=4) + explicit EXIT whitelist (закрыла/закрыл/вышла/вышел) проходит в SIGNAL даже при низком confidence. Прогнан dry-run 30/source.
-- **Result**: MAIN=77, SIGNAL=2, DROP_DISCUSSION=150, DROP_PROMO=5.
+- **Updated**: 2026-03-10 14:05 UTC
+- **Notes**: По подтверждению пользователя перезапускаю live-прогон с safe-caption fallback: caption<=1024, delay=3s, continue-on-error, финальный отчёт send/errors/skipped + 3 sent samples.
+- **Result**: в работе
 
 ## [2026-03-09-portfolio-revive-vercel-3181] Реанимировать портфолио-сайт и подготовить деплой на Vercel
 - **Status**: ✅ 完成
