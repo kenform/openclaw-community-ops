@@ -3,9 +3,9 @@
 ## [2026-03-10-pipeline-output-evelina-dryrun] Dry-run фиксы telegram-pipeline-v1 (output + Evelina parser)
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-10 08:22 UTC
-- **Updated**: 2026-03-10 12:49 UTC
-- **Notes**: Добавлен CHAT/DISCUSSION filter: reply+no structure => DROP_DISCUSSION; discussion-эвристики без trading keywords => DROP_DISCUSSION. Выполнен быстрый dry-run 30/source.
-- **Result**: Dry-run: MAIN=57, SIGNAL=0, DROP_TOTAL=183, в т.ч. DROP_DISCUSSION=177, DROP_PROMO=5.
+- **Updated**: 2026-03-10 13:07 UTC
+- **Notes**: Выполнена калибровка discussion filter по новому правилу: DROP_DISCUSSION только для reply без market-маркеров и <20 слов. Confidence gate не тронут. Прогнан dry-run 30/source.
+- **Result**: MAIN=79, SIGNAL=0, DROP_DISCUSSION=150, DROP_PROMO=5; вытащены 5 кейсов, перешедших из старого DROP_DISCUSSION в MAIN.
 
 ## [2026-03-09-portfolio-revive-vercel-3181] Реанимировать портфолио-сайт и подготовить деплой на Vercel
 - **Status**: ✅ 完成

@@ -3,17 +3,10 @@ from typing import Any, Dict, List, Optional
 
 def _has_trading_structure(text: str) -> bool:
     t = (text or "").lower()
-    entry = any(k in t for k in ["лонг", "шорт", "вход", "взял", "взяла", "беру", "зашел", "зашла", "открыл", "открыла"])
-    stop = any(k in t for k in ["стоп", "stop"])
-    direction = any(k in t for k in ["вверх", "вниз", "long", "short"])
-    return entry or stop or direction
-
-
-def _is_discussion_text(text: str) -> bool:
-    t = (text or "").lower()
-    heur = ["почему", "откуда", "как", "ты же", "я же говорил", "не хочется отвечать", "я тебе отвечу"]
-    trading = ["лонг", "шорт", "взял", "вход", "стоп", "цель"]
-    return any(h in t for h in heur) and not any(k in t for k in trading)
+    has_asset = any(k in t for k in ["btc", "eth", "sol", "link", "brent", "биток", "эфир", "солана", "сол", "линк", "брент", "дед"])
+    has_numbers = bool(__import__("re").search(r"\$|%|\b\d+(?:[\.,]\d+)?\s*[-–]\s*\d+(?:[\.,]\d+)?\s*[kк]?\b", t))
+    has_trading_words = any(k in t for k in ["лонг", "шорт", "вверх", "вниз", "цель", "стоп", "вход", "уровень", "зона", "диапазон", "позиция", "закрыл", "закрыла", "взял", "взяла", "беру"])
+    return has_asset or has_numbers or has_trading_words
 
 
 def _is_smalltalk_or_comment(text: str) -> bool:
@@ -107,7 +100,8 @@ def apply_behavior_profile(
             "main_result": {"pass": False, "type": "DROP", "reason": "DROP_PROMO_SPAM"},
         }
 
-    if (is_reply and not _has_trading_structure(text)) or _is_discussion_text(text):
+    word_count = len([w for w in (text or "").split() if w])
+    if is_reply and (not _has_trading_structure(text)) and word_count < 20:
         return {
             "main_pass": False,
             "signal_pass": False,
