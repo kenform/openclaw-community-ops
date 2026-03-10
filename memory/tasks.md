@@ -12,7 +12,7 @@
 - **Requested**: 2026-03-10 08:22 UTC
 - **Updated**: 2026-03-10 14:05 UTC
 - **Notes**: По подтверждению пользователя перезапускаю live-прогон с safe-caption fallback: caption<=1024, delay=3s, continue-on-error, финальный отчёт send/errors/skipped + 3 sent samples.
-- **Result**: в работе
+- **Result**: Добавлена заметка в Obsidian: `Obsidian-Telegram-KB/00_Inbox/2026-03-10__channel-branding-eragon.md` (House of Eragon + направление Syndicate).
 
 ## [2026-03-09-portfolio-revive-vercel-3181] Реанимировать портфолио-сайт и подготовить деплой на Vercel
 - **Status**: ✅ 完成
