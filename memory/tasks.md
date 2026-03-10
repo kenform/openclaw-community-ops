@@ -3,9 +3,9 @@
 ## [2026-03-10-pipeline-output-evelina-dryrun] Dry-run фиксы telegram-pipeline-v1 (output + Evelina parser)
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-10 08:22 UTC
-- **Updated**: 2026-03-10 11:44 UTC
-- **Notes**: Закрыт safe-пакет улучшений без изменения архитектуры: spam filter, confidence+reliability, signal dedupe (10m), tag dedupe, asset aliases. Выполнен dry-run на 30/source.
-- **Result**: Dry-run итог: MAIN=206, SIGNAL=2, DROP=32, promo-spam drops=5; header tag duplicates=0, confidence строка добавляется в SIGNAL.
+- **Updated**: 2026-03-10 11:47 UTC
+- **Notes**: Этап routing/type semantics cleanup выполнен (без смены архитектуры и без рестарта): tightened MAIN/SMALLTALK split, SIGNAL gate by confidence>=4, type cleanup (SCENARIO/EXIT/MARKET_VIEW/SMALLTALK), dry-run 30/source + borderline cases.
+- **Result**: В текущем 30/source окне после ужесточения: MAIN проходит, DROP вырос; SIGNAL в этом окне = 0 (ни один кейс не прошёл parser+confidence gate одновременно).
 
 ## [2026-03-09-portfolio-revive-vercel-3181] Реанимировать портфолио-сайт и подготовить деплой на Vercel
 - **Status**: ✅ 完成

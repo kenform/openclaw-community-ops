@@ -1,6 +1,19 @@
 from typing import Any, Dict, List, Optional
 
 
+def _is_smalltalk_or_comment(text: str) -> bool:
+    t = (text or "").lower().strip()
+    if not t:
+        return True
+    if "?" in t and not any(k in t for k in ["лонг", "шорт", "вход", "стоп", "цель", "закрыл", "взял", "беру"]):
+        return True
+    markers = [
+        "откуда", "кто", "почему", "как думаешь", "что думаешь", "спасибо", "доброе утро", "всем привет",
+        "ты же", "сегодня стрим", "в офисе", "как дела",
+    ]
+    return any(m in t for m in markers)
+
+
 def update_context(context_store: Dict[str, List[Dict[str, Any]]], trader_id: str, message: Dict[str, Any]) -> List[Dict[str, Any]]:
     tid = (trader_id or "unknown").lower()
     arr = context_store.get(tid, [])
@@ -124,15 +137,35 @@ def apply_behavior_profile(
             signal_data = parse_ilya_signal(text, rules)
             signal_pass = bool(signal_data.get("pass"))
 
+        if _is_smalltalk_or_comment(text):
+            main_pass = False
+            signal_pass = False
+            main_result = {"pass": False, "type": "SMALLTALK", "reason": "DROP_SMALLTALK"}
+            signal_data = {"pass": False, "reason": "DROP_SMALLTALK", "confidence": 0, "signal_type": "DROP"}
+            reasons.append("DROP_SMALLTALK")
+
     elif trader in {"evelina", "eli"}:
         parse_generic_signal = callbacks.get("parse_generic_signal")
         main_pass = True
-        main_result = {"pass": True, "type": "VIEW", "reason": "PASS_MAIN_MARKET_VIEW"}
+        main_result = {"pass": True, "type": "MARKET_VIEW", "reason": "PASS_MAIN_MARKET_VIEW"}
         if callable(parse_generic_signal):
             signal_data = parse_generic_signal(text, threshold=signal_threshold, trader_id=trader)
             signal_pass = bool(signal_data.get("pass"))
+            st = (signal_data.get("signal_type") or "").upper()
+            if st == "CONDITIONAL_ENTRY":
+                main_result = {"pass": True, "type": "SCENARIO", "reason": "PASS_SCENARIO"}
+            elif st == "EXIT":
+                main_result = {"pass": True, "type": "EXIT", "reason": "PASS_EXIT"}
+            elif st in {"LONG_ENTRY", "SHORT_ENTRY"}:
+                main_result = {"pass": True, "type": "SIGNAL", "reason": "PASS_SIGNAL"}
             if bool(signal_data.get("stop_inferred", False)):
                 reasons.append("IMPLICIT_STOP_INFERRED")
+        if _is_smalltalk_or_comment(text):
+            main_pass = False
+            signal_pass = False
+            main_result = {"pass": False, "type": "SMALLTALK", "reason": "DROP_SMALLTALK"}
+            signal_data = {"pass": False, "reason": "DROP_SMALLTALK", "confidence": 0, "signal_type": "DROP"}
+            reasons.append("DROP_SMALLTALK")
 
     elif trader == "irina":
         # Any TradingView for Irina: MAIN only, never SIGNAL.
@@ -157,6 +190,15 @@ def apply_behavior_profile(
         if callable(parse_generic_signal):
             signal_data = parse_generic_signal(text, threshold=signal_threshold, trader_id=trader)
             signal_pass = bool(signal_data.get("pass"))
+
+    min_signal_conf = int(callbacks.get("signal_min_confidence", 4) or 4)
+    conf_final = int(signal_data.get("confidence_final", signal_data.get("confidence", 0)) or 0)
+    if signal_pass and conf_final < min_signal_conf:
+        signal_pass = False
+        reasons.append(f"SIGNAL_CONF_LT_{min_signal_conf}")
+        if not main_pass:
+            main_pass = True
+            main_result = {"pass": True, "type": "MARKET_VIEW", "reason": "LOW_CONF_TO_MAIN"}
 
     if state_type == "HOLD":
         reasons.append("HOLD_STATE_DETECTED")

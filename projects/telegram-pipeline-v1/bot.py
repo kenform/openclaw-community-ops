@@ -105,15 +105,25 @@ def _signal_type_tag(signal_type: Optional[str]) -> str:
 
 def _post_type_tag(main_type: Optional[str], text: str) -> str:
     mt = (main_type or "").upper()
-    t = (text or "").lower()
+    t = (text or "").lower().strip()
+    if mt in {"SMALLTALK", "COMMENT"}:
+        return "#Комментарий"
+    if mt in {"EXIT"}:
+        return "#Закрытие"
+    if mt in {"SCENARIO", "CONDITIONAL_ENTRY"}:
+        return "#Идея"
+    if mt in {"UPDATE", "STOP_UPDATE", "LEVEL_UPDATE", "B_E_UPDATE"}:
+        return "#Обновление"
+    if mt in {"MARKET_VIEW", "VIEW"}:
+        return "#Обзор"
     if any(k in t for k in ["держу", "позиция", "в позиции"]):
         return "#Позиция"
     if any(k in t for k in ["обнов", "апдейт", "bu", "б/у", "безуб", "перенес стоп", "стоп в бу"]):
         return "#Обновление"
-    if mt in {"SIGNAL", "ENTRY", "LONG_ENTRY", "SHORT_ENTRY"}:
+    if "?" in t and not any(k in t for k in ["лонг", "шорт", "вход", "стоп", "цель"]):
+        return "#Комментарий"
+    if mt in {"SIGNAL", "LONG_ENTRY", "SHORT_ENTRY"}:
         return "#Сигнал"
-    if mt in {"VIEW", "MARKET_VIEW"}:
-        return "#Обзор"
     if any(k in t for k in ["идея", "сценар", "план"]):
         return "#Идея"
     return "#Обзор"
@@ -313,6 +323,8 @@ def classify_main_ilya_message(raw_text: str, has_media: bool, rules: Dict[str, 
 
     words = [w for w in text.split(" ") if w]
     short_pass = len(words) <= int(rules.get("short_max_words", 6)) and any(w in text for w in rules.get("short_pass_words", []))
+    is_question_like = ("?" in (raw_text or "")) or text.startswith("ти же") or text.startswith("ты же") or "откуда" in text
+    non_actionable = is_question_like and not any(w in text for w in ["взял", "беру", "лонг", "шорт", "закрыл", "стоп", "цель", "вход"])
 
     msg_type = "VIEW"
     if any(w in text for w in ["закрыл", "прикрыл", "фикс", "тейк", "тейкнул"]): msg_type = "EXIT"
@@ -321,11 +333,12 @@ def classify_main_ilya_message(raw_text: str, has_media: bool, rules: Dict[str, 
     elif any(w in text for w in ["держу", "позиция", "позиции", "поза", "позу"]): msg_type = "HOLD"
     elif any(w in text for w in ["перезайду", "перезаходить", "буду искать", "ищем позы", "вход", "входы"]): msg_type = "PLAN"
 
-    is_pass = short_pass or score >= int(rules.get("main_threshold", 3))
+    is_pass = (short_pass or score >= int(rules.get("main_threshold", 3))) and not non_actionable
     if is_pass:
         reason = {"ENTRY": "PASS_ENTRY", "HOLD": "PASS_HOLD", "EXIT": "PASS_EXIT", "PLAN": "PASS_PLAN", "LEVEL": "PASS_LEVEL", "VIEW": "PASS_VIEW"}.get(msg_type, "PASS_VIEW")
     else:
-        if any(w in text for w in ["стрим", "ютуб", "эфир"]): reason = "DROP_STREAM"
+        if non_actionable: reason = "DROP_SMALLTALK"
+        elif any(w in text for w in ["стрим", "ютуб", "эфир"]): reason = "DROP_STREAM"
         elif neg3: reason = "DROP_PROMO"
         elif neg2: reason = "DROP_SMALLTALK"
         else: reason = "DROP_NO_SIGNAL"
@@ -1231,6 +1244,7 @@ def main() -> None:
                 "parse_ilya_signal": parse_ilya_signal,
                 "parse_generic_signal": parse_generic_signal,
                 "has_promo_spam": _has_promo_spam,
+                "signal_min_confidence": int(cfg.get("SIGNAL_MIN_CONFIDENCE", 4)),
                 "rules": rules,
                 "ilya_main_filter_enabled": ilya_main_filter_enabled,
             }
