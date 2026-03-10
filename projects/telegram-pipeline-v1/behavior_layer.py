@@ -1,6 +1,21 @@
 from typing import Any, Dict, List, Optional
 
 
+def _has_trading_structure(text: str) -> bool:
+    t = (text or "").lower()
+    entry = any(k in t for k in ["лонг", "шорт", "вход", "взял", "взяла", "беру", "зашел", "зашла", "открыл", "открыла"])
+    stop = any(k in t for k in ["стоп", "stop"])
+    direction = any(k in t for k in ["вверх", "вниз", "long", "short"])
+    return entry or stop or direction
+
+
+def _is_discussion_text(text: str) -> bool:
+    t = (text or "").lower()
+    heur = ["почему", "откуда", "как", "ты же", "я же говорил", "не хочется отвечать", "я тебе отвечу"]
+    trading = ["лонг", "шорт", "взял", "вход", "стоп", "цель"]
+    return any(h in t for h in heur) and not any(k in t for k in trading)
+
+
 def _is_smalltalk_or_comment(text: str) -> bool:
     t = (text or "").lower().strip()
     if not t:
@@ -68,6 +83,7 @@ def apply_behavior_profile(
     callbacks: Dict[str, Any],
     tv_link: bool = False,
     signal_threshold: int = 6,
+    is_reply: bool = False,
 ) -> Dict[str, Any]:
     trader = (trader_id or "").lower()
     bundle_text = build_context_bundle(context_window)
@@ -89,6 +105,17 @@ def apply_behavior_profile(
             "bundle_text": bundle_text,
             "signal_data": {"pass": False, "reason": "DROP_PROMO_SPAM", "confidence": 0, "signal_type": "DROP"},
             "main_result": {"pass": False, "type": "DROP", "reason": "DROP_PROMO_SPAM"},
+        }
+
+    if (is_reply and not _has_trading_structure(text)) or _is_discussion_text(text):
+        return {
+            "main_pass": False,
+            "signal_pass": False,
+            "state_type": "MARKET_VIEW",
+            "debug_reasons": reasons + ["DROP_DISCUSSION"],
+            "bundle_text": bundle_text,
+            "signal_data": {"pass": False, "reason": "DROP_DISCUSSION", "confidence": 0, "signal_type": "DROP"},
+            "main_result": {"pass": False, "type": "DISCUSSION", "reason": "DROP_DISCUSSION"},
         }
 
     if tv_link:

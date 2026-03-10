@@ -1260,6 +1260,7 @@ def main() -> None:
                 callbacks=callbacks,
                 tv_link=tv_link,
                 signal_threshold=threshold,
+                is_reply=bool(getattr(msg, "reply_to_msg_id", None)),
             )
 
             main_result = decision["main_result"]
