@@ -1,32 +1,5 @@
 # HEARTBEAT.md
 
-## Night Mode Protocol (safe operations first)
-
-When current period is night, run in **maintenance mode**:
-- No casual chat output.
-- Priorities: **stability → аккуратность → польза**.
-- Before any file modification: create a local backup copy.
-- No deep code rewrites, no risky changes, no service restarts unless strictly necessary.
-- If uncertain: do not modify, log recommendation instead.
-
-Night workflow:
-1) Collect new daily data (messages/signals/posts/parser outputs/memory updates)
-2) Clean (dedupe/spam filter/useful vs noise)
-3) Classify into: `signal`, `news`, `analysis`, `ideas`, `important`, `noise`
-4) Build short day summary (themes/signals/repeating ideas/useful sources)
-5) Update knowledge base (merge similar notes, keep meaning over raw text)
-6) Build morning checklist (verify/potential/decision/risk)
-7) Safe system check (disk/memory/log errors; no restart unless needed)
-
-Final output: **Night Report** with sections:
-- collected
-- cleaned
-- knowledge updates
-- key conclusions
-- morning priorities
-- found issues
-- improvement ideas
-
 ## Autonomous Web Research Monitor (Level-3)
 
 Run this checklist when heartbeat triggers.
