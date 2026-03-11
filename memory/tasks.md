@@ -1,5 +1,12 @@
 # Active Tasks
 
+## [2026-03-11-wyckoff-topics-status-check] Проверить текущий статус парсера топиков Wyckoff
+- **Status**: ✅ 完成
+- **Requested**: 2026-03-11 14:52 UTC
+- **Updated**: 2026-03-11 14:54 UTC
+- **Notes**: Выполнена безопасная проверка без рестартов: systemd status, runtime config (`config.json`), journald, tail `signals.jsonl`.
+- **Result**: Парсер активен и стабилен (`active/running`, `NRestarts=0`), topic-filter включён, backfill выключен. По логам фильтр отсекает неразрешённые источники/топики (`Dropped source not configured`) и обрабатывает разрешённые сообщения (есть свежие pipeline/forward события).
+
 ## [2026-03-11-night-mode-knowledge-ops] Включить ночной режим: чистка/классификация/сводки/безопасные микро-улучшения
 - **Status**: 🔄 进行中
 - **Requested**: 2026-03-11 14:49 UTC
