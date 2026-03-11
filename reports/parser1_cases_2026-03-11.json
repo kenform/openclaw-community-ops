@@ -1,0 +1,12 @@
+[
+  {"id": 1, "trader": "evelina", "text": "Взяла BTC лонг от 68400, стоп 67600, цель 70500", "expected_signal": 1},
+  {"id": 2, "trader": "evelina", "text": "Если потеряем 68000 — ниже нельзя, пока вне позиции", "expected_signal": 0},
+  {"id": 3, "trader": "evelina", "text": "Закрыла все по ETH, спасибо рынку", "expected_signal": 1},
+  {"id": 4, "trader": "artur", "text": "SOL шорт, вход 142, стоп 146, цель 133", "expected_signal": 1},
+  {"id": 5, "trader": "ilya", "text": "BTC закреп над 68к и буду брать в лонг, стоп под 67200, цель 70100", "expected_signal": 1},
+  {"id": 6, "trader": "ilya", "text": "Сегодня стрим в 20:00, в офисе", "expected_signal": 0},
+  {"id": 7, "trader": "ilya", "text": "Закрыл все по BTC, спасибо рынку", "expected_signal": 1},
+  {"id": 8, "trader": "altador", "text": "Зайду позже, стоп короткий", "expected_signal": 0},
+  {"id": 9, "trader": "evelina", "text": "Взяла место на обучение в VIP, старт завтра", "expected_signal": 0},
+  {"id": 10, "trader": "eli", "text": "беру ETH, если закреп над 3800", "expected_signal": 1}
+]

@@ -1,0 +1,82 @@
+{
+  "total": 10,
+  "unique_norm": 10,
+  "summary": {
+    "healthy": 0,
+    "unknown": 10,
+    "duplicate": 0,
+    "problem": 0
+  },
+  "rows": [
+    {
+      "channel": "code_0x",
+      "norm": "code_0x",
+      "trust": 0,
+      "cached": false,
+      "status": "unknown"
+    },
+    {
+      "channel": "maxshitpostit",
+      "norm": "maxshitpostit",
+      "trust": 0,
+      "cached": false,
+      "status": "unknown"
+    },
+    {
+      "channel": "artysiqsat",
+      "norm": "artysiqsat",
+      "trust": 0,
+      "cached": false,
+      "status": "unknown"
+    },
+    {
+      "channel": "digitalbios",
+      "norm": "digitalbios",
+      "trust": 0,
+      "cached": false,
+      "status": "unknown"
+    },
+    {
+      "channel": "vimol_web3",
+      "norm": "vimol_web3",
+      "trust": 0,
+      "cached": false,
+      "status": "unknown"
+    },
+    {
+      "channel": "eltonlabs",
+      "norm": "eltonlabs",
+      "trust": 0,
+      "cached": false,
+      "status": "unknown"
+    },
+    {
+      "channel": "deployladeploy",
+      "norm": "deployladeploy",
+      "trust": 0,
+      "cached": false,
+      "status": "unknown"
+    },
+    {
+      "channel": "Neironka_live",
+      "norm": "neironka_live",
+      "trust": 0,
+      "cached": false,
+      "status": "unknown"
+    },
+    {
+      "channel": "icodrops_sergey",
+      "norm": "icodrops_sergey",
+      "trust": 0,
+      "cached": false,
+      "status": "unknown"
+    },
+    {
+      "channel": "teamaifintech_bot",
+      "norm": "teamaifintech_bot",
+      "trust": 0,
+      "cached": false,
+      "status": "unknown"
+    }
+  ]
+}

@@ -1,0 +1,121 @@
+{
+  "phase": "after",
+  "tp": 6,
+  "fp": 0,
+  "tn": 4,
+  "fn": 0,
+  "precision": 1.0,
+  "recall": 1.0,
+  "rows": [
+    {
+      "id": 1,
+      "trader": "evelina",
+      "expected": 1,
+      "pred": 1,
+      "reason": null,
+      "signal_type": "LONG_ENTRY",
+      "entry": "68400",
+      "stop": "67600",
+      "target": "70500"
+    },
+    {
+      "id": 2,
+      "trader": "evelina",
+      "expected": 0,
+      "pred": 0,
+      "reason": null,
+      "signal_type": "MARKET_VIEW",
+      "entry": "68000",
+      "stop": "68000",
+      "target": "—"
+    },
+    {
+      "id": 3,
+      "trader": "evelina",
+      "expected": 1,
+      "pred": 1,
+      "reason": null,
+      "signal_type": "EXIT",
+      "entry": "—",
+      "stop": "—",
+      "target": "—"
+    },
+    {
+      "id": 4,
+      "trader": "artur",
+      "expected": 1,
+      "pred": 1,
+      "reason": "ARTUR_SIGNAL_PASS",
+      "signal_type": "SHORT_ENTRY",
+      "entry": "142",
+      "stop": "146",
+      "target": "133"
+    },
+    {
+      "id": 5,
+      "trader": "ilya",
+      "expected": 1,
+      "pred": 1,
+      "reason": "SIGNAL_PASS",
+      "signal_type": "CONDITIONAL_ENTRY",
+      "entry": "68к",
+      "stop": "есть",
+      "target": "67200"
+    },
+    {
+      "id": 6,
+      "trader": "ilya",
+      "expected": 0,
+      "pred": 0,
+      "reason": "SIGNAL_LOW_CONFIDENCE",
+      "signal_type": "MARKET_VIEW",
+      "entry": "20",
+      "stop": "—",
+      "target": "00"
+    },
+    {
+      "id": 7,
+      "trader": "ilya",
+      "expected": 1,
+      "pred": 1,
+      "reason": "SIGNAL_PASS",
+      "signal_type": "EXIT",
+      "entry": "—",
+      "stop": "—",
+      "target": "—"
+    },
+    {
+      "id": 8,
+      "trader": "altador",
+      "expected": 0,
+      "pred": 0,
+      "reason": null,
+      "signal_type": "MARKET_VIEW",
+      "entry": "—",
+      "stop": "есть",
+      "target": "—"
+    },
+    {
+      "id": 9,
+      "trader": "evelina",
+      "expected": 0,
+      "pred": 0,
+      "reason": "DROP_PROMO_SPAM",
+      "signal_type": "DROP",
+      "entry": "—",
+      "stop": "—",
+      "target": "—"
+    },
+    {
+      "id": 10,
+      "trader": "eli",
+      "expected": 1,
+      "pred": 1,
+      "reason": null,
+      "signal_type": "CONDITIONAL_ENTRY",
+      "entry": "3800",
+      "stop": "—",
+      "target": "—"
+    }
+  ]
+}

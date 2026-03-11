@@ -1,0 +1,111 @@
+{
+  "phase": "before",
+  "tp": 5,
+  "fp": 2,
+  "tn": 2,
+  "fn": 1,
+  "precision": 0.7143,
+  "recall": 0.8333,
+  "rows": [
+    {
+      "id": 1,
+      "trader": "evelina",
+      "expected": 1,
+      "pred": 1,
+      "reason": null,
+      "signal_type": "LONG_ENTRY",
+      "stop": "есть",
+      "target": "67600"
+    },
+    {
+      "id": 2,
+      "trader": "evelina",
+      "expected": 0,
+      "pred": 0,
+      "reason": null,
+      "signal_type": "MARKET_VIEW",
+      "stop": "68000",
+      "target": "—"
+    },
+    {
+      "id": 3,
+      "trader": "evelina",
+      "expected": 1,
+      "pred": 1,
+      "reason": null,
+      "signal_type": "EXIT",
+      "stop": "—",
+      "target": "—"
+    },
+    {
+      "id": 4,
+      "trader": "artur",
+      "expected": 1,
+      "pred": 1,
+      "reason": "ARTUR_SIGNAL_PASS",
+      "signal_type": "SHORT_ENTRY",
+      "stop": "146",
+      "target": "133"
+    },
+    {
+      "id": 5,
+      "trader": "ilya",
+      "expected": 1,
+      "pred": 1,
+      "reason": "SIGNAL_PASS",
+      "signal_type": "LONG_SETUP",
+      "stop": "есть",
+      "target": "67200"
+    },
+    {
+      "id": 6,
+      "trader": "ilya",
+      "expected": 0,
+      "pred": 0,
+      "reason": "SIGNAL_LOW_CONFIDENCE",
+      "signal_type": "MARKET_VIEW",
+      "stop": "—",
+      "target": "00"
+    },
+    {
+      "id": 7,
+      "trader": "ilya",
+      "expected": 1,
+      "pred": 0,
+      "reason": "SIGNAL_NO_STRUCTURE",
+      "signal_type": "MARKET_VIEW",
+      "stop": "—",
+      "target": "—"
+    },
+    {
+      "id": 8,
+      "trader": "altador",
+      "expected": 0,
+      "pred": 1,
+      "reason": null,
+      "signal_type": "MARKET_VIEW",
+      "stop": "есть",
+      "target": "—"
+    },
+    {
+      "id": 9,
+      "trader": "evelina",
+      "expected": 0,
+      "pred": 1,
+      "reason": null,
+      "signal_type": "MARKET_VIEW",
+      "stop": "—",
+      "target": "—"
+    },
+    {
+      "id": 10,
+      "trader": "eli",
+      "expected": 1,
+      "pred": 1,
+      "reason": null,
+      "signal_type": "CONDITIONAL_ENTRY",
+      "stop": "—",
+      "target": "—"
+    }
+  ]
+}

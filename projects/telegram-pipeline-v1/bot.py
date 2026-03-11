@@ -239,9 +239,11 @@ def _dedupe_tags(tags):
 
 def _has_promo_spam(text_raw: str) -> bool:
     t = _norm_text_for_filter(text_raw)
-    promo = ["vip", "марафон", "обучени", "реферал", "подпис", "места осталось"]
-    market_keep = ["лонг", "шорт", "взял", "взяла", "закрыл", "закрыла", "позицию", "позиция"]
-    return any(p in t for p in promo) and not any(m in t for m in market_keep)
+    promo = ["vip", "марафон", "обучени", "реферал", "подпис", "места осталось", "education", "менторств", "course", "the source", "upscale", "бронирован", "поток", "набор группы", "осталось мест"]
+    if not any(p in t for p in promo):
+        return False
+    strong_market = ["лонг", "шорт", "стоп", "цель", "тейк", "вход", "закрыл", "закрыла", "позиция", "позицию", "btc", "eth", "sol", "link", "брент", "биток", "эфир", "сол"]
+    return not any(m in t for m in strong_market)
 
 
 def _signal_confidence_0_10(text_raw: str, has_entry: bool, has_stop: bool, has_target: bool, trader_id: Optional[str], has_chart: bool = False) -> int:
@@ -396,15 +398,23 @@ def parse_ilya_signal(raw_text: str, rules: Dict[str, Any]) -> Dict[str, Any]:
     asset = _infer_asset(raw_text)
 
     signal_type = "MARKET_VIEW"
-    if not is_question:
-        if "лонг" in text and ("вход" in text or "беру" in text or "взял" in text): signal_type = "LONG_ENTRY"
-        elif "шорт" in text and ("вход" in text or "беру" in text or "взял" in text): signal_type = "SHORT_ENTRY"
-        elif "лонг" in text: signal_type = "LONG_SETUP"
-        elif "шорт" in text: signal_type = "SHORT_SETUP"
-    elif any(w in text for w in ["закрыл", "прикрыл", "фикс"]): signal_type = "EXIT"
-    elif "держу" in text: signal_type = "HOLD"
-    elif has_cond: signal_type = "CONDITIONAL_ENTRY"
-    elif any(w in text for w in ["уровень", "закреп", "зона"]): signal_type = "LEVEL_UPDATE"
+    if any(w in text for w in ["закрыл", "прикрыл", "фикс"]):
+        signal_type = "EXIT"
+    elif "держу" in text:
+        signal_type = "HOLD"
+    elif has_cond:
+        signal_type = "CONDITIONAL_ENTRY"
+    elif any(w in text for w in ["уровень", "закреп", "зона"]):
+        signal_type = "LEVEL_UPDATE"
+    elif not is_question:
+        if "лонг" in text and ("вход" in text or "беру" in text or "взял" in text):
+            signal_type = "LONG_ENTRY"
+        elif "шорт" in text and ("вход" in text or "беру" in text or "взял" in text):
+            signal_type = "SHORT_ENTRY"
+        elif "лонг" in text:
+            signal_type = "LONG_SETUP"
+        elif "шорт" in text:
+            signal_type = "SHORT_SETUP"
 
     confidence = 0
     confidence += 3 if has_dir else 0
@@ -430,7 +440,8 @@ def parse_ilya_signal(raw_text: str, rules: Dict[str, Any]) -> Dict[str, Any]:
     threshold = int(rules.get("signal_threshold", 7))
     has_structure = bool(nums) or has_cond or (has_dir and has_action)
     weak_question = is_question and not has_structure
-    signal_pass = confidence >= threshold and has_structure and not weak_question and not (asset == "UNKNOWN" and confidence <= threshold + 1)
+    explicit_exit = any(w in text for w in ["закрыл", "прикрыл", "фикс"])
+    signal_pass = (explicit_exit and asset != "UNKNOWN") or (confidence >= threshold and has_structure and not weak_question and not (asset == "UNKNOWN" and confidence <= threshold + 1))
     if signal_pass:
         reason = "SIGNAL_PASS"
     elif not has_structure or weak_question:
@@ -744,7 +755,9 @@ def parse_generic_signal(text_raw: str, threshold: int = 6, trader_id: Optional[
             force_main_view = True
 
     conf = (3 if has_entry else 0) + (3 if has_stop else 0) + (3 if has_target else 0) + (2 if asset != "UNKNOWN" else 0) + (1 if nums else 0) + (3 if has_exit else 0)
-    passed = conf >= threshold and sum([has_entry, has_stop, has_target]) >= 2
+    has_direction_word = ("лонг" in text) or ("шорт" in text)
+    structural_guard = (asset != "UNKNOWN") or bool(nums) or has_direction_word
+    passed = conf >= threshold and sum([has_entry, has_stop, has_target]) >= 2 and structural_guard
 
     stype = "LONG_ENTRY" if "лонг" in text else ("SHORT_ENTRY" if "шорт" in text else "MARKET_VIEW")
     if has_exit:
@@ -760,7 +773,16 @@ def parse_generic_signal(text_raw: str, threshold: int = 6, trader_id: Optional[
         else:
             passed = _evelina_action_signal(text) and not force_main_view
 
-    stop_val = invalidation_level if invalidation_level else ("есть" if has_stop else "—")
+    stop_match = re.search(r"(?:стоп|stop|stop loss)\s*[🛑:\-]?\s*(\d{1,6}(?:[\.,]\d+)?)", text, flags=re.IGNORECASE)
+    target_match = re.search(r"(?:цель|тейк|тейки|take)\s*[:\-]?\s*(\d{1,6}(?:[\.,]\d+)?)", text, flags=re.IGNORECASE)
+    entry_match = re.search(r"(?:вход|от|по)\s*[:\-]?\s*(\d{1,6}(?:[\.,]\d+)?)", text, flags=re.IGNORECASE)
+
+    entry_val = entry_match.group(1) if entry_match else (nums[0] if nums else "—")
+    explicit_stop = stop_match.group(1) if stop_match else None
+    explicit_target = target_match.group(1) if target_match else None
+    stop_val = invalidation_level if invalidation_level else (explicit_stop if explicit_stop else ("есть" if has_stop else "—"))
+    target_val = explicit_target if explicit_target else (nums[1] if len(nums) > 1 and nums[1] != stop_val else "—")
+
     conf_final = _signal_confidence_0_10(text_raw, has_entry or is_conditional_entry, has_stop, has_target, trader_id, has_chart=has_tradingview_link(text_raw, ["tradingview.com"]))
     return {
         "pass": passed,
@@ -768,9 +790,9 @@ def parse_generic_signal(text_raw: str, threshold: int = 6, trader_id: Optional[
         "confidence_final": conf_final,
         "signal_type": stype,
         "asset": asset,
-        "entry": nums[0] if nums else "—",
+        "entry": entry_val,
         "stop": stop_val,
-        "target": nums[1] if len(nums) > 1 else "—",
+        "target": target_val,
         "invalidation_level": invalidation_level if invalidation_level else "—",
         "stop_inferred": stop_inferred,
         "raw": text_raw,
@@ -850,8 +872,8 @@ def send_via_bot_api(
     if media_kind and media_bytes is not None:
         # Always send media as file/document for stable channel output.
         method_map = {
-            "photo": ("sendDocument", "document"),
-            "video": ("sendDocument", "document"),
+            "photo": ("sendPhoto", "photo"),
+            "video": ("sendVideo", "video"),
             "voice": ("sendDocument", "document"),
             "document": ("sendDocument", "document"),
         }
@@ -1268,12 +1290,16 @@ def main() -> None:
             state_type = decision["state_type"]
             debug_reasons = decision["debug_reasons"]
             _raw_bundle = decision["bundle_text"] or ""
-            effective_text = _clean_post_text(_raw_bundle) or _clean_post_text(text)
+            effective_text = _clean_post_text(text) or ""
 
             logger.info("pipeline trader=%s state=%s main=%s signal=%s reasons=%s msg_id=%s",
                 trader_id, state_type, decision["main_pass"], decision["signal_pass"], debug_reasons, msg.id)
 
             sent_main = False
+            if media_kind in {"photo", "video"} and not decision["main_pass"]:
+                if not _has_promo_spam(text):
+                    decision["main_pass"] = True
+                    main_result = {"pass": True, "type": "VIEW", "reason": "MEDIA_FORCE_MAIN"}
             if decision["main_pass"] and main_target_channel_id is not None:
                 payload = format_payload(chat_title, chat_id, topic_id,
                     effective_text, media_only, topic_title=topic_title,

@@ -1,0 +1,705 @@
+{
+  "total": 99,
+  "unique_norm": 85,
+  "summary": {
+    "healthy": 59,
+    "unknown": 12,
+    "duplicate": 28,
+    "problem": 0
+  },
+  "rows": [
+    {
+      "channel": "+tFEGc2srSnlhNjAy",
+      "norm": "+tfegc2srsnlhnjay",
+      "trust": 20,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "BornWeb3",
+      "norm": "bornweb3",
+      "trust": 15,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "CryptoAmbitions",
+      "norm": "cryptoambitions",
+      "trust": 15,
+      "cached": true,
+      "status": "duplicate"
+    },
+    {
+      "channel": "DEFI_spekulyant",
+      "norm": "defi_spekulyant",
+      "trust": 15,
+      "cached": true,
+      "status": "duplicate"
+    },
+    {
+      "channel": "DifloksDi",
+      "norm": "difloksdi",
+      "trust": 15,
+      "cached": true,
+      "status": "duplicate"
+    },
+    {
+      "channel": "Digita_Gold",
+      "norm": "digita_gold",
+      "trust": 15,
+      "cached": true,
+      "status": "duplicate"
+    },
+    {
+      "channel": "Fr0ZiCrypto",
+      "norm": "fr0zicrypto",
+      "trust": 15,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "GhoulsInCrypto",
+      "norm": "ghoulsincrypto",
+      "trust": 15,
+      "cached": true,
+      "status": "duplicate"
+    },
+    {
+      "channel": "Neironka_live",
+      "norm": "neironka_live",
+      "trust": 15,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "RTMscalp",
+      "norm": "rtmscalp",
+      "trust": 15,
+      "cached": true,
+      "status": "duplicate"
+    },
+    {
+      "channel": "SearcherTribe",
+      "norm": "searchertribe",
+      "trust": 15,
+      "cached": true,
+      "status": "duplicate"
+    },
+    {
+      "channel": "Smik_Live",
+      "norm": "smik_live",
+      "trust": 17,
+      "cached": true,
+      "status": "duplicate"
+    },
+    {
+      "channel": "SweetCryptoCrumps",
+      "norm": "sweetcryptocrumps",
+      "trust": 15,
+      "cached": true,
+      "status": "duplicate"
+    },
+    {
+      "channel": "TeddyinCrypto",
+      "norm": "teddyincrypto",
+      "trust": 15,
+      "cached": true,
+      "status": "duplicate"
+    },
+    {
+      "channel": "Vorkaem_crypto",
+      "norm": "vorkaem_crypto",
+      "trust": 15,
+      "cached": true,
+      "status": "duplicate"
+    },
+    {
+      "channel": "abuzersruma",
+      "norm": "abuzersruma",
+      "trust": 15,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "adel_aggregator",
+      "norm": "adel_aggregator",
+      "trust": 15,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "adel_crypta",
+      "norm": "adel_crypta",
+      "trust": 15,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "adelkastyle",
+      "norm": "adelkastyle",
+      "trust": 15,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "algorithm_0x",
+      "norm": "algorithm_0x",
+      "trust": 15,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "ape_crypt",
+      "norm": "ape_crypt",
+      "trust": 15,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "argona_print",
+      "norm": "argona_print",
+      "trust": 15,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "artysiqsat",
+      "norm": "artysiqsat",
+      "trust": 15,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "blackm1r",
+      "norm": "blackm1r",
+      "trust": 16,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "crypto_gossip_girl",
+      "norm": "crypto_gossip_girl",
+      "trust": 16,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "crypto_gym01",
+      "norm": "crypto_gym01",
+      "trust": 16,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "crypto_miracle01",
+      "norm": "crypto_miracle01",
+      "trust": 16,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "cryptoambitions",
+      "norm": "cryptoambitions",
+      "trust": 16,
+      "cached": true,
+      "status": "duplicate"
+    },
+    {
+      "channel": "cryptobrelgin",
+      "norm": "cryptobrelgin",
+      "trust": 16,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "cryptobzzi",
+      "norm": "cryptobzzi",
+      "trust": 16,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "cryptoneprostoy",
+      "norm": "cryptoneprostoy",
+      "trust": 16,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "cryptoniumss",
+      "norm": "cryptoniumss",
+      "trust": 16,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "dandelion_crypto",
+      "norm": "dandelion_crypto",
+      "trust": 16,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "defi_spekulyant",
+      "norm": "defi_spekulyant",
+      "trust": 16,
+      "cached": true,
+      "status": "duplicate"
+    },
+    {
+      "channel": "deployladeploy",
+      "norm": "deployladeploy",
+      "trust": 16,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "difloksdi",
+      "norm": "difloksdi",
+      "trust": 16,
+      "cached": true,
+      "status": "duplicate"
+    },
+    {
+      "channel": "digita_gold",
+      "norm": "digita_gold",
+      "trust": 16,
+      "cached": true,
+      "status": "duplicate"
+    },
+    {
+      "channel": "digitalbios",
+      "norm": "digitalbios",
+      "trust": 16,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "drizzyscalp",
+      "norm": "drizzyscalp",
+      "trust": 16,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "eltonlabs",
+      "norm": "eltonlabs",
+      "trust": 16,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "eshiasdweb3",
+      "norm": "eshiasdweb3",
+      "trust": 16,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "fakemoney95",
+      "norm": "fakemoney95",
+      "trust": 16,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "futuraXnews",
+      "norm": "futuraxnews",
+      "trust": 16,
+      "cached": true,
+      "status": "duplicate"
+    },
+    {
+      "channel": "futuraxnews",
+      "norm": "futuraxnews",
+      "trust": 16,
+      "cached": true,
+      "status": "duplicate"
+    },
+    {
+      "channel": "gangvcryptovalyte",
+      "norm": "gangvcryptovalyte",
+      "trust": 18,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "ghoulsincrypto",
+      "norm": "ghoulsincrypto",
+      "trust": 16,
+      "cached": true,
+      "status": "duplicate"
+    },
+    {
+      "channel": "hatavcrypto",
+      "norm": "hatavcrypto",
+      "trust": 16,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "incrypted_airdrops",
+      "norm": "incrypted_airdrops",
+      "trust": 16,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "kapustavzhire",
+      "norm": "kapustavzhire",
+      "trust": 18,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "kozh_crypto",
+      "norm": "kozh_crypto",
+      "trust": 18,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "ledgerhermes",
+      "norm": "ledgerhermes",
+      "trust": 16,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "logovo_pauka",
+      "norm": "logovo_pauka",
+      "trust": 16,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "maloymedika",
+      "norm": "maloymedika",
+      "trust": 16,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "marcelkow_crypto",
+      "norm": "marcelkow_crypto",
+      "trust": 16,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "maxhitpostit",
+      "norm": "maxhitpostit",
+      "trust": 16,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "maycrypto",
+      "norm": "maycrypto",
+      "trust": 16,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "mbccryptonews",
+      "norm": "mbccryptonews",
+      "trust": 18,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "mickydealss",
+      "norm": "mickydealss",
+      "trust": 16,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "murchimpromemes",
+      "norm": "murchimpromemes",
+      "trust": 16,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "mylosuccess",
+      "norm": "mylosuccess",
+      "trust": 16,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "ol_onXdao",
+      "norm": "ol_onxdao",
+      "trust": 15,
+      "cached": true,
+      "status": "duplicate"
+    },
+    {
+      "channel": "ol_onxdao",
+      "norm": "ol_onxdao",
+      "trust": 15,
+      "cached": true,
+      "status": "duplicate"
+    },
+    {
+      "channel": "orca_lab",
+      "norm": "orca_lab",
+      "trust": 17,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "pananasikcrypto",
+      "norm": "pananasikcrypto",
+      "trust": 15,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "pazhik_i",
+      "norm": "pazhik_i",
+      "trust": 17,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "robsvrtg",
+      "norm": "robsvrtg",
+      "trust": 17,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "rtmscalp",
+      "norm": "rtmscalp",
+      "trust": 15,
+      "cached": true,
+      "status": "duplicate"
+    },
+    {
+      "channel": "runnerxbtInsight1",
+      "norm": "runnerxbtinsight1",
+      "trust": 15,
+      "cached": true,
+      "status": "duplicate"
+    },
+    {
+      "channel": "runnerxbtinsight1",
+      "norm": "runnerxbtinsight1",
+      "trust": 15,
+      "cached": true,
+      "status": "duplicate"
+    },
+    {
+      "channel": "sarahonchain",
+      "norm": "sarahonchain",
+      "trust": 15,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "searchertribe",
+      "norm": "searchertribe",
+      "trust": 15,
+      "cached": true,
+      "status": "duplicate"
+    },
+    {
+      "channel": "shifild",
+      "norm": "shifild",
+      "trust": 15,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "shitpostdaze",
+      "norm": "shitpostdaze",
+      "trust": 15,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "skhema_crypto",
+      "norm": "skhema_crypto",
+      "trust": 15,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "smik_live",
+      "norm": "smik_live",
+      "trust": 15,
+      "cached": true,
+      "status": "duplicate"
+    },
+    {
+      "channel": "stellarechodao",
+      "norm": "stellarechodao",
+      "trust": 17,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "sweetcryptocrumps",
+      "norm": "sweetcryptocrumps",
+      "trust": 15,
+      "cached": true,
+      "status": "duplicate"
+    },
+    {
+      "channel": "teddyincrypto",
+      "norm": "teddyincrypto",
+      "trust": 15,
+      "cached": true,
+      "status": "duplicate"
+    },
+    {
+      "channel": "testnetworker",
+      "norm": "testnetworker",
+      "trust": 15,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "theairclaim",
+      "norm": "theairclaim",
+      "trust": 17,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "vimol_web3",
+      "norm": "vimol_web3",
+      "trust": 16,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "vorkaem_crypto",
+      "norm": "vorkaem_crypto",
+      "trust": 16,
+      "cached": true,
+      "status": "duplicate"
+    },
+    {
+      "channel": "votesa",
+      "norm": "votesa",
+      "trust": 16,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "web3memoriess",
+      "norm": "web3memoriess",
+      "trust": 16,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "who_is_votesa",
+      "norm": "who_is_votesa",
+      "trust": 15,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "zarka10",
+      "norm": "zarka10",
+      "trust": 15,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "micky_fomo",
+      "norm": "micky_fomo",
+      "trust": 15,
+      "cached": true,
+      "status": "healthy"
+    },
+    {
+      "channel": "mirrorsbyrnd",
+      "norm": "mirrorsbyrnd",
+      "trust": 0,
+      "cached": false,
+      "status": "unknown"
+    },
+    {
+      "channel": "traverserr",
+      "norm": "traverserr",
+      "trust": 0,
+      "cached": false,
+      "status": "unknown"
+    },
+    {
+      "channel": "ravenludit",
+      "norm": "ravenludit",
+      "trust": 0,
+      "cached": false,
+      "status": "unknown"
+    },
+    {
+      "channel": "mmmadmarket",
+      "norm": "mmmadmarket",
+      "trust": 0,
+      "cached": false,
+      "status": "unknown"
+    },
+    {
+      "channel": "bykvan328",
+      "norm": "bykvan328",
+      "trust": 0,
+      "cached": false,
+      "status": "unknown"
+    },
+    {
+      "channel": "jdmdao",
+      "norm": "jdmdao",
+      "trust": 0,
+      "cached": false,
+      "status": "unknown"
+    },
+    {
+      "channel": "crypto_bibizyana",
+      "norm": "crypto_bibizyana",
+      "trust": 0,
+      "cached": false,
+      "status": "unknown"
+    },
+    {
+      "channel": "OI_Delta",
+      "norm": "oi_delta",
+      "trust": 0,
+      "cached": false,
+      "status": "unknown"
+    },
+    {
+      "channel": "cryptozoro04",
+      "norm": "cryptozoro04",
+      "trust": 0,
+      "cached": false,
+      "status": "unknown"
+    },
+    {
+      "channel": "papakollit",
+      "norm": "papakollit",
+      "trust": 0,
+      "cached": false,
+      "status": "unknown"
+    },
+    {
+      "channel": "payme99",
+      "norm": "payme99",
+      "trust": 0,
+      "cached": false,
+      "status": "unknown"
+    },
+    {
+      "channel": "StoragebyAnchilotus",
+      "norm": "storagebyanchilotus",
+      "trust": 0,
+      "cached": false,
+      "status": "unknown"
+    }
+  ]
+}
