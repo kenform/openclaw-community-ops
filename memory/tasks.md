@@ -1,5 +1,12 @@
 # Active Tasks
 
+## [2026-03-11-note-eragon-names] Добавить в заметки названия бренда
+- **Status**: ✅ 完成
+- **Requested**: 2026-03-11 06:32 UTC
+- **Updated**: 2026-03-11 06:33 UTC
+- **Notes**: Пользователь прислал 3 варианта названия и попросил добавить их в заметки.
+- **Result**: Сохранено в Obsidian заметку `Obsidian-Telegram-KB/00_Inbox/2026-03-11__brand-name-ideas.md`.
+
 ## [2026-03-10-remove-psybot-legacy] Безопасно удалить старый psybot_api проект
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-10 18:45 UTC
