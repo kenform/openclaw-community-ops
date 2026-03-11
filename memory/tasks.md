@@ -1,5 +1,12 @@
 # Active Tasks
 
+## [2026-03-11-language-coach-template] Дать готовый ежедневный шаблон Language Coach 30/10
+- **Status**: ✅ 完成
+- **Requested**: 2026-03-11 19:00 UTC
+- **Updated**: 2026-03-11 19:00 UTC
+- **Notes**: Пользователь подтвердил "хочу" на запрос готового ежедневного шаблона.
+- **Result**: Отправляю copy-paste шаблон (EN 30 + CN 10) с автопроверкой, трекингом и форматами ответа.
+
 ## [2026-03-11-language-coach-setup] Запустить внедрение агента Language Coach 30/10
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-11 18:56 UTC
