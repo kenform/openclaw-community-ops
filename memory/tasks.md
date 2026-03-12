@@ -7,12 +7,19 @@
 - **Notes**: Добавлен freshness-guard в `elven_ai_lab_poster_bot.py`: публикация только по заметкам не старше `MAX_NOTE_AGE_HOURS` (из env). В env добавлено `MAX_NOTE_AGE_HOURS=48`.
 - **Result**: Постер больше не берёт старые «уникальные» записи за пределами окна свежести; логика повторов дополнительно ужесточена.
 
-## [2026-03-12-pipeline-format-payload-hotfix] Починить TypeError format_payload(timestamp=...) в parser1
+## [2026-03-12-userbot2-quiet-hardening] Тихий hardening userbot2 (без изменения логики)
 - **Status**: ✅ 完成
+- **Requested**: 2026-03-12 16:58 UTC
+- **Updated**: 2026-03-12 17:00 UTC
+- **Notes**: Сделан backup `/home/openclawuser/userbot2/bot.py.bak_20260312T1700Z`; добавлено quiet-логирование для Telethon transport logger (`telethon.network.connection.connection`/`mtprotosender` -> ERROR) и health-marker запись в `health_summary.json` при событиях. Логика задач/публикаций не менялась.
+- **Result**: `userbot2.service` перезапущен и активен/running; шум reconnect-сообщений снижен, контур сохранён без функциональных изменений.
+
+## [2026-03-12-pipeline-format-payload-hotfix] Починить TypeError format_payload(timestamp=...) в parser1
+- **Status**: 🔄 进行中
 - **Requested**: 2026-03-12 16:51 UTC
-- **Updated**: 2026-03-12 16:53 UTC
-- **Notes**: Сделан backup `projects/telegram-pipeline-v1/bot.py.bak_20260312T1652Z`; поправлена сигнатура `format_payload(..., timestamp: Optional[int] = None)` и безопасный fallback для empty/media payload; выполнены `py_compile` и рестарт `telegram-pipeline-v1.service`.
-- **Result**: Критичная ошибка `unexpected keyword argument 'timestamp'` устранена. Сервис активен/running после рестарта; в пост-логах после фикса повтор ошибки не зафиксирован.
+- **Updated**: 2026-03-12 16:56 UTC
+- **Notes**: Запущен контрольный live-check по запросу пользователя (15–20 минут после фикса).
+- **Result**: Наблюдаю логи parser1 на живом трафике.
 
 ## [2026-03-12-parser-health-report] Дать health-report по парсерам (24ч, аптайм, ошибки, последний успех)
 - **Status**: ✅ 完成
