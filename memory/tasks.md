@@ -1,11 +1,11 @@
 # Active Tasks
 
-## [2026-03-12-elven-post-285-bug-rootcause] Разобрать причину багнутого поста #285 и повторов
+## [2026-03-12-elven-post-285-fix] Починить повторы и сломанные ссылки в Elven автопостинге
 - **Status**: ✅ 完成
-- **Requested**: 2026-03-12 16:04 UTC
-- **Updated**: 2026-03-12 16:07 UTC
-- **Notes**: Проверены cron-расписание, publish-wrapper, `elven_ai_lab_poster_bot.py`, и история `tmp/elven_ai_lab_history.json`.
-- **Result**: Найден root-cause: автопостинг идёт каждые 2 часа из `elven_ai_lab_poster_bot.py`; при исчерпании пула уникальных заметок код откатывается к `or clean_notes`, из-за чего крутятся одни и те же 2 поста по кругу. В шаблоне поста зашита нерабочая ссылка `https://example.com/exchanges`, поэтому блок ссылок в посте выглядит «сломано».
+- **Requested**: 2026-03-12 16:30 UTC
+- **Updated**: 2026-03-12 16:32 UTC
+- **Notes**: Сделаны backup-файлы и правки в `scripts/elven_ai_lab_poster_bot.py` + `scripts/elven_ai_lab_bot.env`: убран fallback на `clean_notes`, добавлен strict guard «нет новых уникальных постов -> не публиковать», и ссылка `Биржи` переведена на `EXCHANGE_LINK`.
+- **Result**: Причина повторов устранена на уровне логики выбора кандидата; битая ссылка `example.com` удалена. Синтаксис скрипта валиден (`py_compile ok`).
 
 ## [2026-03-12-parser-health-report] Дать health-report по парсерам (24ч, аптайм, ошибки, последний успех)
 - **Status**: ✅ 完成

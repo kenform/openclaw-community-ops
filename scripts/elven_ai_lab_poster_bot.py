@@ -203,7 +203,7 @@ def is_buggy_unknown_note(n: dict) -> bool:
     return False
 
 
-def render_post(n, channel_link, chat_link, post_type='AI SIGNAL'):
+def render_post(n, channel_link, chat_link, exchange_link, post_type='AI SIGNAL'):
     title = n['title']
     bullets = n['bullets'] or ['Короткий технический сигнал без лишнего шума.']
     source_name = sanitize_channel_name(n.get('source_name') or '')
@@ -232,7 +232,7 @@ def render_post(n, channel_link, chat_link, post_type='AI SIGNAL'):
         "🌿 Elven AI Lab",
         "",
         "Ссылки:",
-        f'<a href="https://example.com/exchanges">Биржи</a> | <a href="{channel_link}">Канал</a> | <a href="{chat_link}">Чат</a>',
+        f'<a href="{exchange_link}">Биржи</a> | <a href="{channel_link}">Канал</a> | <a href="{chat_link}">Чат</a>',
         pick_context_tags(' '.join(bullets) + ' ' + title),
     ]
     return '\n'.join([x for x in out if x is not None])
@@ -266,6 +266,7 @@ def main():
 
     channel_link = env.get('CHANNEL_LINK', 'https://t.me/Elven_Ai_Lab')
     chat_link = env.get('CHAT_LINK', channel_link)
+    exchange_link = env.get('EXCHANGE_LINK', 'https://eragon-exchange-site-next-kenformgod-6184s-projects.vercel.app/')
 
     h = prune_history(load_history(), 168)
     notes = collect_notes(120)
@@ -282,20 +283,25 @@ def main():
     pool = [
         n for n in clean_notes
         if n['title'].strip().lower() not in used_titles and note_signature(n) not in used_sigs
-    ] or clean_notes
+    ]
 
-    # avoid reposting exact same top note over and over even if history was pruned/reset
+    # strict no-repost mode: if nothing new, skip publish
+    if not pool:
+        return
+
+    # avoid immediate repeat of last signature
     if h.get('posts'):
         last_sig = h['posts'][-1].get('sig', '')
         pool2 = [n for n in pool if note_signature(n) != last_sig]
-        if pool2:
-            pool = pool2
+        if not pool2:
+            return
+        pool = pool2
 
     n = sorted(pool, key=lambda x: x.get('score', 0), reverse=True)[0]
 
     score = int(n.get('score', 0))
     ptype = POST_TYPES[(today_count_by_layer(h, 'signals') + today_count_by_layer(h, 'raw')) % len(POST_TYPES)]
-    msg = render_post(n, channel_link, chat_link, ptype)
+    msg = render_post(n, channel_link, chat_link, exchange_link, ptype)
 
     # routing by score
     if score < RAW_MIN_SCORE:
