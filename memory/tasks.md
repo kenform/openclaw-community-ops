@@ -1,5 +1,19 @@
 # Active Tasks
 
+## [2026-03-12-elven-post-285-bug-rootcause] Разобрать причину багнутого поста #285 и повторов
+- **Status**: ✅ 完成
+- **Requested**: 2026-03-12 16:04 UTC
+- **Updated**: 2026-03-12 16:07 UTC
+- **Notes**: Проверены cron-расписание, publish-wrapper, `elven_ai_lab_poster_bot.py`, и история `tmp/elven_ai_lab_history.json`.
+- **Result**: Найден root-cause: автопостинг идёт каждые 2 часа из `elven_ai_lab_poster_bot.py`; при исчерпании пула уникальных заметок код откатывается к `or clean_notes`, из-за чего крутятся одни и те же 2 поста по кругу. В шаблоне поста зашита нерабочая ссылка `https://example.com/exchanges`, поэтому блок ссылок в посте выглядит «сломано».
+
+## [2026-03-12-parser-health-report] Дать health-report по парсерам (24ч, аптайм, ошибки, последний успех)
+- **Status**: ✅ 完成
+- **Requested**: 2026-03-12 15:20 UTC
+- **Updated**: 2026-03-12 15:21 UTC
+- **Notes**: Собраны live-метрики по `telegram-pipeline-v1`, `userbot`, `userbot2` (systemd status + journalctl 24ч + последние успешные события).
+- **Result**: Отчёт передан: все сервисы active/running; pipeline активен с частыми drops по нерелевантным source/topic, userbot/userbot2 имеют периодические reconnection/рестарты, критических падений контура не обнаружено.
+
 ## [2026-03-12-openclaw-news-recovery] Восстановить поток публикаций в OpenClaw News безопасно
 - **Status**: ⏸️ 暂停
 - **Requested**: 2026-03-12 10:55 UTC
