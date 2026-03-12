@@ -163,6 +163,10 @@ def _infer_asset(text: str) -> str:
         "LINK": [r"(?<!\w)link(?!\w)", r"(?<!\w)линк\w*"],
         "APT": [r"(?<!\w)apt(?!\w)", r"(?<!\w)aptos(?!\w)", r"(?<!\w)апт\w*"],
         "BRENT": [r"(?<!\w)brent(?!\w)", r"(?<!\w)брент\w*"],
+        "GOLD": [r"(?<!\w)gold(?!\w)", r"(?<!\w)xau(?!\w)", r"(?<!\w)золот\w*"],
+        "OIL": [r"(?<!\w)oil(?!\w)", r"(?<!\w)нефть\w*"],
+        "NDX": [r"(?<!\w)ndx(?!\w)", r"(?<!\w)nasdaq(?!\w)"],
+        "SPX": [r"(?<!\w)spx(?!\w)", r"(?<!\w)sp500(?!\w)"],
         "BCH": [r"(?<!\w)bch(?!\w)"],
     }
     for asset, pats in alias_patterns.items():
@@ -170,7 +174,7 @@ def _infer_asset(text: str) -> str:
             if re.search(pat, t):
                 return asset
 
-    for a in ["BTC", "ETH", "SOL", "BCH", "BRENT", "BNB", "XRP", "DOGE", "TON", "LINK", "NEAR", "APT"]:
+    for a in ["BTC", "ETH", "SOL", "BCH", "BRENT", "BNB", "XRP", "DOGE", "TON", "LINK", "NEAR", "APT", "GOLD", "XAU", "OIL", "NDX", "SPX"]:
         if a in t_up:
             return a
     return "UNKNOWN"
@@ -189,6 +193,7 @@ def format_payload(
     topic_title: Optional[str] = None,
     trader_id: Optional[str] = None,
     main_type: Optional[str] = None,
+    timestamp: Optional[int] = None,
 ) -> str:
     _ = (chat_title, chat_id, topic_id, topic_title)
     body = _clean_post_text(text)
@@ -199,9 +204,18 @@ def format_payload(
     ])
     pair = re.search(r"\b([A-Z]{2,10}/USDT)\b", body.upper())
     pair_line = pair.group(1) if pair else ""
+
     if body:
-        return "\n".join(tags) + (f"\n\n{pair_line}\n\n" if pair_line else "\n\n") + body
-    return "\n".join(tags)
+        result = "\n".join(tags) + (f"\n\n{pair_line}\n\n" if pair_line else "\n\n") + body
+    else:
+        media_stub = "(media)" if media_only else "(empty)"
+        result = "\n".join(tags) + f"\n\n{media_stub}"
+
+    if timestamp:
+        import time as _t
+        ts_str = _t.strftime('%Y-%m-%d %H:%M:%S UTC', _t.gmtime(timestamp))
+        return result + f"\n\n📅 {ts_str}"
+    return result
 
 
 EMOJI_RE = re.compile(
@@ -1303,7 +1317,8 @@ def main() -> None:
             if decision["main_pass"] and main_target_channel_id is not None:
                 payload = format_payload(chat_title, chat_id, topic_id,
                     effective_text, media_only, topic_title=topic_title,
-                    trader_id=trader_id, main_type=main_result.get("type") or "VIEW")
+                    trader_id=trader_id, main_type=main_result.get("type") or "VIEW",
+                    timestamp=int(msg.date.timestamp()) if msg.date else None)
                 sent_main = send_via_bot_api(bot_token, str(main_target_channel_id), payload, logger,
                     dry_run=dry_run, media_kind=media_kind, media_bytes=media_bytes, media_name=media_name)
 

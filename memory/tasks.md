@@ -7,6 +7,13 @@
 - **Notes**: Добавлен freshness-guard в `elven_ai_lab_poster_bot.py`: публикация только по заметкам не старше `MAX_NOTE_AGE_HOURS` (из env). В env добавлено `MAX_NOTE_AGE_HOURS=48`.
 - **Result**: Постер больше не берёт старые «уникальные» записи за пределами окна свежести; логика повторов дополнительно ужесточена.
 
+## [2026-03-12-pipeline-format-payload-hotfix] Починить TypeError format_payload(timestamp=...) в parser1
+- **Status**: ✅ 完成
+- **Requested**: 2026-03-12 16:51 UTC
+- **Updated**: 2026-03-12 16:53 UTC
+- **Notes**: Сделан backup `projects/telegram-pipeline-v1/bot.py.bak_20260312T1652Z`; поправлена сигнатура `format_payload(..., timestamp: Optional[int] = None)` и безопасный fallback для empty/media payload; выполнены `py_compile` и рестарт `telegram-pipeline-v1.service`.
+- **Result**: Критичная ошибка `unexpected keyword argument 'timestamp'` устранена. Сервис активен/running после рестарта; в пост-логах после фикса повтор ошибки не зафиксирован.
+
 ## [2026-03-12-parser-health-report] Дать health-report по парсерам (24ч, аптайм, ошибки, последний успех)
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-12 15:20 UTC
