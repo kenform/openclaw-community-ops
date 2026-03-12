@@ -1,11 +1,18 @@
 # Active Tasks
 
 ## [2026-03-12-openclaw-news-recovery] Восстановить поток публикаций в OpenClaw News безопасно
-- **Status**: 🔄 进行中
+- **Status**: ⏸️ 暂停
 - **Requested**: 2026-03-12 10:55 UTC
-- **Updated**: 2026-03-12 10:58 UTC
-- **Notes**: Выполнена read-only диагностика: `userbot` и `telegram-pipeline-v1` active/running; найдено, что в pipeline основной шум — `Dropped (source not configured)` (topic_id `None/11/48704`), а в digest ранее подтверждён `payme99` и уже исключён. Проверен поток: в `pipeline` есть реальные forward-события (напр. 06:06 и 08:06 UTC).
-- **Result**: Попытка ручной публикации через OpenClaw `message` в target `-1003891349981` неуспешна (`chat not found`) — проблема доступа именно у текущего провайдера OpenClaw, не у pipeline-бота. Продолжаю безопасный recovery через pipeline-контур и анализ последних 100 сигналов.
+- **Updated**: 2026-03-12 13:49 UTC
+- **Notes**: Приостановлено новым приоритетом пользователя (система второго мозга Obsidian+Telegram).
+- **Result**: Вернусь после закрытия новой задачи.
+
+## [2026-03-12-telegram-obsidian-second-brain] Развернуть Telegram -> Obsidian second brain с автозапуском
+- **Status**: ✅ 完成
+- **Requested**: 2026-03-12 13:49 UTC
+- **Updated**: 2026-03-12 13:52 UTC
+- **Notes**: Vault `/home/openclawuser/vault` подтверждён; структура папок создана. Развёрнут сервис `/home/openclawuser/telegram_to_obsidian.py` (text + /idea /note /task + voice->Whisper + daily notes). Поднят user-systemd `telegram-obsidian.service`.
+- **Result**: Система автономна и активна: `systemctl --user status telegram-obsidian.service` -> active/running; заметки сохраняются в `.md` внутри vault.
 
 ## [2026-03-12-voice-3550-transcribe] Расшифровать входящее голосовое 3550
 - **Status**: ✅ 完成
