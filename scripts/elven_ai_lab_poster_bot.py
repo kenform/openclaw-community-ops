@@ -106,13 +106,26 @@ def ambiguity_reason(low: str) -> str:
     return '; '.join(reasons[:1])
 
 
-def collect_notes(limit=120):
+def collect_notes(limit=120, max_age_hours=48):
     roots = [VAULT / '10_Channels', VAULT / '20_Summaries', VAULT / 'Crypto']
     files = []
+    now = dt.datetime.now(dt.timezone.utc)
     for r in roots:
         if r.exists():
             files.extend(r.rglob('*.md'))
-    files = sorted(files, key=lambda p: p.stat().st_mtime, reverse=True)
+
+    # freshness guard: only recent notes
+    fresh = []
+    for p in files:
+        try:
+            m = dt.datetime.fromtimestamp(p.stat().st_mtime, tz=dt.timezone.utc)
+            age_h = (now - m).total_seconds() / 3600.0
+            if age_h <= float(max_age_hours):
+                fresh.append(p)
+        except Exception:
+            continue
+
+    files = sorted(fresh, key=lambda p: p.stat().st_mtime, reverse=True)
 
     out = []
     for f in files:
@@ -267,9 +280,10 @@ def main():
     channel_link = env.get('CHANNEL_LINK', 'https://t.me/Elven_Ai_Lab')
     chat_link = env.get('CHAT_LINK', channel_link)
     exchange_link = env.get('EXCHANGE_LINK', 'https://eragon-exchange-site-next-kenformgod-6184s-projects.vercel.app/')
+    max_note_age_hours = int(env.get('MAX_NOTE_AGE_HOURS', '48'))
 
     h = prune_history(load_history(), 168)
-    notes = collect_notes(120)
+    notes = collect_notes(120, max_age_hours=max_note_age_hours)
     if not notes:
         return
 

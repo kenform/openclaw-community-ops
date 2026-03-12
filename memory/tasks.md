@@ -3,9 +3,9 @@
 ## [2026-03-12-elven-post-285-fix] Починить повторы и сломанные ссылки в Elven автопостинге
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-12 16:30 UTC
-- **Updated**: 2026-03-12 16:32 UTC
-- **Notes**: Сделаны backup-файлы и правки в `scripts/elven_ai_lab_poster_bot.py` + `scripts/elven_ai_lab_bot.env`: убран fallback на `clean_notes`, добавлен strict guard «нет новых уникальных постов -> не публиковать», и ссылка `Биржи` переведена на `EXCHANGE_LINK`.
-- **Result**: Причина повторов устранена на уровне логики выбора кандидата; битая ссылка `example.com` удалена. Синтаксис скрипта валиден (`py_compile ok`).
+- **Updated**: 2026-03-12 16:38 UTC
+- **Notes**: Добавлен freshness-guard в `elven_ai_lab_poster_bot.py`: публикация только по заметкам не старше `MAX_NOTE_AGE_HOURS` (из env). В env добавлено `MAX_NOTE_AGE_HOURS=48`.
+- **Result**: Постер больше не берёт старые «уникальные» записи за пределами окна свежести; логика повторов дополнительно ужесточена.
 
 ## [2026-03-12-parser-health-report] Дать health-report по парсерам (24ч, аптайм, ошибки, последний успех)
 - **Status**: ✅ 完成
