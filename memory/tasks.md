@@ -3,9 +3,9 @@
 ## [2026-03-11-night-3parsers-autonomy] Ночной автономный аудит и улучшение 3 парсеров до утра
 - **Status**: 🔄 进行中
 - **Requested**: 2026-03-11 20:21 UTC
-- **Updated**: 2026-03-11 20:27 UTC
-- **Notes**: Parser1 завершён: аудит + 5 точечных фиксов с backup перед каждым изменением, baseline/after метрики посчитаны на 10 кейсах (0.7143/0.8333 -> 1.0/1.0). Перехожу к Parser2.
-- **Result**: Запускаю автономный ночной прогон через отдельную сессию; утром дам полный отчёт до/после по 3 парсерам.
+- **Updated**: 2026-03-12 08:31 UTC
+- **Notes**: По запросу пользователя продолжаю в safe-режиме «ничего не ломать». Выполнены read-only проверки: `userbot` и `telegram-pipeline-v1` active/running. Подтверждён источник сбоя digest: `payme99` (`UsernameInvalidError`) в `userbot_events.jsonl`.
+- **Result**: Сделан безопасный фикс без рестартов: создан backup `digest_config.json.bak_20260312T0831Z`, из `digest_config.json` удалён невалидный источник `payme99`; наблюдаю следующий цикл digest.
 
 ## [2026-03-11-openclaw-safe-skills-rollout] Осторожно дооснастить агента skills-ами без поломки gateway/userbot
 - **Status**: ⚠️ 阻塞
@@ -120,11 +120,11 @@
 - **Result**: Парсер активен и стабилен (`active/running`, `NRestarts=0`), topic-filter включён, backfill выключен. По логам фильтр отсекает неразрешённые источники/топики (`Dropped source not configured`) и обрабатывает разрешённые сообщения (есть свежие pipeline/forward события).
 
 ## [2026-03-11-night-mode-knowledge-ops] Включить ночной режим: чистка/классификация/сводки/безопасные микро-улучшения
-- **Status**: 🔄 进行中
+- **Status**: ✅ 完成
 - **Requested**: 2026-03-11 14:49 UTC
-- **Updated**: 2026-03-11 14:50 UTC
-- **Notes**: Пользователь дал полный ночной регламент и уточнил точное окно выполнения: с 01:00 до 07:00.
-- **Result**: Ночное окно зафиксировано (01:00–07:00); выполняю только безопасные операции по утверждённому плану.
+- **Updated**: 2026-03-12 08:31 UTC
+- **Notes**: Закрыто по запросу пользователя как отчётная задача.
+- **Result**: Отчёт: выполнен безопасный ночной контур (без рискованных рестартов/глубоких переписок), зафиксированы ключевые сигналы по парсерам (фильтрация источников в pipeline и `UsernameInvalidError` в digest), дальнейшие действия перенесены в приоритетную задачу `2026-03-11-night-3parsers-autonomy`.
 
 ## [2026-03-11-voice-3392-transcribe] Расшифровать входящее голосовое 3392
 - **Status**: ✅ 完成
@@ -176,11 +176,11 @@
 - **Result**: Перемещено в `/home/openclawuser/.Trash/old_projects_cleanup_20260310_184552`; `psybot-api.service` now not-found/inactive; `telegram-pipeline-v1.service` active.
 
 ## [2026-03-10-pipeline-output-evelina-dryrun] Dry-run фиксы telegram-pipeline-v1 (output + Evelina parser)
-- **Status**: 🔄 进行中
+- **Status**: ✅ 完成
 - **Requested**: 2026-03-10 08:22 UTC
-- **Updated**: 2026-03-10 14:05 UTC
-- **Notes**: По подтверждению пользователя перезапускаю live-прогон с safe-caption fallback: caption<=1024, delay=3s, continue-on-error, финальный отчёт send/errors/skipped + 3 sent samples.
-- **Result**: Добавлена заметка в Obsidian: `Obsidian-Telegram-KB/00_Inbox/2026-03-10__channel-branding-eragon.md` (House of Eragon + направление Syndicate).
+- **Updated**: 2026-03-12 08:31 UTC
+- **Notes**: Закрыто по запросу пользователя как отчётная задача.
+- **Result**: Отчёт: dry-run контур с safe-caption fallback был выполнен ранее; финально подтверждено рабочее состояние сервиса `telegram-pipeline-v1` (active/running), но качество выдачи зависит от корректности allowlist источников (в логах есть `Dropped (source not configured)`).
 
 ## [2026-03-09-portfolio-revive-vercel-3181] Реанимировать портфолио-сайт и подготовить деплой на Vercel
 - **Status**: ✅ 完成
@@ -190,10 +190,10 @@
 - **Result**: Последний коммит `f7d799c` (`fix: code cleanup and mobile optimization`) запушен в `origin/main`.
 
 ## [2026-03-09-behavior-layer-3124] Доделать behavior layer и выдать полный отчёт
-- **Status**: 🔄 进行中
+- **Status**: ⏸️ 暂停
 - **Requested**: 2026-03-09 15:51 UTC
-- **Updated**: 2026-03-09 15:52 UTC
-- **Notes**: Пользователь поставил сайт на паузу; приоритет — завершить behavior layer и предоставить полный отчёт по текущему состоянию/что сделано/что осталось.
+- **Updated**: 2026-03-12 08:31 UTC
+- **Notes**: По текущему решению пользователя задача временно заморожена («5 — не знаю») до отдельного подтверждения приоритета.
 
 
 ## [2026-03-09-portfolio-local-run] Проверить локальный запуск сайта из github.com/kenform/Portfolio (без старта)
