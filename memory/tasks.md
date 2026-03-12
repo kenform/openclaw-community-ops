@@ -7,6 +7,13 @@
 - **Notes**: Приостановлено новым приоритетом пользователя (система второго мозга Obsidian+Telegram).
 - **Result**: Вернусь после закрытия новой задачи.
 
+## [2026-03-12-telegram-obsidian-vault-cleanup] Безопасная очистка и структурирование Obsidian vault
+- **Status**: ✅ 完成
+- **Requested**: 2026-03-12 14:08 UTC
+- **Updated**: 2026-03-12 14:12 UTC
+- **Notes**: Выполнен backup `vault_autoclean_20260312T140908Z.tar.gz`, затем scan+классификация+безопасная реорганизация. Удаления не применялись (только перемещения/архив), кроме потенциально пустых — таких не обнаружено.
+- **Result**: Перемещено 20 файлов, архивировано 13, создано/обновлено 3 MOC, добавлены связи в 6 orphan notes; orphan nodes снижены с 27 до 8, duplicate groups с 2 до 0.
+
 ## [2026-03-12-telegram-obsidian-second-brain] Развернуть Telegram -> Obsidian second brain с автозапуском
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-12 13:49 UTC
