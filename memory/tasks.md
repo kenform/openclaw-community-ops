@@ -10,9 +10,9 @@
 ## [2026-03-12-telegram-obsidian-second-brain] Развернуть Telegram -> Obsidian second brain с автозапуском
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-12 13:49 UTC
-- **Updated**: 2026-03-12 13:52 UTC
-- **Notes**: Vault `/home/openclawuser/vault` подтверждён; структура папок создана. Развёрнут сервис `/home/openclawuser/telegram_to_obsidian.py` (text + /idea /note /task + voice->Whisper + daily notes). Поднят user-systemd `telegram-obsidian.service`.
-- **Result**: Система автономна и активна: `systemctl --user status telegram-obsidian.service` -> active/running; заметки сохраняются в `.md` внутри vault.
+- **Updated**: 2026-03-12 13:55 UTC
+- **Notes**: Использован vault `/home/openclawuser/vault`; созданы недостающие папки (включая `00 Inbox/voice`). Сервис обновлён: text ingest, `/idea /note /task`, voice->Whisper, команды `/digest /review /search /ask`, встроенный Markdown RAG и авто-rebuild индекса после каждой новой заметки.
+- **Result**: `telegram-obsidian.service` активен (running), автозапуск включён, резервная копия кода: `/home/openclawuser/telegram_to_obsidian.py.bak_20260312T1354Z`.
 
 ## [2026-03-12-voice-3550-transcribe] Расшифровать входящее голосовое 3550
 - **Status**: ✅ 完成
