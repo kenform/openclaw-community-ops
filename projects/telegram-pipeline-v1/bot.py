@@ -26,6 +26,7 @@ CONFIG_PATH = BASE_DIR / "config.json"
 MEMORY_PATH = BASE_DIR / "memory.json"
 MSG_CACHE_LIMIT = 500
 LOG_PATH = BASE_DIR / "userbot.log"
+BLOCKED_WARN_TTL_SEC = 3600
 
 
 def load_json(path: Path, default: Dict[str, Any]) -> Dict[str, Any]:
@@ -1190,12 +1191,18 @@ def main() -> None:
             allowed_topic_runtime_ids = set(allowed_topic_ids)
             ilya_topic_runtime_ids = set(ilya_topic_ids)
 
+    blocked_warn_state: Dict[int, float] = {}
+
     @client.on(events.NewMessage(incoming=True))
     async def on_new_message(event):
         chat_id = int(event.chat_id)
 
         if chat_id in blocked_channel_ids:
-            logger.warning("Blocked channel skipped: chat_id=%s message_id=%s", chat_id, getattr(event.message, 'id', None))
+            now_ts = time.time()
+            last_ts = float(blocked_warn_state.get(chat_id, 0.0) or 0.0)
+            if now_ts - last_ts >= BLOCKED_WARN_TTL_SEC:
+                logger.warning("Blocked channel skipped: chat_id=%s message_id=%s", chat_id, getattr(event.message, 'id', None))
+                blocked_warn_state[chat_id] = now_ts
             return
 
         if track_group_only and chat_id != allowed_group_id and chat_id != artur_channel_id:
