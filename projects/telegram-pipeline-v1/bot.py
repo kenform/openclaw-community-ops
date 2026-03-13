@@ -1238,13 +1238,8 @@ def main() -> None:
                     trader_id = "artur"
 
             if not trader_id:
-                # SAFE MODE: don't drop messages from allowed sources even if source map missing
-                if (chat_id in allowed_channel_ids) or (allowed_group_id is not None and chat_id == allowed_group_id):
-                    trader_id = "generic"
-                    logger.info("SAFE_MODE source fallback -> trader=generic chat_id=%s topic_id=%s msg_id=%s", chat_id, topic_id, msg.id)
-                else:
-                    logger.info("Dropped (source not configured): chat_id=%s topic_id=%s msg_id=%s", chat_id, topic_id, msg.id)
-                    return
+                logger.info("Dropped (source not configured): chat_id=%s topic_id=%s msg_id=%s", chat_id, topic_id, msg.id)
+                return
 
             media_kind = None
             media_bytes = None
@@ -1285,11 +1280,11 @@ def main() -> None:
                 "parse_ilya_signal": parse_ilya_signal,
                 "parse_generic_signal": parse_generic_signal,
                 "has_promo_spam": _has_promo_spam,
-                "signal_min_confidence": int(cfg.get("SIGNAL_MIN_CONFIDENCE", 1)),
+                "signal_min_confidence": int(cfg.get("SIGNAL_MIN_CONFIDENCE", 4)),
                 "rules": rules,
                 "ilya_main_filter_enabled": ilya_main_filter_enabled,
             }
-            threshold = int((trader_profiles.get(trader_id) or {}).get("signal_threshold", 2))
+            threshold = int((trader_profiles.get(trader_id) or {}).get("signal_threshold", 6))
             ctx_window = recent_context.get(f"{trader_id}", [])
 
             decision = apply_behavior_profile(
@@ -1315,11 +1310,10 @@ def main() -> None:
                 trader_id, state_type, decision["main_pass"], decision["signal_pass"], debug_reasons, msg.id)
 
             sent_main = False
-            # SAFE MODE: publish almost everything from configured sources except explicit promo spam
-            if not decision["main_pass"]:
+            if media_kind in {"photo", "video"} and not decision["main_pass"]:
                 if not _has_promo_spam(text):
                     decision["main_pass"] = True
-                    main_result = {"pass": True, "type": "VIEW", "reason": "SAFE_MODE_FORCE_MAIN"}
+                    main_result = {"pass": True, "type": "VIEW", "reason": "MEDIA_FORCE_MAIN"}
             if decision["main_pass"] and main_target_channel_id is not None:
                 payload = format_payload(chat_title, chat_id, topic_id,
                     effective_text, media_only, topic_title=topic_title,
@@ -1334,7 +1328,7 @@ def main() -> None:
                 dedupe_key = f"{trader_id}:{sig_asset}:{sig_type}"
                 now_ts = int(time.time())
                 prev_ts = int(state.get("recent_signals", {}).get(dedupe_key, 0) or 0)
-                if now_ts - prev_ts <= 120:
+                if now_ts - prev_ts <= 600:
                     logger.info("SIGNAL_DEDUP_SKIP key=%s delta=%ss msg_id=%s", dedupe_key, now_ts - prev_ts, msg.id)
                 else:
                     if trader_id == "artur":
