@@ -5,7 +5,7 @@
 - **Requested**: 2026-03-14 06:46 UTC
 - **Updated**: 2026-03-14 07:04 UTC
 - **Notes**: Пользователь подтвердил запуск: переносить голосовые/медиа как есть, без расшифровки. Фоновая сессия `grand-ocean` завершилась некорректно без финального `lifeos_migration_last_report.json`.
-- **Result**: Найден checkpoint `/home/openclawuser/userbot/lifeos_migration_state.json` (частичный прогресс: трекаются ID по источнику Дисциплина, updated_at=1773471466). `userbot.service` был `inactive`, вручную поднят обратно (`active/running`). Готова перезапустить перенос с точки сохранения.
+- **Result**: Найден checkpoint `/home/openclawuser/userbot/lifeos_migration_state.json` (частичный прогресс: трекаются ID по источнику Дисциплина, updated_at=1773471466). `userbot.service` был `inactive`, вручную поднят обратно (`active/running`). Перезапущен перенос с точки сохранения в новой сессии `calm-fjord` через отдельный скрипт `lifeos_raw_migrate.py` с crash-логом `lifeos_migration_crash.json` и обязательным финальным отчётом `lifeos_migration_last_report.json`.
 
 ## [2026-03-14-arya-channel-manual-post] Опубликовать пост в канал @Arya_claw по команде пользователя
 - **Status**: ✅ 完成
