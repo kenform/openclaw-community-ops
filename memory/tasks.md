@@ -1,5 +1,12 @@
 # Active Tasks
 
+## [2026-03-14-arya-channel-manual-post] Опубликовать пост в канал @Arya_claw по команде пользователя
+- **Status**: ✅ 完成
+- **Requested**: 2026-03-14 06:43 UTC
+- **Updated**: 2026-03-14 06:49 UTC
+- **Notes**: Пользователь дал прямую команду «Пост сделай».
+- **Result**: Опубликован новый пост в `@Arya_claw`, message_id `115`.
+
 ## [2026-03-14-openclaw-news-check] Проверить OpenClaw News: навигация/ссылки/состояние
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-14 06:42 UTC
