@@ -1,5 +1,12 @@
 # Active Tasks
 
+## [2026-03-14-transfer-log-check] Проверить финальный статус переноса tide-crustacean
+- **Status**: ✅ 完成
+- **Requested**: 2026-03-14 06:40 UTC
+- **Updated**: 2026-03-14 06:44 UTC
+- **Notes**: Поднят лог старой сессии `/home/openclawuser/.openclaw/agents/main/sessions/3e88f8de-189a-4039-95c9-99bbf92ec668.jsonl`, проверены записи `process list/poll/kill` и текущее состояние PID/сервиса.
+- **Result**: Перенос `tide-crustacean` был жив ~7 минут, затем сессия пропала (на `kill` ответ: `No active session found`). Финального JSON-отчёта из скрипта нет; файл состояния `/home/openclawuser/userbot/lifeos_migration_state.json` отсутствует. Это указывает, что полный проход не завершился/оборвался до сохранения прогресса. `userbot.service` при этом сейчас `active/running`.
+
 ## [2026-03-14-arya-channel-autopost-start] Запустить автопостинг в канал @Arya_claw
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-14 06:40 UTC
