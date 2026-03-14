@@ -1,0 +1,109 @@
+{
+  "ts": 1773486843,
+  "chat_id": -1003542470588,
+  "topics": [
+    {
+      "topic": "🧠 Дисциплина",
+      "topic_id": 6,
+      "messages": 187,
+      "dupes_count": 44,
+      "dupes_sample": [
+        358,
+        355,
+        354,
+        352,
+        102,
+        98,
+        97,
+        96,
+        95,
+        94,
+        93,
+        92,
+        91,
+        90,
+        89
+      ],
+      "broken_links_count": 0,
+      "broken_links_sample": [],
+      "tech_empty_count": 2,
+      "tech_empty_sample": [
+        230,
+        6
+      ]
+    },
+    {
+      "topic": "💪 Здоровье",
+      "topic_id": 7,
+      "messages": 42,
+      "dupes_count": 0,
+      "dupes_sample": [],
+      "broken_links_count": 0,
+      "broken_links_sample": [],
+      "tech_empty_count": 2,
+      "tech_empty_sample": [
+        232,
+        7
+      ]
+    },
+    {
+      "topic": "💸 Финансы",
+      "topic_id": 8,
+      "messages": 25,
+      "dupes_count": 0,
+      "dupes_sample": [],
+      "broken_links_count": 0,
+      "broken_links_sample": [],
+      "tech_empty_count": 2,
+      "tech_empty_sample": [
+        231,
+        8
+      ]
+    },
+    {
+      "topic": "🎯 Фокус недели",
+      "topic_id": 9,
+      "messages": 4,
+      "dupes_count": 0,
+      "dupes_sample": [],
+      "broken_links_count": 0,
+      "broken_links_sample": [],
+      "tech_empty_count": 1,
+      "tech_empty_sample": [
+        9
+      ]
+    },
+    {
+      "topic": "📊 Итоги / Review",
+      "topic_id": 10,
+      "messages": 3,
+      "dupes_count": 0,
+      "dupes_sample": [],
+      "broken_links_count": 0,
+      "broken_links_sample": [],
+      "tech_empty_count": 1,
+      "tech_empty_sample": [
+        10
+      ]
+    },
+    {
+      "topic": "📥 Inbox / Разобрать",
+      "topic_id": 5,
+      "messages": 3,
+      "dupes_count": 0,
+      "dupes_sample": [],
+      "broken_links_count": 0,
+      "broken_links_sample": [],
+      "tech_empty_count": 1,
+      "tech_empty_sample": [
+        5
+      ]
+    }
+  ],
+  "summary": {
+    "msgs": 264,
+    "dupes": 44,
+    "broken_links": 0,
+    "tech_empty": 9
+  }
+}

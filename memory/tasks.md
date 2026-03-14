@@ -17,9 +17,9 @@
 ## [2026-03-14-lifeos-final-pass] Финальный прогон Life OS (добивка + контроль)
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-14 08:21 UTC
-- **Updated**: 2026-03-14 11:11 UTC
-- **Notes**: Пользователь запросил финальный прогон. Выполнена добивка хвоста Дисциплина + cleanup технически битых media (`application/octet-stream`) после подтверждённой доставки корректных voice-версий.
-- **Result**: Финальный дожим Дисциплина завершён (`tracked_ids=216`). Проведена чистка топика `🧠 Дисциплина`: найдено `130` и удалено `130` octet-stream сообщений. Отчёт cleanup: `/home/openclawuser/userbot/lifeos_reports/1773486674_Дисциплина_cleanup_octet_stream.json`.
+- **Updated**: 2026-03-14 11:14 UTC
+- **Notes**: Пользователь запросил финальный прогон. Выполнена добивка хвоста Дисциплина + cleanup технически битых media (`application/octet-stream`) после подтверждённой доставки корректных voice-версий. Затем выполнен контрольный аудит Life OS и собран сводный отчёт.
+- **Result**: Финальный дожим Дисциплина завершён (`tracked_ids=216`). Чистка `🧠 Дисциплина`: найдено `130` и удалено `130` octet-stream сообщений (`/home/openclawuser/userbot/lifeos_reports/1773486674_Дисциплина_cleanup_octet_stream.json`). Финальный аудит: `reports/lifeos_final_audit_1773486844.json`, `reports/lifeos_final_report_1773486844.md` (сводка: msgs=264, dupes=44, broken_links=0, tech_empty=9).
 
 ## [2026-03-14-lifeos-topic-nav] Сделать навигацию в каждом топике под его контекст
 - **Status**: ✅ 完成
