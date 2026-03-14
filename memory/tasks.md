@@ -3,7 +3,7 @@
 ## [2026-03-14-lifeos-raw-migration] Запустить перенос в Life OS в режиме raw copy only
 - **Status**: 🔄 进行中
 - **Requested**: 2026-03-14 06:46 UTC
-- **Updated**: 2026-03-14 08:07 UTC
+- **Updated**: 2026-03-14 09:22 UTC
 - **Notes**: Пользователь подтвердил запуск: переносить голосовые/медиа как есть, без расшифровки. Фоновые сессии `grand-ocean` и `calm-fjord` завершились без финального отчёта.
 - **Result**: Есть частичный прогресс в checkpoint `/home/openclawuser/userbot/lifeos_migration_state.json` (для источника Дисциплина уже сохранены ID до 60, `updated_at=1773472646`). Файлы `lifeos_migration_last_report.json` и `lifeos_migration_crash.json` отсутствуют. `userbot.service` сейчас `active/running`.
 
@@ -13,6 +13,13 @@
 - **Updated**: 2026-03-14 06:49 UTC
 - **Notes**: Пользователь дал прямую команду «Пост сделай».
 - **Result**: Опубликован новый пост в `@Arya_claw`, message_id `115`.
+
+## [2026-03-14-lifeos-final-pass] Финальный прогон Life OS (добивка + контроль)
+- **Status**: ✅ 完成
+- **Requested**: 2026-03-14 08:21 UTC
+- **Updated**: 2026-03-14 11:11 UTC
+- **Notes**: Пользователь запросил финальный прогон. Выполнена добивка хвоста Дисциплина + cleanup технически битых media (`application/octet-stream`) после подтверждённой доставки корректных voice-версий.
+- **Result**: Финальный дожим Дисциплина завершён (`tracked_ids=216`). Проведена чистка топика `🧠 Дисциплина`: найдено `130` и удалено `130` octet-stream сообщений. Отчёт cleanup: `/home/openclawuser/userbot/lifeos_reports/1773486674_Дисциплина_cleanup_octet_stream.json`.
 
 ## [2026-03-14-lifeos-topic-nav] Сделать навигацию в каждом топике под его контекст
 - **Status**: ✅ 完成
