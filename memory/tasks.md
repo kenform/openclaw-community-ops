@@ -1,5 +1,26 @@
 # Active Tasks
 
+## [2026-03-14-arya-channel-autopost-start] Запустить автопостинг в канал @Arya_claw
+- **Status**: ✅ 完成
+- **Requested**: 2026-03-14 06:40 UTC
+- **Updated**: 2026-03-14 06:42 UTC
+- **Notes**: Сделаны backup конфигов userbot2 перед правками; переключён target-паблишинг на канал Арьи и включён интервальный автопостинг.
+- **Result**: `DIGEST_PUBLISH_CHAT=@Arya_claw`, ссылки канала обновлены, в `digest_config.json` выставлено `interval_minutes=120` и `jitter_minutes=7`; `userbot2.service` перезапущен и работает (`active/running`, `NRestarts=0`).
+
+## [2026-03-14-parser-autonomy-check] Поднять и проверить все парсеры после перезапуска агента
+- **Status**: ✅ 完成
+- **Requested**: 2026-03-14 06:40 UTC
+- **Updated**: 2026-03-14 06:41 UTC
+- **Notes**: Проверены user services, относящиеся к парсерам/пайплайнам: `telegram-obsidian`, `telegram-pipeline-v1` (крипто-парсер), `userbot`, `userbot2`.
+- **Result**: Все 4 сервиса `enabled + active/running`, политика `Restart=always`, рестартов в текущем окне нет (`NRestarts=0`). Дополнительный подъём не потребовался.
+
+## [2026-03-14-heartbeat-0200] Heartbeat-проверка по NIGHT protocol
+- **Status**: ✅ 完成
+- **Requested**: 2026-03-14 02:00 UTC
+- **Updated**: 2026-03-14 02:01 UTC
+- **Notes**: Выполнен безопасный ночной срез: проверены daily note, диск/память, failed user services и последние user-level ошибки journalctl.
+- **Result**: Найден повторяющийся инцидент: регулярные ошибки `sudo: a password is required` для команды `tailscale serve --bg --yes 18789` (каждые ~20–25 минут с 19:40 UTC до 01:30 UTC). Критичных отказов user services не выявлено.
+
 ## [2026-03-13-upscale-demo-autonomous-v1] Автономное тестирование открытия позиций в Upscale Demo по регламенту V1
 - **Status**: 🔄 进行中
 - **Requested**: 2026-03-13 06:25 UTC
