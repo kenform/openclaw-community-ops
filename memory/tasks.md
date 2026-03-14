@@ -1,11 +1,19 @@
 # Active Tasks
 
+## [2026-03-14-openclaw-news-check] Проверить OpenClaw News: навигация/ссылки/состояние
+- **Status**: ✅ 完成
+- **Requested**: 2026-03-14 06:42 UTC
+- **Updated**: 2026-03-14 06:47 UTC
+- **Notes**: Проверен канал `@openclaw_digest` (OpenClaw Parser) через Telethon, просмотрены последние публикации и шаблоны ссылок; проверен текущий publishing-target (`@Arya_claw`) и статус news-сервиса.
+- **Result**: В последних сообщениях `@openclaw_digest` битых ссылок не найдено (паттерны `None/undefined` отсутствуют), но явной закреплённой навигации не обнаружено, и контур `oc-news.service` сейчас `inactive`. Текущий автопостинг переключён на `@Arya_claw`.
+
 ## [2026-03-14-transfer-log-check] Проверить финальный статус переноса tide-crustacean
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-14 06:40 UTC
 - **Updated**: 2026-03-14 06:44 UTC
 - **Notes**: Поднят лог старой сессии `/home/openclawuser/.openclaw/agents/main/sessions/3e88f8de-189a-4039-95c9-99bbf92ec668.jsonl`, проверены записи `process list/poll/kill` и текущее состояние PID/сервиса.
 - **Result**: Перенос `tide-crustacean` был жив ~7 минут, затем сессия пропала (на `kill` ответ: `No active session found`). Финального JSON-отчёта из скрипта нет; файл состояния `/home/openclawuser/userbot/lifeos_migration_state.json` отсутствует. Это указывает, что полный проход не завершился/оборвался до сохранения прогресса. `userbot.service` при этом сейчас `active/running`.
+- **Update**: Пользователь уточнил правило: голосовые не расшифровывать при миграции, только пересылать raw (forward/copy media as-is).
 
 ## [2026-03-14-arya-channel-autopost-start] Запустить автопостинг в канал @Arya_claw
 - **Status**: ✅ 完成
