@@ -1,5 +1,12 @@
 # Active Tasks
 
+## [2026-03-14-lifeos-raw-migration] Запустить перенос в Life OS в режиме raw copy only
+- **Status**: 🔄 进行中
+- **Requested**: 2026-03-14 06:46 UTC
+- **Updated**: 2026-03-14 06:50 UTC
+- **Notes**: Пользователь подтвердил запуск: переносить голосовые/медиа как есть, без расшифровки.
+- **Result**: Запускаю фоновый перенос с checkpoint-state и отчётом по copied/skipped/failed.
+
 ## [2026-03-14-arya-channel-manual-post] Опубликовать пост в канал @Arya_claw по команде пользователя
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-14 06:43 UTC
@@ -12,7 +19,7 @@
 - **Requested**: 2026-03-14 06:42 UTC
 - **Updated**: 2026-03-14 06:47 UTC
 - **Notes**: Проверен канал `@openclaw_digest` (OpenClaw Parser) через Telethon, просмотрены последние публикации и шаблоны ссылок; проверен текущий publishing-target (`@Arya_claw`) и статус news-сервиса.
-- **Result**: В последних сообщениях `@openclaw_digest` битых ссылок не найдено (паттерны `None/undefined` отсутствуют), но явной закреплённой навигации не обнаружено, и контур `oc-news.service` сейчас `inactive`. Текущий автопостинг переключён на `@Arya_claw`.
+- **Result**: В последних сообщениях `@openclaw_digest` битых ссылок не найдено (паттерны `None/undefined` отсутствуют). По запросу пользователя выполнено восстановление навигации: опубликован новый nav-пост и закреплён (`message_id=13`). Финальная проверка 30 последних сообщений: `broken_link_patterns=0`, структура канала валидна; служебное сообщение `MessageActionPinMessage` (id=14) подтверждает успешный pin.
 
 ## [2026-03-14-transfer-log-check] Проверить финальный статус переноса tide-crustacean
 - **Status**: ✅ 完成
