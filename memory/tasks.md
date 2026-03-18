@@ -13,7 +13,7 @@
 - **Updated**: 2026-03-18 21:05 UTC
 - **Notes**: Выполнен безопасный health-check (`openclaw status`, `systemctl --user`, `journalctl`) без рестартов по месту, затем мягкие фиксы багов.
 - **Result**: Все ключевые сервисы активны и enabled: `openclaw-gateway`, `telegram-obsidian`, `telegram-pipeline-v1`, `userbot`, `userbot2` (везде `NRestarts=0`, failed units=0). Найдены 2 проблемы: (1) `tailscale serve` в gateway периодически падает из-за отсутствия sudo-прав у `openclawuser`; (2) LifeOS raw-migrate падал traceback при `ChannelPrivateError`. Исправлено (2): в `/home/openclawuser/userbot/lifeos_raw_migrate.py` и `/home/openclawuser/userbot/lifeos_raw_batch.py` добавлена безопасная обработка `ChannelPrivateError` с JSON-отчётом вместо крэша. Проверка пройдена: migrate теперь завершает работу корректно и отдаёт структурированный отчёт с `error=source_channel_private`.
-- **Next**: Пользователь подтвердил, что хочет команды для фикса tailscale-прав; отправляю 2 команды (fix+verify).
+- **Next**: Пользователь отложил tailscale-fix до завтра (ожидаем запуск 2 sudo-команд вручную на хосте).
 
 ## [2026-03-18-lifeos-finish-pass] Доделать контур Life OS (добивка миграции + проверка)
 - **Status**: ⚠️ 阻塞
