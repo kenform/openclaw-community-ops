@@ -1,5 +1,12 @@
 # Active Tasks
 
+## [2026-03-18-interactive-heavy-confirm] Добавить интерактивный Y/N-порог перед тяжёлыми задачами
+- **Status**: ✅ 完成
+- **Requested**: 2026-03-18 22:16 UTC
+- **Updated**: 2026-03-18 22:17 UTC
+- **Notes**: Пользователь подтвердил включение подтверждения перед тяжёлыми AI-запросами.
+- **Result**: Реализовано в `/home/openclawuser/userbot/bot.py`: для тяжёлых запросов (`>1600` симв.) `ask_openclaw` теперь требует подтверждение (`[upstream confirm required ...]`), если не активировано окно подтверждения. Добавлена команда управления `.heavy y|n|status`; `.heavy y` открывает окно на 10 минут (`HARD_ECON_CONFIRM_WINDOW_SEC`, default 600). `userbot.service` перезапущен и `active` (`NRestarts=0`).
+
 ## [2026-03-18-groups-inventory-for-cleanup] Собрать список доступных групп для следующего этапа уборки
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-18 22:15 UTC
