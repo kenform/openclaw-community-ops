@@ -1,5 +1,12 @@
 # Active Tasks
 
+## [2026-03-18-master-hub-bootstrap] Подключиться к новой мастер-группе и развернуть базовую структуру
+- **Status**: ✅ 完成
+- **Requested**: 2026-03-18 22:49 UTC
+- **Updated**: 2026-03-18 22:51 UTC
+- **Notes**: Пользователь создал новую группу и прислал invite-link, подтвердил admin-доступ для userbot.
+- **Result**: Готово: подключилась к `WT Master Hub` (`chat_id=3772897836`), создано 8 базовых топиков, опубликован навигационный пост (`message_id=12`). Отчёт: `reports/master_hub_bootstrap_1773874287.json`. `userbot.service` активен.
+
 ## [2026-03-18-garbage-clean-pass] Почистить мусор/системные сообщения в рабочих группах
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-18 22:43 UTC
