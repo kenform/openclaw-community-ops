@@ -1,5 +1,12 @@
 # Active Tasks
 
+## [2026-03-18-hard-economy-mode] Включить жёсткий режим экономии лимитов
+- **Status**: ✅ 完成
+- **Requested**: 2026-03-18 22:14 UTC
+- **Updated**: 2026-03-18 22:16 UTC
+- **Notes**: Пользователь подтвердил запуск жёсткого режима экономии.
+- **Result**: Включено: (1) строгие AI-лимиты в `/home/openclawuser/userbot/ai_limits.json` (`max_input_chars=1800`, `max_calls_per_hour=40`, `max_calls_per_source_per_hour=12`, `dedup_ttl_min=180`), (2) hard-economy guardrails в `/home/openclawuser/userbot/bot.py` для `ask_openclaw`: блок абсолютного контекста `>5000`, блок больших запросов при расходе `>=85%` и `>1600` символов, (3) параметры режима добавлены в `/home/openclawuser/userbot/config.env`. `userbot.service` перезапущен: `active`, `NRestarts=0`.
+
 ## [2026-03-18-limits-optimization-rollout] Внедрить экономию лимитов и базовый трекер расходов
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-18 22:11 UTC
