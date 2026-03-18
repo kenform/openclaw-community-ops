@@ -1,5 +1,12 @@
 # Active Tasks
 
+## [2026-03-18-lifeos-status-and-resource-fix] Уточнить статус Life OS и снизить расход лимитов на «Сортировать»
+- **Status**: ✅ 完成
+- **Requested**: 2026-03-18 22:06 UTC
+- **Updated**: 2026-03-18 22:08 UTC
+- **Notes**: Пользователь сообщил, что старые группы удалены, и попросил объяснить права + исправить перерасход ресурсов.
+- **Result**: Подтверждено: `ChannelPrivateError` по старым source-группам в Life OS ожидаем и прав больше не требуется, если миграция завершена. Для снижения нагрузки оптимизирован `userbot`: backup `digest_config.json.bak_20260318T2208Z`, список каналов в `/home/openclawuser/userbot/digest_config.json` сокращён до 20 целевых, `interval_minutes` увеличен до 240, в `/home/openclawuser/userbot/config.env` снижено `DIGEST_MAX_CHANNELS_PER_RUN=10`; `userbot.service` перезапущен и `active` (`NRestarts=0` после запуска).
+
 ## [2026-03-18-arya-manual-test-post] Опубликовать тестовый ручной пост в @Arya_claw в новом авторском стиле
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-18 22:04 UTC
