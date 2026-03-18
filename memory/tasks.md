@@ -1,5 +1,12 @@
 # Active Tasks
 
+## [2026-03-18-limits-optimization-rollout] Внедрить экономию лимитов и базовый трекер расходов
+- **Status**: ✅ 完成
+- **Requested**: 2026-03-18 22:11 UTC
+- **Updated**: 2026-03-18 22:13 UTC
+- **Notes**: Пользователь прислал промпт по экономии лимитов и мониторингу порогов.
+- **Result**: Применён безопасный rollout: (1) ранее снижена нагрузка digest (`interval_minutes=240`, 20 каналов, `DIGEST_MAX_CHANNELS_PER_RUN=10`), (2) создан файл трекера `/home/openclawuser/.ari_limits_tracker.json`, (3) в `/home/openclawuser/userbot/bot.py` добавлен учёт rough token usage на каждом `ask_openclaw` + пороговые алерты 15/30/50/70/85/95 в Telegram owner. `userbot.service` перезапущен и active (`NRestarts=0`).
+
 ## [2026-03-18-lifeos-status-and-resource-fix] Уточнить статус Life OS и снизить расход лимитов на «Сортировать»
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-18 22:06 UTC
