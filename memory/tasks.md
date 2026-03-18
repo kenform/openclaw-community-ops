@@ -1,11 +1,11 @@
 # Active Tasks
 
 ## [2026-03-18-2w-status-and-channel-resume] Сводка за 2 недели + возобновить ведение канала @Arya_claw
-- **Status**: 🔄 进行中
+- **Status**: ✅ 完成
 - **Requested**: 2026-03-18 19:18 UTC
-- **Updated**: 2026-03-18 19:18 UTC
+- **Updated**: 2026-03-18 19:19 UTC
 - **Notes**: Пользователь запросил: (1) полный статус по задачам за 2 недели, (2) отдельно отложенные/недоделанные, (3) снова вести канал «как прежде».
-- **Result**: Готовлю сжатый отчёт по `memory/tasks.md` и параллельно проверяю/поднимаю контур автопостинга в `@Arya_claw`.
+- **Result**: Сформирована сводка по `memory/tasks.md` (период 2026-03-05..2026-03-18). Автопостинг в `@Arya_claw` возвращён: в `/home/openclawuser/userbot2/digest_config.json` выставлено `enabled=true`, `interval_minutes=120`, `jitter_minutes=7`, `publish_chat=@Arya_claw`; `userbot2.service` перезапущен и `active/running` (`NRestarts=0`).
 
 ## [2026-03-14-lifeos-raw-migration] Запустить перенос в Life OS в режиме raw copy only
 - **Status**: 🔄 进行中
