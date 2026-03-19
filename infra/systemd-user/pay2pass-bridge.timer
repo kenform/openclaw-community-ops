@@ -1,0 +1,10 @@
+[Unit]
+Description=Pay2Pass bridge daily expiry timer at 00:00 UTC
+
+[Timer]
+OnCalendar=*-*-* 00:00:00 UTC
+Persistent=true
+Unit=pay2pass-bridge-expiry.service
+
+[Install]
+WantedBy=timers.target
