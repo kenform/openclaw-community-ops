@@ -1,0 +1,87 @@
+# Secrets / credentials
+.env
+.env.*
+*.env
+config.env
+**/config.env
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+*.der
+id_rsa
+id_ed25519
+
+# Telegram/Telethon sessions and auth
+*.session
+*.session-*
+**/*.session
+**/*.session-*
+
+# Python caches / virtualenvs
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.python-version
+.venv/
+venv/
+**/.venv/
+**/venv/
+.venv-ppt/
+.whisper-venv/
+
+# Node deps/build
+node_modules/
+**/node_modules/
+.next/
+dist/
+build/
+
+# Logs / runtime state
+*.log
+logs/
+**/logs/
+*.pid
+*.lock
+
+# Temporary / local artifacts
+tmp/
+**/tmp/
+cache/
+**/cache/
+*.bak
+*.bak_*
+*.swp
+*.swo
+
+# Large/generated reports (keep selectively if needed)
+reports/*.json
+reports/*.md
+!reports/.gitkeep
+
+# Personal memory/private notes
+MEMORY.md
+memory/*.md
+!memory/tasks.md
+
+# Downloads/media/artifacts
+downloads/
+**/downloads/
+*.mp3
+*.wav
+*.ogg
+*.opus
+*.mp4
+*.mov
+*.mkv
+*.zip
+*.tar.gz
+*.pptx
+
+# IDE/system
+.DS_Store
+.vscode/
+.idea/
