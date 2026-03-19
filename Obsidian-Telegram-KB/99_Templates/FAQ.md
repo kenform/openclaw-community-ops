@@ -1,7 +1,7 @@
 ---
 type: faq
 channel: ""
-updated: 
+updated:
 ---
 
 # FAQ — {{channel}}

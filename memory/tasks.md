@@ -1,5 +1,19 @@
 # Active Tasks
 
+## [2026-03-19-mentor-chat-form-setup] Добавить заметки в Obsidian + вступить в группу ментора + создать чат подписчиков + подготовить Google Form поток
+- **Status**: 🔄 进行中
+- **Requested**: 2026-03-19 14:10 UTC
+- **Updated**: 2026-03-19 14:41 UTC
+- **Notes**: Пользователь попросил: зафиксировать в Obsidian, добавить ментора (invite), создать чат для подписчиков, сделать Google-форму и отвечать по её данным.
+- **Result**: Частично завершено: заметки добавлены, в группу ментора вступила (`OpenClaw Course Ru`), чат подписчиков создан (`Чат подписчиков`).
+
+## [2026-03-19-obsidian-no-gpt-cleanup] Навести порядок в Obsidian и сделать автономный Python-cleaner без GPT
+- **Status**: ✅ 完成
+- **Requested**: 2026-03-19 14:38 UTC
+- **Updated**: 2026-03-19 14:41 UTC
+- **Notes**: Пользователь попросил навести порядок в Obsidian и сделать no-GPT очистку/фильтрацию на случай окончания подписки.
+- **Result**: Реализовано: `scripts/obsidian_no_gpt_cleaner.py` + `config/obsidian_no_gpt_cleaner.json`; выполнен dry-run и apply-run (92 файлов, нормализовано 52, ошибок 0), отчёты `reports/obsidian_no_gpt_cleaner_1773931221.json` и `reports/obsidian_no_gpt_cleaner_1773931238.json`; включён автономный timer `obsidian-no-gpt-cleaner.timer` (active).
+
 ## [2026-03-19-github-prep-safe-push] Подготовить безопасный GitHub push-пакет (gitignore + инструкции + staging)
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-19 10:22 UTC

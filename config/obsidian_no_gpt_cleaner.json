@@ -1,0 +1,14 @@
+{
+  "vault_path": "/home/openclawuser/.openclaw/workspace/Obsidian-Telegram-KB",
+  "archive_dir": "90_MOC/auto-clean",
+  "reports_dir": "/home/openclawuser/.openclaw/workspace/reports",
+  "min_chars_keep": 40,
+  "dedupe": {
+    "enabled": true,
+    "hash_mode": "title_plus_body"
+  },
+  "normalize": {
+    "trim_trailing_spaces": true,
+    "collapse_3plus_blank_lines": true
+  }
+}

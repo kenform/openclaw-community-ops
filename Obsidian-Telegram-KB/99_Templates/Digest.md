@@ -2,19 +2,19 @@
 type: digest
 channel: ""
 period: ""
-updated: 
+updated:
 ---
 
 # Digest — {{channel}} ({{period}})
 
 ## Главное
-- 
+-
 
 ## Сигналы / выводы
-- 
+-
 
 ## Что удалить/архивировать
-- 
+-
 
 ## Что опубликовать
-- 
+-

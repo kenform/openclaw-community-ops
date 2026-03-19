@@ -1,0 +1,12 @@
+[Unit]
+Description=Run Obsidian no-GPT cleaner every 12 hours
+
+[Timer]
+OnBootSec=10min
+OnUnitActiveSec=12h
+RandomizedDelaySec=120
+Persistent=true
+Unit=obsidian-no-gpt-cleaner.service
+
+[Install]
+WantedBy=timers.target

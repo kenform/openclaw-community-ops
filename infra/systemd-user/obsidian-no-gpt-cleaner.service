@@ -1,0 +1,12 @@
+[Unit]
+Description=Obsidian no-GPT cleaner (normalize + dedupe + archive)
+After=default.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/openclawuser/.openclaw/workspace
+ExecStart=/usr/bin/env python3 /home/openclawuser/.openclaw/workspace/scripts/obsidian_no_gpt_cleaner.py --config /home/openclawuser/.openclaw/workspace/config/obsidian_no_gpt_cleaner.json --apply
+Nice=10
+
+[Install]
+WantedBy=default.target

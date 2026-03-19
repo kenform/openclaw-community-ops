@@ -3,7 +3,7 @@ type: channel-index
 channel: ""
 source: telegram
 status: active
-updated: 
+updated:
 ---
 
 # {{channel}}
@@ -11,10 +11,10 @@ updated:
 ## Описание
 
 ## Ключевые темы
-- 
+-
 
 ## Полезные ссылки
-- 
+-
 
 ## Навигация
 - [[timeline]]

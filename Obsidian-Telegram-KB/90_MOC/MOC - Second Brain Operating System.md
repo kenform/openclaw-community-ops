@@ -28,7 +28,6 @@
 - Использовать шаблон [[Weekly-Review]]
 - Чистить шум и поднимать лучшие связи в MOC
 
-
 ## Быстрый обзор новых заметок (Dataview)
 ```dataview
 TABLE date(file.mtime) as Updated, Source, Relevance
@@ -36,4 +35,3 @@ FROM "10_Channels" OR "20_Summaries"
 SORT file.mtime DESC
 LIMIT 20
 ```
-
