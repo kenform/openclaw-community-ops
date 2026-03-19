@@ -1,5 +1,12 @@
 # Active Tasks
 
+## [2026-03-19-defios-final-pass] Навести порядок в Defi Os и сделать финальный прогон
+- **Status**: ✅ 完成
+- **Requested**: 2026-03-19 14:44 UTC
+- **Updated**: 2026-03-19 14:46 UTC
+- **Notes**: Пользователь запросил отдельный порядок и финальный контрольный прогон именно по Defi Os.
+- **Result**: Финальный прогон выполнен: 9 топиков, скан 824, удалено 9 (service), дублей текстов не найдено, ошибок 0; post-check: dup_candidates=0. Отчёт: `reports/defios_final_pass_1773931575.json`.
+
 ## [2026-03-19-wt-masterhub-and-remaining-groups-cleanup] Навести порядок в WT Master Hub и продолжить cleanup по остальным группам
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-19 14:42 UTC
