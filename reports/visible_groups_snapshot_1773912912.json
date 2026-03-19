@@ -1,0 +1,211 @@
+{
+  "ts": 1773912912,
+  "mode": "visible_groups_snapshot",
+  "counts": {
+    "total_groups_visible": 28
+  },
+  "baseline_sort_folder_prev_12": [
+    "2025 Pro Defi",
+    "2025 БАЗА Defi",
+    "BAS",
+    "Syndicate",
+    "TW",
+    "БАЗА и ПРО 2023",
+    "ДОП DEFI 24",
+    "Материалы",
+    "Мой спот",
+    "Общак Спот",
+    "Отработки зоны 141-161",
+    "Уроки Вайкофа в картинках"
+  ],
+  "new_vs_prev_baseline": [
+    "CryptoHub Chat",
+    "CryptoInside Chat",
+    "Defi Os",
+    "FACK BLOCK RESEARCH CHAT",
+    "HOMIC DAO",
+    "Hunt",
+    "Kozh - чатик",
+    "Life OS",
+    "Mr Robot, Kenform and Arya Claw",
+    "OCHKISK | Chat 💬",
+    "OpenClaw news",
+    "ShadowFlow Chat",
+    "WT Master Hub",
+    "WT. Личный слив курса",
+    "Интра 2.0 ☃️"
+  ],
+  "missing_vs_prev_baseline": [
+    "Уроки Вайкофа в картинках"
+  ],
+  "groups": [
+    {
+      "name": "2025 Pro Defi",
+      "id": -1002845061030,
+      "archived": true,
+      "folder_id": 1
+    },
+    {
+      "name": "2025 БАЗА Defi",
+      "id": -1002758539226,
+      "archived": true,
+      "folder_id": 1
+    },
+    {
+      "name": "BAS",
+      "id": -1002283963219,
+      "archived": true,
+      "folder_id": 1
+    },
+    {
+      "name": "CryptoHub Chat",
+      "id": -1003203120987,
+      "archived": true,
+      "folder_id": 1
+    },
+    {
+      "name": "CryptoInside Chat",
+      "id": -1001293752024,
+      "archived": true,
+      "folder_id": 1
+    },
+    {
+      "name": "Defi Os",
+      "id": -5205369847,
+      "archived": false,
+      "folder_id": null
+    },
+    {
+      "name": "Defi Os",
+      "id": -1003646976482,
+      "archived": true,
+      "folder_id": 1
+    },
+    {
+      "name": "FACK BLOCK RESEARCH CHAT",
+      "id": -1001696177157,
+      "archived": true,
+      "folder_id": 1
+    },
+    {
+      "name": "HOMIC DAO",
+      "id": -1002439144465,
+      "archived": true,
+      "folder_id": 1
+    },
+    {
+      "name": "Hunt",
+      "id": -1003881590727,
+      "archived": true,
+      "folder_id": 1
+    },
+    {
+      "name": "Kozh - чатик",
+      "id": -1001955794576,
+      "archived": true,
+      "folder_id": 1
+    },
+    {
+      "name": "Life OS",
+      "id": -1003542470588,
+      "archived": true,
+      "folder_id": 1
+    },
+    {
+      "name": "Life OS",
+      "id": -5199158469,
+      "archived": false,
+      "folder_id": null
+    },
+    {
+      "name": "Mr Robot, Kenform and Arya Claw",
+      "id": -5156705450,
+      "archived": false,
+      "folder_id": null
+    },
+    {
+      "name": "OCHKISK | Chat 💬",
+      "id": -1002286671132,
+      "archived": true,
+      "folder_id": 1
+    },
+    {
+      "name": "OpenClaw news",
+      "id": -1003650146818,
+      "archived": true,
+      "folder_id": 1
+    },
+    {
+      "name": "ShadowFlow Chat",
+      "id": -1003140349714,
+      "archived": true,
+      "folder_id": 1
+    },
+    {
+      "name": "Syndicate",
+      "id": -1002623559867,
+      "archived": true,
+      "folder_id": 1
+    },
+    {
+      "name": "TW",
+      "id": -1002787143323,
+      "archived": true,
+      "folder_id": 1
+    },
+    {
+      "name": "WT Master Hub",
+      "id": -1003772897836,
+      "archived": true,
+      "folder_id": 1
+    },
+    {
+      "name": "WT. Личный слив курса",
+      "id": -1002207208809,
+      "archived": false,
+      "folder_id": null
+    },
+    {
+      "name": "БАЗА и ПРО 2023",
+      "id": -1002305257406,
+      "archived": true,
+      "folder_id": 1
+    },
+    {
+      "name": "ДОП DEFI 24",
+      "id": -1002389062759,
+      "archived": true,
+      "folder_id": 1
+    },
+    {
+      "name": "Интра 2.0 ☃️",
+      "id": -1003398914047,
+      "archived": true,
+      "folder_id": 1
+    },
+    {
+      "name": "Материалы",
+      "id": -1002565854059,
+      "archived": true,
+      "folder_id": 1
+    },
+    {
+      "name": "Мой спот",
+      "id": -1002760924656,
+      "archived": true,
+      "folder_id": 1
+    },
+    {
+      "name": "Общак Спот",
+      "id": -1002156970447,
+      "archived": true,
+      "folder_id": 1
+    },
+    {
+      "name": "Отработки зоны 141-161",
+      "id": -1002229676776,
+      "archived": true,
+      "folder_id": 1
+    }
+  ]
+}
