@@ -1,0 +1,14 @@
+[Unit]
+Description=Discord billing sync webhook listener (Stripe -> role sync)
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/openclawuser/.openclaw/workspace
+EnvironmentFile=/home/openclawuser/.openclaw/workspace/config/discord_billing.env
+ExecStart=/usr/bin/env python3 /home/openclawuser/.openclaw/workspace/scripts/discord_billing_sync.py --mode webhook --env-file /home/openclawuser/.openclaw/workspace/config/discord_billing.env
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target

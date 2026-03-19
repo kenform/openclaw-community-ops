@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily Discord billing expiry check at 00:00 UTC
+
+[Timer]
+OnCalendar=*-*-* 00:00:00 UTC
+Persistent=true
+Unit=discord-billing-expiry.service
+
+[Install]
+WantedBy=timers.target

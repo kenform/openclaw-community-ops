@@ -1,0 +1,9 @@
+[Unit]
+Description=Discord billing expiry check (daily revoke)
+After=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/openclawuser/.openclaw/workspace
+EnvironmentFile=/home/openclawuser/.openclaw/workspace/config/discord_billing.env
+ExecStart=/usr/bin/env python3 /home/openclawuser/.openclaw/workspace/scripts/discord_billing_sync.py --mode expiry-check --env-file /home/openclawuser/.openclaw/workspace/config/discord_billing.env
