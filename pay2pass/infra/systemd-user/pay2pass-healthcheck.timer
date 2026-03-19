@@ -1,0 +1,11 @@
+[Unit]
+Description=Run Pay2Pass healthcheck every 30 min
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=30min
+Persistent=true
+Unit=pay2pass-healthcheck.service
+
+[Install]
+WantedBy=timers.target

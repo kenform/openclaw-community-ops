@@ -1,0 +1,8 @@
+[Unit]
+Description=Pay2Pass healthcheck/report
+After=default.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/openclawuser/.openclaw/workspace/pay2pass
+ExecStart=/usr/bin/env python3 /home/openclawuser/.openclaw/workspace/pay2pass/scripts/pay2pass_healthcheck.py

@@ -4,7 +4,6 @@ After=network-online.target
 
 [Service]
 Type=oneshot
-User=openclawuser
 WorkingDirectory=/home/openclawuser/.openclaw/workspace/pay2pass
 Environment="PATH=/home/openclawuser/.openclaw/workspace/pay2pass/.venv/bin:/usr/local/bin:/usr/bin"
 EnvironmentFile=/home/openclawuser/.openclaw/workspace/pay2pass/config/.env
