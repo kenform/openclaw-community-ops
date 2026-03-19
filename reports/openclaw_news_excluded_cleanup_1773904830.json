@@ -1,0 +1,328 @@
+{
+  "ts": 1773904824,
+  "mode": "openclaw_news_and_excluded_cleanup",
+  "openclaw_news": [
+    {
+      "chat_id": -1003711761959,
+      "name": "Арья печатает...",
+      "scanned": 18,
+      "candidates": 2,
+      "deleted": 2,
+      "failed": 0,
+      "examples": [
+        {
+          "id": 112,
+          "text": "",
+          "service": false,
+          "mine": true
+        },
+        {
+          "id": 1,
+          "text": "",
+          "service": true,
+          "mine": true
+        }
+      ]
+    },
+    {
+      "chat_id": -1003650146818,
+      "name": "OpenClaw news",
+      "scanned": 180,
+      "candidates": 4,
+      "deleted": 4,
+      "failed": 0,
+      "examples": [
+        {
+          "id": 339,
+          "text": "",
+          "service": true,
+          "mine": false
+        },
+        {
+          "id": 210,
+          "text": "",
+          "service": false,
+          "mine": true
+        },
+        {
+          "id": 209,
+          "text": "",
+          "service": false,
+          "mine": true
+        },
+        {
+          "id": 208,
+          "text": "",
+          "service": false,
+          "mine": true
+        }
+      ]
+    },
+    {
+      "chat_id": -1003757288496,
+      "name": "OpenClaw Parser",
+      "scanned": 4,
+      "candidates": 0,
+      "deleted": 0,
+      "failed": 0,
+      "examples": []
+    },
+    {
+      "chat_id": 8713132191,
+      "name": "OpenClaw Digest post bot",
+      "scanned": 1,
+      "candidates": 0,
+      "deleted": 0,
+      "failed": 0,
+      "examples": []
+    }
+  ],
+  "excluded_groups": [
+    {
+      "chat_id": -1002845061030,
+      "name": "2025 Pro Defi",
+      "scanned": 220,
+      "candidates": 15,
+      "deleted": 15,
+      "failed": 0,
+      "examples": [
+        {
+          "id": 430,
+          "text": "",
+          "service": true,
+          "mine": false
+        },
+        {
+          "id": 395,
+          "text": "",
+          "service": true,
+          "mine": false
+        },
+        {
+          "id": 394,
+          "text": "",
+          "service": true,
+          "mine": false
+        },
+        {
+          "id": 382,
+          "text": "",
+          "service": true,
+          "mine": false
+        },
+        {
+          "id": 340,
+          "text": "",
+          "service": true,
+          "mine": false
+        }
+      ]
+    },
+    {
+      "chat_id": -1002758539226,
+      "name": "2025 БАЗА Defi",
+      "scanned": 182,
+      "candidates": 18,
+      "deleted": 18,
+      "failed": 0,
+      "examples": [
+        {
+          "id": 214,
+          "text": "",
+          "service": true,
+          "mine": false
+        },
+        {
+          "id": 213,
+          "text": "",
+          "service": true,
+          "mine": false
+        },
+        {
+          "id": 200,
+          "text": "",
+          "service": true,
+          "mine": false
+        },
+        {
+          "id": 182,
+          "text": "",
+          "service": true,
+          "mine": false
+        },
+        {
+          "id": 174,
+          "text": "",
+          "service": true,
+          "mine": false
+        }
+      ]
+    },
+    {
+      "chat_id": -1002305257406,
+      "name": "БАЗА и ПРО 2023",
+      "scanned": 163,
+      "candidates": 17,
+      "deleted": 17,
+      "failed": 0,
+      "examples": [
+        {
+          "id": 163,
+          "text": "",
+          "service": true,
+          "mine": false
+        },
+        {
+          "id": 162,
+          "text": "",
+          "service": true,
+          "mine": false
+        },
+        {
+          "id": 161,
+          "text": "",
+          "service": true,
+          "mine": false
+        },
+        {
+          "id": 160,
+          "text": "",
+          "service": true,
+          "mine": false
+        },
+        {
+          "id": 155,
+          "text": "",
+          "service": true,
+          "mine": false
+        }
+      ]
+    },
+    {
+      "chat_id": -1002389062759,
+      "name": "ДОП DEFI 24",
+      "scanned": 68,
+      "candidates": 11,
+      "deleted": 11,
+      "failed": 0,
+      "examples": [
+        {
+          "id": 68,
+          "text": "",
+          "service": true,
+          "mine": false
+        },
+        {
+          "id": 67,
+          "text": "",
+          "service": true,
+          "mine": false
+        },
+        {
+          "id": 66,
+          "text": "",
+          "service": true,
+          "mine": false
+        },
+        {
+          "id": 65,
+          "text": "",
+          "service": true,
+          "mine": false
+        },
+        {
+          "id": 51,
+          "text": "",
+          "service": true,
+          "mine": false
+        }
+      ]
+    },
+    {
+      "chat_id": -1002565854059,
+      "name": "Материалы",
+      "scanned": 125,
+      "candidates": 10,
+      "deleted": 10,
+      "failed": 0,
+      "examples": [
+        {
+          "id": 118,
+          "text": "",
+          "service": true,
+          "mine": false
+        },
+        {
+          "id": 100,
+          "text": "",
+          "service": true,
+          "mine": false
+        },
+        {
+          "id": 82,
+          "text": "",
+          "service": true,
+          "mine": false
+        },
+        {
+          "id": 71,
+          "text": "",
+          "service": true,
+          "mine": false
+        },
+        {
+          "id": 31,
+          "text": "",
+          "service": true,
+          "mine": false
+        }
+      ]
+    },
+    {
+      "chat_id": -1002623559867,
+      "name": "Syndicate",
+      "scanned": 74,
+      "candidates": 7,
+      "deleted": 7,
+      "failed": 0,
+      "examples": [
+        {
+          "id": 119,
+          "text": "",
+          "service": true,
+          "mine": false
+        },
+        {
+          "id": 92,
+          "text": "",
+          "service": true,
+          "mine": false
+        },
+        {
+          "id": 52,
+          "text": "",
+          "service": true,
+          "mine": false
+        },
+        {
+          "id": 21,
+          "text": "",
+          "service": true,
+          "mine": false
+        },
+        {
+          "id": 9,
+          "text": "",
+          "service": true,
+          "mine": false
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "openclaw_targets": 4,
+    "openclaw_deleted_total": 6,
+    "excluded_targets": 6,
+    "excluded_deleted_total": 78
+  }
+}
