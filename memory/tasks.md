@@ -1,5 +1,12 @@
 # Active Tasks
 
+## [2026-03-19-wt-masterhub-and-remaining-groups-cleanup] Навести порядок в WT Master Hub и продолжить cleanup по остальным группам
+- **Status**: ✅ 完成
+- **Requested**: 2026-03-19 14:42 UTC
+- **Updated**: 2026-03-19 14:44 UTC
+- **Notes**: Пользователь попросил отдельный порядок в WT Master Hub и продолжение cleanup там, где ещё не доделано.
+- **Result**: Выполнен deep-pass: обработано 18 групп, удалено 177 служебных/пустых/дублирующихся сообщений, ошибок 0. По WT Master Hub: 9 топиков, навигационных постов в свежем окне = 2. Отчёт: `reports/wt_masterhub_remaining_cleanup_1773931429.json`.
+
 ## [2026-03-19-mentor-chat-form-setup] Добавить заметки в Obsidian + вступить в группу ментора + создать чат подписчиков + подготовить Google Form поток
 - **Status**: 🔄 进行中
 - **Requested**: 2026-03-19 14:10 UTC
