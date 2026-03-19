@@ -1,0 +1,108 @@
+{
+  "ts": 1773915156,
+  "mode": "defios_dedupe_pass",
+  "target": {
+    "name": "Defi Os",
+    "chat_id": -1003646976482
+  },
+  "topics": [
+    {
+      "topic_id": 9,
+      "title": "📎 Материалы / Ресурсы",
+      "scanned": 65,
+      "dup_candidates": 3,
+      "empty_candidates": 0,
+      "service_candidates": 1,
+      "deleted": 4,
+      "failed": 0
+    },
+    {
+      "topic_id": 8,
+      "title": "🧪 ДОП DEFI 24 / Дополнения",
+      "scanned": 53,
+      "dup_candidates": 3,
+      "empty_candidates": 0,
+      "service_candidates": 1,
+      "deleted": 4,
+      "failed": 0
+    },
+    {
+      "topic_id": 7,
+      "title": "🗂 БАЗА и ПРО 2023 / Архив",
+      "scanned": 145,
+      "dup_candidates": 5,
+      "empty_candidates": 0,
+      "service_candidates": 1,
+      "deleted": 6,
+      "failed": 0
+    },
+    {
+      "topic_id": 6,
+      "title": "🧠 Syndicate / Идеи",
+      "scanned": 66,
+      "dup_candidates": 1,
+      "empty_candidates": 0,
+      "service_candidates": 1,
+      "deleted": 2,
+      "failed": 0
+    },
+    {
+      "topic_id": 5,
+      "title": "📚 БАЗА Defi / Основы",
+      "scanned": 165,
+      "dup_candidates": 6,
+      "empty_candidates": 0,
+      "service_candidates": 1,
+      "deleted": 7,
+      "failed": 0
+    },
+    {
+      "topic_id": 4,
+      "title": "📈 Pro Defi / Сигналы",
+      "scanned": 350,
+      "dup_candidates": 5,
+      "empty_candidates": 0,
+      "service_candidates": 1,
+      "deleted": 6,
+      "failed": 0
+    },
+    {
+      "topic_id": 3,
+      "title": "🧭 Навигатор",
+      "scanned": 2,
+      "dup_candidates": 0,
+      "empty_candidates": 0,
+      "service_candidates": 1,
+      "deleted": 1,
+      "failed": 0
+    },
+    {
+      "topic_id": 2,
+      "title": "📥 Inbox / Разобрать",
+      "scanned": 1,
+      "dup_candidates": 0,
+      "empty_candidates": 0,
+      "service_candidates": 1,
+      "deleted": 1,
+      "failed": 0
+    },
+    {
+      "topic_id": 1,
+      "title": "General",
+      "scanned": 1,
+      "dup_candidates": 0,
+      "empty_candidates": 0,
+      "service_candidates": 1,
+      "deleted": 1,
+      "failed": 0
+    }
+  ],
+  "summary": {
+    "topics_total": 9,
+    "deleted_total": 32,
+    "dup_deleted": 23,
+    "empty_deleted": 0,
+    "service_deleted": 9,
+    "failed_total": 0
+  }
+}

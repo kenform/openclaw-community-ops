@@ -1,5 +1,12 @@
 # Active Tasks
 
+## [2026-03-19-defios-dedupe-pass] Мягкий dedupe-pass в Defi Os (без потери контекста)
+- **Status**: ✅ 完成
+- **Requested**: 2026-03-19 10:11 UTC
+- **Updated**: 2026-03-19 10:13 UTC
+- **Notes**: Пользователь подтвердил запуск dedupe-pass после аудита качества.
+- **Result**: Выполнено: удалено 32 сообщения (дубли exact-text=23, service=9), ошибок 0. Post-check показал `dup_candidates_total=0` в контрольной выборке. Отчёты: `reports/defios_dedupe_pass_1773915159.json`, `reports/defios_quality_post_dedupe_1773915197.json`.
+
 ## [2026-03-19-defios-quality-audit] Контроль качества Defi Os после миграции
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-19 10:09 UTC
