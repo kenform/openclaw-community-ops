@@ -1,0 +1,11 @@
+[Unit]
+Description=Pay2Pass Bridge Daily Expiry Check
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=openclawuser
+WorkingDirectory=/home/openclawuser/.openclaw/workspace/pay2pass
+Environment="PATH=/home/openclawuser/.openclaw/workspace/pay2pass/.venv/bin:/usr/local/bin:/usr/bin"
+EnvironmentFile=/home/openclawuser/.openclaw/workspace/pay2pass/config/.env
+ExecStart=/home/openclawuser/.openclaw/workspace/pay2pass/.venv/bin/python /home/openclawuser/.openclaw/workspace/pay2pass/scripts/pay2pass_discord_bridge.py --mode expiry-check --env-file /home/openclawuser/.openclaw/workspace/pay2pass/config/.env

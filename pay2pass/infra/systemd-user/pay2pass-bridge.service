@@ -1,0 +1,18 @@
+[Unit]
+Description=Pay2Pass Discord Bridge (BSC polling)
+After=network-online.target
+
+[Service]
+Type=simple
+User=openclawuser
+WorkingDirectory=/home/openclawuser/.openclaw/workspace/pay2pass
+Environment="PATH=/home/openclawuser/.openclaw/workspace/pay2pass/.venv/bin:/usr/local/bin:/usr/bin"
+EnvironmentFile=/home/openclawuser/.openclaw/workspace/pay2pass/config/.env
+ExecStart=/home/openclawuser/.openclaw/workspace/pay2pass/.venv/bin/python /home/openclawuser/.openclaw/workspace/pay2pass/scripts/pay2pass_discord_bridge.py --mode poll --env-file /home/openclawuser/.openclaw/workspace/pay2pass/config/.env
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target
