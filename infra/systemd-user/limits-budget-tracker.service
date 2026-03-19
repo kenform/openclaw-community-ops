@@ -1,0 +1,8 @@
+[Unit]
+Description=Limits budget tracker event pulse
+After=default.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/openclawuser/.openclaw/workspace
+ExecStart=/usr/bin/env python3 /home/openclawuser/.openclaw/workspace/scripts/limits_budget_tracker.py --config /home/openclawuser/.openclaw/workspace/config/limits_budget_policy.json --event analysis_call

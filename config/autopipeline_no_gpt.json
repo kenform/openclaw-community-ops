@@ -31,7 +31,7 @@
     ],
     "exclude_name_contains": ["chat", "чат"],
     "exclude_exact": ["HOMIC DAO", "Интра 2.0", "Интра 2.0 ☃️"],
-    "limit_per_group": 260,
+    "limit_per_group": 180,
     "delete_service": true,
     "delete_empty": true,
     "dedupe_exact_text": true

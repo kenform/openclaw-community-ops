@@ -1,0 +1,12 @@
+{
+  "weekly_budget_units": 100,
+  "warn_thresholds": [15, 30, 50, 70, 85, 95],
+  "weights": {
+    "analysis_call": 10,
+    "large_context_penalty": 5,
+    "batch_bonus": -3,
+    "delta_bonus": -4
+  },
+  "reports_dir": "/home/openclawuser/.openclaw/workspace/reports",
+  "state_file": "/home/openclawuser/.openclaw/workspace/reports/limits_budget_state.json"
+}

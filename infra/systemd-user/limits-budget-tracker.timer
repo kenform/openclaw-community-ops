@@ -1,0 +1,11 @@
+[Unit]
+Description=Run limits budget tracker every 6 hours
+
+[Timer]
+OnBootSec=4min
+OnUnitActiveSec=6h
+Persistent=true
+Unit=limits-budget-tracker.service
+
+[Install]
+WantedBy=timers.target
