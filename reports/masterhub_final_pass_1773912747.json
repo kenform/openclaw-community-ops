@@ -1,0 +1,128 @@
+{
+  "ts": 1773912744,
+  "mode": "masterhub_final_pass",
+  "master_hub": {
+    "chat_id": -1003772897836,
+    "name": "WT Master Hub",
+    "topics": [
+      {
+        "id": 6,
+        "title": "📈 Spot / Позиции"
+      },
+      {
+        "id": 5,
+        "title": "🧭 Навигатор"
+      },
+      {
+        "id": 11,
+        "title": "🗃 Архив"
+      },
+      {
+        "id": 10,
+        "title": "📚 Материалы / Wyckoff"
+      },
+      {
+        "id": 9,
+        "title": "📊 Результаты / статистика"
+      },
+      {
+        "id": 8,
+        "title": "🧪 Сетапы и гипотезы"
+      },
+      {
+        "id": 7,
+        "title": "🎯 Лимитки и зоны"
+      },
+      {
+        "id": 4,
+        "title": "📥 Inbox / Разобрать"
+      },
+      {
+        "id": 1,
+        "title": "General"
+      }
+    ],
+    "nav_posts": 1
+  },
+  "source_groups": [
+    {
+      "name": "2025 Pro Defi",
+      "found": true,
+      "recent_messages": 50,
+      "chat_id": -1002845061030
+    },
+    {
+      "name": "2025 БАЗА Defi",
+      "found": true,
+      "recent_messages": 50,
+      "chat_id": -1002758539226
+    },
+    {
+      "name": "БАЗА и ПРО 2023",
+      "found": true,
+      "recent_messages": 50,
+      "chat_id": -1002305257406
+    },
+    {
+      "name": "ДОП DEFI 24",
+      "found": true,
+      "recent_messages": 50,
+      "chat_id": -1002389062759
+    },
+    {
+      "name": "Общак Спот",
+      "found": true,
+      "recent_messages": 50,
+      "chat_id": -1002156970447
+    },
+    {
+      "name": "Материалы",
+      "found": true,
+      "recent_messages": 50,
+      "chat_id": -1002565854059
+    },
+    {
+      "name": "Syndicate",
+      "found": true,
+      "recent_messages": 50,
+      "chat_id": -1002623559867
+    },
+    {
+      "name": "BAS",
+      "found": true,
+      "recent_messages": 40,
+      "chat_id": -1002283963219
+    },
+    {
+      "name": "TW",
+      "found": true,
+      "recent_messages": 50,
+      "chat_id": -1002787143323
+    },
+    {
+      "name": "Мой спот",
+      "found": true,
+      "recent_messages": 27,
+      "chat_id": -1002760924656
+    },
+    {
+      "name": "Отработки зоны 141-161",
+      "found": true,
+      "recent_messages": 50,
+      "chat_id": -1002229676776
+    },
+    {
+      "name": "Уроки Вайкофа в картинках",
+      "found": true,
+      "recent_messages": 44,
+      "chat_id": -1002021381113
+    }
+  ],
+  "summary": {
+    "master_hub_found": true,
+    "master_hub_topics": 9,
+    "master_hub_nav_posts_recent": 1,
+    "source_groups_found": 12,
+    "source_groups_total": 12
+  }
+}
