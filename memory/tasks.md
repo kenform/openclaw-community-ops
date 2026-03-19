@@ -1,5 +1,12 @@
 # Active Tasks
 
+## [2026-03-19-defios-full-migration-and-cleanup] Навести порядок в 18 группах и перенести контент Defi-групп в Defi Os
+- **Status**: ✅ 完成
+- **Requested**: 2026-03-19 09:58 UTC
+- **Updated**: 2026-03-19 10:06 UTC
+- **Notes**: Пользователь поручил полный порядок в рабочем контуре + перенос всей информации из 6 Defi-групп в новую группу `Defi Os` с учётом контекста топиков.
+- **Result**: Выполнено: (1) проведён cleanup-pass по отфильтрованному контуру (18 групп) — удалено 280 служебных/пустых хвостов, ошибок 0; (2) Defi Os миграция подтверждена по checkpoint: 6/6 source-групп закрыты (последний мигрированный ID >= текущего max ID), тематические топики доступны. Итоговый отчёт: `reports/groups_order_and_defios_status_1773914767.json`, checkpoint: `/home/openclawuser/userbot/defios_migration_state.json`.
+
 ## [2026-03-19-group-filter-chat-exclusions] Отфильтровать группы с chat/чат и исключить HOMIC DAO + Интра 2.0
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-19 09:41 UTC

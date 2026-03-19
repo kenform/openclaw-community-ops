@@ -1,0 +1,238 @@
+{
+  "ts": 1773914767,
+  "mode": "groups_cleanup_and_defios_migration_status",
+  "filtered_rule": "exclude names containing chat/чат + exact excludes HOMIC DAO, Интра 2.0",
+  "working_groups_count": 18,
+  "cleanup": [
+    {
+      "name": "Defi Os",
+      "chat_id": -1003646976482,
+      "scanned": 260,
+      "candidates": 38,
+      "deleted": 38,
+      "failed": 0
+    },
+    {
+      "name": "WT Master Hub",
+      "chat_id": -1003772897836,
+      "scanned": 161,
+      "candidates": 11,
+      "deleted": 11,
+      "failed": 0
+    },
+    {
+      "name": "Mr Robot, Kenform and Arya Claw",
+      "chat_id": -5156705450,
+      "scanned": 3,
+      "candidates": 3,
+      "deleted": 3,
+      "failed": 0
+    },
+    {
+      "name": "Отработки зоны 141-161",
+      "chat_id": -1002229676776,
+      "scanned": 53,
+      "candidates": 7,
+      "deleted": 7,
+      "failed": 0
+    },
+    {
+      "name": "BAS",
+      "chat_id": -1002283963219,
+      "scanned": 40,
+      "candidates": 9,
+      "deleted": 9,
+      "failed": 0
+    },
+    {
+      "name": "Мой спот",
+      "chat_id": -1002760924656,
+      "scanned": 27,
+      "candidates": 8,
+      "deleted": 8,
+      "failed": 0
+    },
+    {
+      "name": "TW",
+      "chat_id": -1002787143323,
+      "scanned": 123,
+      "candidates": 8,
+      "deleted": 8,
+      "failed": 0
+    },
+    {
+      "name": "Общак Спот",
+      "chat_id": -1002156970447,
+      "scanned": 225,
+      "candidates": 14,
+      "deleted": 14,
+      "failed": 0
+    },
+    {
+      "name": "WT. Личный слив курса",
+      "chat_id": -1002207208809,
+      "scanned": 260,
+      "candidates": 14,
+      "deleted": 14,
+      "failed": 0
+    },
+    {
+      "name": "OpenClaw news",
+      "chat_id": -1003650146818,
+      "scanned": 258,
+      "candidates": 12,
+      "deleted": 12,
+      "failed": 0
+    },
+    {
+      "name": "Life OS",
+      "chat_id": -1003542470588,
+      "scanned": 222,
+      "candidates": 40,
+      "deleted": 40,
+      "failed": 0
+    },
+    {
+      "name": "Hunt",
+      "chat_id": -1003881590727,
+      "scanned": 158,
+      "candidates": 38,
+      "deleted": 38,
+      "failed": 0
+    },
+    {
+      "name": "2025 Pro Defi",
+      "chat_id": -1002845061030,
+      "scanned": 260,
+      "candidates": 15,
+      "deleted": 15,
+      "failed": 0
+    },
+    {
+      "name": "ДОП DEFI 24",
+      "chat_id": -1002389062759,
+      "scanned": 68,
+      "candidates": 11,
+      "deleted": 11,
+      "failed": 0
+    },
+    {
+      "name": "БАЗА и ПРО 2023",
+      "chat_id": -1002305257406,
+      "scanned": 163,
+      "candidates": 17,
+      "deleted": 17,
+      "failed": 0
+    },
+    {
+      "name": "2025 БАЗА Defi",
+      "chat_id": -1002758539226,
+      "scanned": 182,
+      "candidates": 18,
+      "deleted": 18,
+      "failed": 0
+    },
+    {
+      "name": "Материалы",
+      "chat_id": -1002565854059,
+      "scanned": 125,
+      "candidates": 10,
+      "deleted": 10,
+      "failed": 0
+    },
+    {
+      "name": "Syndicate",
+      "chat_id": -1002623559867,
+      "scanned": 74,
+      "candidates": 7,
+      "deleted": 7,
+      "failed": 0
+    }
+  ],
+  "defios_target": {
+    "found": true,
+    "name": "Defi Os",
+    "chat_id": -1003646976482,
+    "forum": true
+  },
+  "defios_topics": [
+    "📎 Материалы / Ресурсы",
+    "🧪 ДОП DEFI 24 / Дополнения",
+    "🗂 БАЗА и ПРО 2023 / Архив",
+    "🧠 Syndicate / Идеи",
+    "📚 БАЗА Defi / Основы",
+    "📈 Pro Defi / Сигналы",
+    "🧭 Навигатор",
+    "📥 Inbox / Разобрать",
+    "General"
+  ],
+  "defios_migration_status": [
+    {
+      "source": "2025 Pro Defi",
+      "found": true,
+      "source_chat_id": -1002845061030,
+      "mapped_topic": "📈 Pro Defi / Сигналы",
+      "topic_exists": true,
+      "last_migrated_id": 430,
+      "source_max_id": 430,
+      "complete": true
+    },
+    {
+      "source": "2025 БАЗА Defi",
+      "found": true,
+      "source_chat_id": -1002758539226,
+      "mapped_topic": "📚 БАЗА Defi / Основы",
+      "topic_exists": true,
+      "last_migrated_id": 214,
+      "source_max_id": 214,
+      "complete": true
+    },
+    {
+      "source": "Syndicate",
+      "found": true,
+      "source_chat_id": -1002623559867,
+      "mapped_topic": "🧠 Syndicate / Идеи",
+      "topic_exists": true,
+      "last_migrated_id": 139,
+      "source_max_id": 139,
+      "complete": true
+    },
+    {
+      "source": "БАЗА и ПРО 2023",
+      "found": true,
+      "source_chat_id": -1002305257406,
+      "mapped_topic": "🗂 БАЗА и ПРО 2023 / Архив",
+      "topic_exists": true,
+      "last_migrated_id": 163,
+      "source_max_id": 163,
+      "complete": true
+    },
+    {
+      "source": "ДОП DEFI 24",
+      "found": true,
+      "source_chat_id": -1002389062759,
+      "mapped_topic": "🧪 ДОП DEFI 24 / Дополнения",
+      "topic_exists": true,
+      "last_migrated_id": 68,
+      "source_max_id": 68,
+      "complete": true
+    },
+    {
+      "source": "Материалы",
+      "found": true,
+      "source_chat_id": -1002565854059,
+      "mapped_topic": "📎 Материалы / Ресурсы",
+      "topic_exists": true,
+      "last_migrated_id": 158,
+      "source_max_id": 158,
+      "complete": true
+    }
+  ],
+  "summary": {
+    "cleanup_deleted_total": 280,
+    "cleanup_failed_total": 0,
+    "defi_sources_total": 6,
+    "defi_sources_complete": 6,
+    "defi_sources_pending": 0
+  }
+}
