@@ -1,5 +1,12 @@
 # Active Tasks
 
+## [2026-03-19-final-drycheck-and-style-tune] Финальный dry-check + оживление стиля постов Арьи
+- **Status**: ✅ 完成
+- **Requested**: 2026-03-19 08:04 UTC
+- **Updated**: 2026-03-19 08:05 UTC
+- **Notes**: Пользователь подтвердил финальный dry-check и попросил сделать стиль постов менее сухим.
+- **Result**: Финальный dry-check сделан без удаления: OpenClaw-контур 4 цели / 1 кандидат, исключённые 6 целей / 68 кандидатов (`reports/openclaw_news_excluded_final_drycheck_1773907517.json`). Стиль в `userbot2/bot.py` обновлён: усилен живой разговорный тон, добавлены анти-клише и анти-канцелярит фильтры; `userbot2.service` перезапущен (`active`); опубликован живой пост в `@Arya_claw` (`id=131`).
+
 ## [2026-03-19-openclaw-second-cleanup-pass] Добивающий cleanup-pass после dry-check (OpenClaw + исключённые)
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-19 07:39 UTC
