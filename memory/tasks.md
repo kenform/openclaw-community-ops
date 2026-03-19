@@ -1,11 +1,11 @@
 # Active Tasks
 
 ## [2026-03-19-github-prep-safe-push] Подготовить безопасный GitHub push-пакет (gitignore + инструкции + staging)
-- **Status**: 🔄 进行中
+- **Status**: ✅ 完成
 - **Requested**: 2026-03-19 10:22 UTC
-- **Updated**: 2026-03-19 10:22 UTC
+- **Updated**: 2026-03-19 10:24 UTC
 - **Notes**: Пользователь попросил, чтобы я сделала перенос максимально за него; он готов только создать репозитории на GitHub.
-- **Result**: В процессе: готовлю .gitignore, safe-push инструкции и локальную подготовку к пушу.
+- **Result**: Готово: создан `.gitignore`, `GITHUB_PUSH_PLAN.md`, локальная ветка `feat/no-gpt-autopipeline-prep`; база для безопасного push готова, ожидаю только URL(ы) новых репозиториев от пользователя.
 
 ## [2026-03-19-autonomy-no-gpt-plan-and-github-reminder] Подготовить и внедрить авто-сортировку без GPT + напоминание про GitHub сегодня
 - **Status**: ✅ 完成
