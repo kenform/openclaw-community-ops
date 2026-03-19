@@ -1,5 +1,12 @@
 # Active Tasks
 
+## [2026-03-19-openclaw-dry-check-delta] Контрольный dry-check после чистки (только дельта)
+- **Status**: ✅ 完成
+- **Requested**: 2026-03-19 07:38 UTC
+- **Updated**: 2026-03-19 07:38 UTC
+- **Notes**: Пользователь подтвердил запуск контрольной проверки «Хочу».
+- **Result**: Dry-check выполнен без удалений: OpenClaw-контур (4 цели) — 1 новый кандидат; исключённые группы (6 целей) — 64 кандидата на следующий cleanup-pass. Отчёт: `reports/openclaw_news_excluded_drycheck_1773905930.json`.
+
 ## [2026-03-19-openclaw-news-and-excluded-groups] Запустить сортировку OpenClaw News и завершить работу по исключённым группам
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-19 07:18 UTC
