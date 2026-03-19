@@ -1,0 +1,14 @@
+# Default owners
+* @kenform
+
+# Ops and automation core
+/scripts/ @kenform
+/config/ @kenform
+/infra/ @kenform
+
+# Community and docs
+/Obsidian-Telegram-KB/OpenClaw/ @kenform
+/.github/ @kenform
+/README.md @kenform
+/CONTRIBUTING.md @kenform
+/CHANGELOG.md @kenform

@@ -3,9 +3,9 @@
 ## [2026-03-19-full-community-ops-pack] Закрыть блок: GitHub-first prep + Google Form контур + чат подписчиков + Discord план + контент/фидбэк/аналитика
 - **Status**: 🔄 进行中
 - **Requested**: 2026-03-19 15:02 UTC
-- **Updated**: 2026-03-19 15:18 UTC
-- **Notes**: Пользователь попросил выполнить весь предложенный пакет задач; GitHub в приоритете №1. Отдельно попросил заморозить Google Forms до будущего этапа.
-- **Result**: GitHub шаг выполнен: remote `https://github.com/kenform/openclaw-community-ops` подключён, ветка `feat/no-gpt-autopipeline-prep` запушена и отслеживается. Выполнено доступное автономно: OpenClaw-документы, no-GPT скрипт форм, правила+навигация в `Чат подписчиков`. Google Form блок поставлен на паузу; текущий фокус — пошагово провести пользователя по GitHub UI (PR/merge). Discord блок ожидает сервер/invite.
+- **Updated**: 2026-03-19 15:49 UTC
+- **Notes**: Пользователь выбрал вариант A по GitHub (без collaborators) и попросил продолжать работу автономно.
+- **Result**: Продолжила: добавлены `CODEOWNERS` (owner: `@kenform`), `ROADMAP.md` (30 дней), `DEFINITION_OF_DONE.md`. Google Form блок остаётся на паузе. Discord блок ждёт подключения бота OpenClaw для полного remote-управления.
 
 ## [2026-03-19-defios-final-pass] Навести порядок в Defi Os и сделать финальный прогон
 - **Status**: ✅ 完成
