@@ -1,0 +1,218 @@
+{
+  "ts": 1773915545,
+  "mode": "autopipeline_no_gpt",
+  "services": [
+    {
+      "service": "telegram-pipeline-v1.service",
+      "active_before": true,
+      "restarted": false,
+      "active_after": true,
+      "restart_result": null
+    },
+    {
+      "service": "userbot.service",
+      "active_before": true,
+      "restarted": false,
+      "active_after": true,
+      "restart_result": null
+    },
+    {
+      "service": "userbot2.service",
+      "active_before": true,
+      "restarted": false,
+      "active_after": true,
+      "restart_result": null
+    },
+    {
+      "service": "telegram-obsidian.service",
+      "active_before": true,
+      "restarted": false,
+      "active_after": true,
+      "restart_result": null
+    }
+  ],
+  "cleanup_worker": {
+    "pre_stop": {
+      "cmd": "systemctl --user stop userbot2.service",
+      "code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "worker_exec": {
+      "cmd": "/home/openclawuser/userbot2/.venv/bin/python /home/openclawuser/.openclaw/workspace/scripts/tg_no_gpt_worker.py /home/openclawuser/.openclaw/workspace/config/autopipeline_no_gpt.json",
+      "code": 0,
+      "stdout": "{\"ts\": 1773915547, \"mode\": \"no_gpt_cleanup_worker\", \"selected_groups\": 15, \"groups\": [{\"name\": \"Defi Os\", \"chat_id\": -1003646976482, \"scanned\": 260, \"service_candidates\": 0, \"empty_candidates\": 0, \"dup_candidates\": 0, \"deleted\": 0, \"failed\": 0}, {\"name\": \"WT Master Hub\", \"chat_id\": -1003772897836, \"scanned\": 145, \"service_candidates\": 9, \"empty_candidates\": 0, \"dup_candidates\": 0, \"deleted\": 9, \"failed\": 0}, {\"name\": \"Отработки зоны 141-161\", \"chat_id\": -1002229676776, \"scanned\": 53, \"service_candidates\": 7, \"empty_candidates\": 0, \"dup_candidates\": 0, \"deleted\": 7, \"failed\": 0}, {\"name\": \"BAS\", \"chat_id\": -1002283963219, \"scanned\": 40, \"service_candidates\": 9, \"empty_candidates\": 0, \"dup_candidates\": 0, \"deleted\": 9, \"failed\": 0}, {\"name\": \"Мой спот\", \"chat_id\": -1002760924656, \"scanned\": 27, \"service_candidates\": 8, \"empty_candidates\": 0, \"dup_candidates\": 0, \"deleted\": 8, \"failed\": 0}, {\"name\": \"TW\", \"chat_id\": -1002787143323, \"scanned\": 123, \"service_candidates\": 8, \"empty_candidates\": 0, \"dup_candidates\": 0, \"deleted\": 8, \"failed\": 0}, {\"name\": \"Общак Спот\", \"chat_id\": -1002156970447, \"scanned\": 225, \"service_candidates\": 14, \"empty_candidates\": 0, \"dup_candidates\": 0, \"deleted\": 14, \"failed\": 0}, {\"name\": \"OpenClaw news\", \"chat_id\": -1003650146818, \"scanned\": 257, \"service_candidates\": 11, \"empty_candidates\": 0, \"dup_candidates\": 0, \"deleted\": 11, \"failed\": 0}, {\"name\": \"Life OS\", \"chat_id\": -1003542470588, \"scanned\": 189, \"service_candidates\": 8, \"empty_candidates\": 0, \"dup_candidates\": 0, \"deleted\": 8, \"failed\": 0}, {\"name\": \"2025 Pro Defi\", \"chat_id\": -1002845061030, \"scanned\": 260, \"service_candidates\": 15, \"empty_candidates\": 0, \"dup_candidates\": 0, \"deleted\": 15, \"failed\": 0}, {\"name\": \"ДОП DEFI 24\", \"chat_id\": -1002389062759, \"scanned\": 68, \"service_candidates\": 11, \"empty_candidates\": 0, \"dup_candidates\": 0, \"deleted\": 11, \"failed\": 0}, {\"name\": \"БАЗА и ПРО 2023\", \"chat_id\": -1002305257406, \"scanned\": 163, \"service_candidates\": 17, \"empty_candidates\": 0, \"dup_candidates\": 0, \"deleted\": 17, \"failed\": 0}, {\"name\": \"2025 БАЗА Defi\", \"chat_id\": -1002758539226, \"scanned\": 182, \"service_candidates\": 18, \"empty_candidates\": 0, \"dup_candidates\": 0, \"deleted\": 18, \"failed\": 0}, {\"name\": \"Материалы\", \"chat_id\": -1002565854059, \"scanned\": 125, \"service_candidates\": 10, \"empty_candidates\": 0, \"dup_candidates\": 0, \"deleted\": 10, \"failed\": 0}, {\"name\": \"Syndicate\", \"chat_id\": -1002623559867, \"scanned\": 74, \"service_candidates\": 7, \"empty_candidates\": 0, \"dup_candidates\": 0, \"deleted\": 7, \"failed\": 0}], \"summary\": {\"groups_processed\": 15, \"scanned_total\": 2191, \"deleted_total\": 152, \"failed_total\": 0}}",
+      "stderr": ""
+    },
+    "worker_report": {
+      "ts": 1773915547,
+      "mode": "no_gpt_cleanup_worker",
+      "selected_groups": 15,
+      "groups": [
+        {
+          "name": "Defi Os",
+          "chat_id": -1003646976482,
+          "scanned": 260,
+          "service_candidates": 0,
+          "empty_candidates": 0,
+          "dup_candidates": 0,
+          "deleted": 0,
+          "failed": 0
+        },
+        {
+          "name": "WT Master Hub",
+          "chat_id": -1003772897836,
+          "scanned": 145,
+          "service_candidates": 9,
+          "empty_candidates": 0,
+          "dup_candidates": 0,
+          "deleted": 9,
+          "failed": 0
+        },
+        {
+          "name": "Отработки зоны 141-161",
+          "chat_id": -1002229676776,
+          "scanned": 53,
+          "service_candidates": 7,
+          "empty_candidates": 0,
+          "dup_candidates": 0,
+          "deleted": 7,
+          "failed": 0
+        },
+        {
+          "name": "BAS",
+          "chat_id": -1002283963219,
+          "scanned": 40,
+          "service_candidates": 9,
+          "empty_candidates": 0,
+          "dup_candidates": 0,
+          "deleted": 9,
+          "failed": 0
+        },
+        {
+          "name": "Мой спот",
+          "chat_id": -1002760924656,
+          "scanned": 27,
+          "service_candidates": 8,
+          "empty_candidates": 0,
+          "dup_candidates": 0,
+          "deleted": 8,
+          "failed": 0
+        },
+        {
+          "name": "TW",
+          "chat_id": -1002787143323,
+          "scanned": 123,
+          "service_candidates": 8,
+          "empty_candidates": 0,
+          "dup_candidates": 0,
+          "deleted": 8,
+          "failed": 0
+        },
+        {
+          "name": "Общак Спот",
+          "chat_id": -1002156970447,
+          "scanned": 225,
+          "service_candidates": 14,
+          "empty_candidates": 0,
+          "dup_candidates": 0,
+          "deleted": 14,
+          "failed": 0
+        },
+        {
+          "name": "OpenClaw news",
+          "chat_id": -1003650146818,
+          "scanned": 257,
+          "service_candidates": 11,
+          "empty_candidates": 0,
+          "dup_candidates": 0,
+          "deleted": 11,
+          "failed": 0
+        },
+        {
+          "name": "Life OS",
+          "chat_id": -1003542470588,
+          "scanned": 189,
+          "service_candidates": 8,
+          "empty_candidates": 0,
+          "dup_candidates": 0,
+          "deleted": 8,
+          "failed": 0
+        },
+        {
+          "name": "2025 Pro Defi",
+          "chat_id": -1002845061030,
+          "scanned": 260,
+          "service_candidates": 15,
+          "empty_candidates": 0,
+          "dup_candidates": 0,
+          "deleted": 15,
+          "failed": 0
+        },
+        {
+          "name": "ДОП DEFI 24",
+          "chat_id": -1002389062759,
+          "scanned": 68,
+          "service_candidates": 11,
+          "empty_candidates": 0,
+          "dup_candidates": 0,
+          "deleted": 11,
+          "failed": 0
+        },
+        {
+          "name": "БАЗА и ПРО 2023",
+          "chat_id": -1002305257406,
+          "scanned": 163,
+          "service_candidates": 17,
+          "empty_candidates": 0,
+          "dup_candidates": 0,
+          "deleted": 17,
+          "failed": 0
+        },
+        {
+          "name": "2025 БАЗА Defi",
+          "chat_id": -1002758539226,
+          "scanned": 182,
+          "service_candidates": 18,
+          "empty_candidates": 0,
+          "dup_candidates": 0,
+          "deleted": 18,
+          "failed": 0
+        },
+        {
+          "name": "Материалы",
+          "chat_id": -1002565854059,
+          "scanned": 125,
+          "service_candidates": 10,
+          "empty_candidates": 0,
+          "dup_candidates": 0,
+          "deleted": 10,
+          "failed": 0
+        },
+        {
+          "name": "Syndicate",
+          "chat_id": -1002623559867,
+          "scanned": 74,
+          "service_candidates": 7,
+          "empty_candidates": 0,
+          "dup_candidates": 0,
+          "deleted": 7,
+          "failed": 0
+        }
+      ],
+      "summary": {
+        "groups_processed": 15,
+        "scanned_total": 2191,
+        "deleted_total": 152,
+        "failed_total": 0
+      }
+    },
+    "post_start": {
+      "cmd": "systemctl --user start userbot2.service",
+      "code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  },
+  "summary": {}
+}

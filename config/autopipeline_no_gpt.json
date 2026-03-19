@@ -1,0 +1,41 @@
+{
+  "services": [
+    "telegram-pipeline-v1.service",
+    "userbot.service",
+    "userbot2.service",
+    "telegram-obsidian.service"
+  ],
+  "telethon": {
+    "python": "/home/openclawuser/userbot2/.venv/bin/python",
+    "worker_script": "/home/openclawuser/.openclaw/workspace/scripts/tg_no_gpt_worker.py",
+    "stop_service_before_run": "userbot2.service",
+    "start_service_after_run": "userbot2.service"
+  },
+  "cleanup": {
+    "groups": [
+      "OpenClaw news",
+      "Defi Os",
+      "2025 Pro Defi",
+      "2025 БАЗА Defi",
+      "Syndicate",
+      "БАЗА и ПРО 2023",
+      "ДОП DEFI 24",
+      "Материалы",
+      "BAS",
+      "TW",
+      "Мой спот",
+      "Общак Спот",
+      "Отработки зоны 141-161",
+      "WT Master Hub",
+      "Life OS"
+    ],
+    "exclude_name_contains": ["chat", "чат"],
+    "exclude_exact": ["HOMIC DAO", "Интра 2.0", "Интра 2.0 ☃️"],
+    "limit_per_group": 260,
+    "delete_service": true,
+    "delete_empty": true,
+    "dedupe_exact_text": true
+  },
+  "reports_dir": "/home/openclawuser/.openclaw/workspace/reports",
+  "state_file": "/home/openclawuser/.openclaw/workspace/reports/no_gpt_autopipeline_state.json"
+}

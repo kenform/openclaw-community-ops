@@ -1,0 +1,12 @@
+[Unit]
+Description=Autonomous no-GPT pipeline maintenance (groups + OpenClaw news + parser health)
+After=default.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/openclawuser/.openclaw/workspace
+ExecStart=/usr/bin/env python3 /home/openclawuser/.openclaw/workspace/scripts/autopipeline_no_gpt.py
+Nice=5
+
+[Install]
+WantedBy=default.target

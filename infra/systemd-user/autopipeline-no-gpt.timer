@@ -1,0 +1,12 @@
+[Unit]
+Description=Run autonomous no-GPT pipeline every 30 minutes
+
+[Timer]
+OnBootSec=3min
+OnUnitActiveSec=30min
+RandomizedDelaySec=90
+Persistent=true
+Unit=autopipeline-no-gpt.service
+
+[Install]
+WantedBy=timers.target

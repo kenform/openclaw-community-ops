@@ -1,11 +1,11 @@
 # Active Tasks
 
-## [2026-03-19-autonomy-no-gpt-plan-and-github-reminder] Подготовить план полной авто-сортировки без GPT + напоминание про GitHub сегодня
+## [2026-03-19-autonomy-no-gpt-plan-and-github-reminder] Подготовить и внедрить авто-сортировку без GPT + напоминание про GitHub сегодня
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-19 10:15 UTC
-- **Updated**: 2026-03-19 10:16 UTC
-- **Notes**: Пользователь спросил, что ещё можно сделать, и можно ли перевести сортировку в автономный Python-режим без GPT; отдельно попросил напомнить сегодня перенести код и парсеры в GitHub.
-- **Result**: Подготовлен практичный план автономного контура (rule-based + keyword classifiers + dedupe + routing + reports), подтверждена реализуемость без GPT. Напоминание на сегодня зафиксировано в рабочей памяти/задачах.
+- **Updated**: 2026-03-19 10:19 UTC
+- **Notes**: Пользователь попросил не только план, но и внедрение: чтобы автономно работало на парсеры и OpenClaw news даже без GPT.
+- **Result**: Внедрён no-GPT контур: `scripts/autopipeline_no_gpt.py`, `scripts/tg_no_gpt_worker.py`, `config/autopipeline_no_gpt.json`, systemd unit+timer `infra/systemd-user/autopipeline-no-gpt.{service,timer}`; таймер включён и протестирован (`active`), one-shot отчёты: `reports/autopipeline_no_gpt_1773915513.json`, `reports/autopipeline_no_gpt_1773915545.json`. Напоминание про GitHub зафиксировано в `memory/2026-03-19.md`.
 
 ## [2026-03-19-defios-dedupe-pass] Мягкий dedupe-pass в Defi Os (без потери контекста)
 - **Status**: ✅ 完成
