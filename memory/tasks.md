@@ -1,5 +1,12 @@
 # Active Tasks
 
+## [2026-03-19-openclaw-second-cleanup-pass] Добивающий cleanup-pass после dry-check (OpenClaw + исключённые)
+- **Status**: ✅ 完成
+- **Requested**: 2026-03-19 07:39 UTC
+- **Updated**: 2026-03-19 07:41 UTC
+- **Notes**: Пользователь подтвердил запуск второго добивающего прохода по найденной дельте.
+- **Result**: Проход выполнен: OpenClaw-контур (4 цели) удалено 1; исключённые группы (6 целей) удалено 78; ошибок 0. Отчёт: `reports/openclaw_news_excluded_cleanup_pass2_1773906117.json`.
+
 ## [2026-03-19-arya-channel-quality-fix] Проверить баги и оживить стиль постов в @Arya_claw
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-19 07:39 UTC

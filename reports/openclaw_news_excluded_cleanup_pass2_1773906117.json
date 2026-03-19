@@ -1,0 +1,95 @@
+{
+  "ts": 1773906114,
+  "mode": "second_cleanup_pass",
+  "openclaw_news": [
+    {
+      "chat_id": -1003711761959,
+      "name": "Арья печатает...",
+      "scanned": 19,
+      "candidates": 1,
+      "deleted": 1,
+      "failed": 0
+    },
+    {
+      "chat_id": -1003650146818,
+      "name": "OpenClaw news",
+      "scanned": 160,
+      "candidates": 0,
+      "deleted": 0,
+      "failed": 0
+    },
+    {
+      "chat_id": -1003757288496,
+      "name": "OpenClaw Parser",
+      "scanned": 4,
+      "candidates": 0,
+      "deleted": 0,
+      "failed": 0
+    },
+    {
+      "chat_id": 8713132191,
+      "name": "OpenClaw Digest post bot",
+      "scanned": 1,
+      "candidates": 0,
+      "deleted": 0,
+      "failed": 0
+    }
+  ],
+  "excluded_groups": [
+    {
+      "chat_id": -1002845061030,
+      "name": "2025 Pro Defi",
+      "scanned": 220,
+      "candidates": 15,
+      "deleted": 15,
+      "failed": 0
+    },
+    {
+      "chat_id": -1002758539226,
+      "name": "2025 БАЗА Defi",
+      "scanned": 182,
+      "candidates": 18,
+      "deleted": 18,
+      "failed": 0
+    },
+    {
+      "chat_id": -1002305257406,
+      "name": "БАЗА и ПРО 2023",
+      "scanned": 163,
+      "candidates": 17,
+      "deleted": 17,
+      "failed": 0
+    },
+    {
+      "chat_id": -1002389062759,
+      "name": "ДОП DEFI 24",
+      "scanned": 68,
+      "candidates": 11,
+      "deleted": 11,
+      "failed": 0
+    },
+    {
+      "chat_id": -1002565854059,
+      "name": "Материалы",
+      "scanned": 125,
+      "candidates": 10,
+      "deleted": 10,
+      "failed": 0
+    },
+    {
+      "chat_id": -1002623559867,
+      "name": "Syndicate",
+      "scanned": 74,
+      "candidates": 7,
+      "deleted": 7,
+      "failed": 0
+    }
+  ],
+  "summary": {
+    "openclaw_targets": 4,
+    "openclaw_deleted_total": 1,
+    "excluded_targets": 6,
+    "excluded_deleted_total": 78,
+    "failed_total": 0
+  }
+}
