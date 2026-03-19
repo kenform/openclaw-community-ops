@@ -1,0 +1,214 @@
+{
+  "ts": 1773914987,
+  "mode": "defios_quality_audit",
+  "target": {
+    "name": "Defi Os",
+    "chat_id": -1003646976482
+  },
+  "topics": [
+    {
+      "topic_id": 9,
+      "title": "📎 Материалы / Ресурсы",
+      "scanned": 65,
+      "service_msgs": 1,
+      "empty_text_no_media": 1,
+      "media_msgs": 33,
+      "media_no_caption": 0,
+      "dup_candidates": 3,
+      "examples": [
+        {
+          "id": 831,
+          "kind": "dup",
+          "text": "📹 Урок 2: Как защитить себя в мире DeFi"
+        },
+        {
+          "id": 808,
+          "kind": "dup",
+          "text": "📥 @ttpapabot 720p"
+        },
+        {
+          "id": 807,
+          "kind": "dup",
+          "text": "📥 @ttpapabot 720p"
+        }
+      ]
+    },
+    {
+      "topic_id": 8,
+      "title": "🧪 ДОП DEFI 24 / Дополнения",
+      "scanned": 53,
+      "service_msgs": 1,
+      "empty_text_no_media": 1,
+      "media_msgs": 48,
+      "media_no_caption": 0,
+      "dup_candidates": 3,
+      "examples": [
+        {
+          "id": 737,
+          "kind": "dup",
+          "text": "."
+        },
+        {
+          "id": 736,
+          "kind": "dup",
+          "text": "."
+        },
+        {
+          "id": 735,
+          "kind": "dup",
+          "text": "."
+        }
+      ]
+    },
+    {
+      "topic_id": 7,
+      "title": "🗂 БАЗА и ПРО 2023 / Архив",
+      "scanned": 120,
+      "service_msgs": 0,
+      "empty_text_no_media": 0,
+      "media_msgs": 111,
+      "media_no_caption": 0,
+      "dup_candidates": 4,
+      "examples": [
+        {
+          "id": 719,
+          "kind": "dup",
+          "text": "."
+        },
+        {
+          "id": 707,
+          "kind": "dup",
+          "text": "."
+        },
+        {
+          "id": 649,
+          "kind": "dup",
+          "text": "."
+        }
+      ]
+    },
+    {
+      "topic_id": 6,
+      "title": "🧠 Syndicate / Идеи",
+      "scanned": 66,
+      "service_msgs": 1,
+      "empty_text_no_media": 1,
+      "media_msgs": 54,
+      "media_no_caption": 11,
+      "dup_candidates": 11,
+      "examples": [
+        {
+          "id": 581,
+          "kind": "dup",
+          "text": ""
+        },
+        {
+          "id": 557,
+          "kind": "dup",
+          "text": "09.06 - 15.06.2026"
+        },
+        {
+          "id": 554,
+          "kind": "dup",
+          "text": ""
+        }
+      ]
+    },
+    {
+      "topic_id": 5,
+      "title": "📚 БАЗА Defi / Основы",
+      "scanned": 120,
+      "service_msgs": 0,
+      "empty_text_no_media": 0,
+      "media_msgs": 110,
+      "media_no_caption": 56,
+      "dup_candidates": 60,
+      "examples": [
+        {
+          "id": 513,
+          "kind": "dup",
+          "text": ""
+        },
+        {
+          "id": 512,
+          "kind": "dup",
+          "text": ""
+        },
+        {
+          "id": 511,
+          "kind": "dup",
+          "text": ""
+        }
+      ]
+    },
+    {
+      "topic_id": 4,
+      "title": "📈 Pro Defi / Сигналы",
+      "scanned": 120,
+      "service_msgs": 0,
+      "empty_text_no_media": 0,
+      "media_msgs": 117,
+      "media_no_caption": 64,
+      "dup_candidates": 63,
+      "examples": [
+        {
+          "id": 325,
+          "kind": "dup",
+          "text": ""
+        },
+        {
+          "id": 324,
+          "kind": "dup",
+          "text": ""
+        },
+        {
+          "id": 323,
+          "kind": "dup",
+          "text": ""
+        }
+      ]
+    },
+    {
+      "topic_id": 3,
+      "title": "🧭 Навигатор",
+      "scanned": 2,
+      "service_msgs": 1,
+      "empty_text_no_media": 1,
+      "media_msgs": 0,
+      "media_no_caption": 0,
+      "dup_candidates": 0,
+      "examples": []
+    },
+    {
+      "topic_id": 2,
+      "title": "📥 Inbox / Разобрать",
+      "scanned": 1,
+      "service_msgs": 1,
+      "empty_text_no_media": 1,
+      "media_msgs": 0,
+      "media_no_caption": 0,
+      "dup_candidates": 0,
+      "examples": []
+    },
+    {
+      "topic_id": 1,
+      "title": "General",
+      "scanned": 1,
+      "service_msgs": 1,
+      "empty_text_no_media": 1,
+      "media_msgs": 0,
+      "media_no_caption": 0,
+      "dup_candidates": 0,
+      "examples": []
+    }
+  ],
+  "summary": {
+    "topics_total": 9,
+    "scanned_total": 548,
+    "service_total": 6,
+    "empty_total": 6,
+    "dup_candidates_total": 144,
+    "media_total": 473,
+    "media_no_caption_total": 131
+  }
+}

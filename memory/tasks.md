@@ -1,5 +1,12 @@
 # Active Tasks
 
+## [2026-03-19-defios-quality-audit] Контроль качества Defi Os после миграции
+- **Status**: ✅ 完成
+- **Requested**: 2026-03-19 10:09 UTC
+- **Updated**: 2026-03-19 10:10 UTC
+- **Notes**: Пользователь подтвердил запуск пункта 1 — быстрый аудит качества контента в Defi Os.
+- **Result**: Аудит выполнен по 9 топикам (548 сообщений): service=6, пустых=6, дубль-кандидатов=144, media=473, media без caption=131. Отчёт: `reports/defios_quality_audit_1773914988.json`.
+
 ## [2026-03-19-defios-full-migration-and-cleanup] Навести порядок в 18 группах и перенести контент Defi-групп в Defi Os
 - **Status**: ✅ 完成
 - **Requested**: 2026-03-19 09:58 UTC
