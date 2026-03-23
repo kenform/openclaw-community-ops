@@ -1,13 +1,11 @@
-## Что сделано
-- 
+## Summary
+- What changed and why
 
-## Почему
-- 
+## Checklist
+- [ ] Self-review completed
+- [ ] Screenshots/video attached (if UI)
+- [ ] Docs/README updated if needed
+- [ ] Tests/checks pass
 
-## Проверка
-- [ ] Локальный запуск пройден
-- [ ] Секретов/сессий в diff нет
-- [ ] Обновлены docs/config при необходимости
-
-## Риски
-- 
+## Risks
+- Any migration, breaking change, or rollback notes
